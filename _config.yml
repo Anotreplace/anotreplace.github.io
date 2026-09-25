@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────
+#  Ànotreplace — configuration du site
+#  Remplacez les valeurs marquées A_REMPLACER.
+# ─────────────────────────────────────────────
+title: Ànotreplace
+tagline: Collectif sportif féminin
+description: >-
+  Collectif running, trail et triathlon 100 % féminin à Angoulême.
+  Tous niveaux, sorties en groupe et en sécurité.
+url: "https://anotreplace.github.io"        # votre domaine (ou https://<organisation>.github.io)
+baseurl: ""                          # "" avec un domaine perso ; "/nom-du-depot" sinon
+lang: fr
+locale: fr_FR
+
+# Liens externes utilisés dans tout le site
+liens:
+  reservation: "https://cal.com/A_REMPLACER/seance-decouverte"   # Cal.com ou Calendly
+  helloasso: "https://www.helloasso.com/associations/A_REMPLACER"
+  instagram: "https://www.instagram.com/A_REMPLACER"
+  formspree_contact: "https://formspree.io/f/A_REMPLACER"
+  formspree_partenaires: "https://formspree.io/f/A_REMPLACER"
+  brevo_newsletter: ""        # URL d'action du formulaire Brevo (laisser vide = formulaire masqué)
+  ga4_id: ""                  # ex. G-XXXXXXX ; vide = aucun suivi, aucun bandeau cookies
+
+contact:
+  email: "contact@A_REMPLACER.fr"
+
+association:
+  nom: "ANOTREPLACE"
+  rna: "W161010667"
+  ville: "Gond-Pontouvre (Charente)"
+  siege: "A_REMPLACER : adresse du siège (obligatoire dans les mentions légales)"
+  directrice_publication: "Lauryn Zoller, présidente"
+
+# Réseaux pour les aperçus de partage
+social:
+  name: Ànotreplace
+  links:
+    - "https://www.instagram.com/A_REMPLACER"
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+
+permalink: /blog/:title/
+markdown: kramdown
+timezone: Europe/Paris
+
+exclude:
+  - README.md
+  - LISEZMOI.md
+  - Gemfile
+  - Gemfile.lock

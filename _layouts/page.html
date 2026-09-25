@@ -1,0 +1,10 @@
+---
+layout: default
+---
+<section class="bande bande--intro">
+  <div class="conteneur texte">
+    <h1>{{ page.h1 | default: page.title }}</h1>
+    {% if page.chapo %}<p class="chapo">{{ page.chapo }}</p>{% endif %}
+  </div>
+</section>
+{{ content }}

@@ -1,0 +1,29 @@
+---
+layout: page
+permalink: /contact/
+title: "Contact – Collectif running féminin Angoulême"
+description: "Une question sur le collectif Ànotreplace, une idée de projet ou un partenariat ? Écris-nous : une bénévole du bureau te répond sous 48 heures, promis."
+h1: "Contacter le collectif Ànotreplace"
+chapo: "Une question, une idée de projet, un partenariat ? Une bénévole du bureau te répond sous 48 heures."
+---
+<section class="bande">
+  <div class="conteneur grille-2" style="align-items:start">
+    <form class="formulaire" action="{{ site.liens.formspree_contact }}" method="post">
+      <div><label for="c-prenom">Prénom</label><input id="c-prenom" name="prenom" autocomplete="given-name" required></div>
+      <div><label for="c-email">E-mail</label><input id="c-email" name="email" type="email" autocomplete="email" required></div>
+      <div><label for="c-objet">Objet</label>
+        <select id="c-objet" name="objet"><option>Adhésion</option><option>Partenariat</option><option>Presse</option><option>Autre</option></select></div>
+      <div><label for="c-message">Ton message</label><textarea id="c-message" name="message" required></textarea></div>
+      <label class="case"><input type="checkbox" name="consentement" required> J'accepte que mes données soient utilisées pour répondre à ma demande. <a href="{{ '/confidentialite/' | relative_url }}">Confidentialité</a></label>
+      <button class="btn" type="submit">Envoyer mon message</button>
+    </form>
+    <div>
+      <h2>Autres moyens</h2>
+      <p>Instagram : <a href="{{ site.liens.instagram }}" rel="noopener">@anotreplace</a></p>
+      <p>E-mail : <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a></p>
+      <p>{{ site.association.ville }}</p>
+      <h3 style="margin-top:2rem">Raccourcis</h3>
+      <p><a href="{{ '/reserver/' | relative_url }}">Réserver une séance découverte</a><br><a href="{{ '/faq/' | relative_url }}">Lire les questions fréquentes</a></p>
+    </div>
+  </div>
+</section>

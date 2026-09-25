@@ -1,0 +1,13 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsClub",
+  "name": "Ànotreplace",
+  "description": {{ site.description | jsonify }},
+  "url": {{ site.url | jsonify }},
+  "sport": ["Running", "Trail", "Triathlon"],
+  "areaServed": "Angoulême, Charente",
+  "address": { "@type": "PostalAddress", "addressLocality": "Gond-Pontouvre", "postalCode": "16160", "addressCountry": "FR" },
+  "sameAs": [{{ site.liens.instagram | jsonify }}]
+}
+</script>

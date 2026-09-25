@@ -1,0 +1,26 @@
+---
+layout: page
+permalink: /faq/
+title: "Running féminin Angoulême : vos questions"
+description: "Niveau, sécurité, tarif, certificat médical, projets : toutes les réponses sur le collectif sportif féminin Ànotreplace. Une autre question ? Écris-nous."
+h1: "Running entre femmes à Angoulême : toutes vos questions"
+jsonld_faq: true
+---
+<section class="bande">
+  <div class="conteneur texte">
+    <nav aria-label="Thèmes"><ul class="sommaire">
+      {% for groupe in site.data.faq %}<li><a href="#{{ groupe.id }}">{{ groupe.groupe }}</a></li>{% endfor %}
+    </ul></nav>
+    {% for groupe in site.data.faq %}
+      <h2 id="{{ groupe.id }}">{{ groupe.groupe }}</h2>
+      <div class="faq">
+        {% for q in groupe.questions %}<details><summary>{{ q.q }}</summary><p>{{ q.r }}</p></details>{% endfor %}
+      </div>
+    {% endfor %}
+    <h2>Tu n'as pas trouvé ta réponse ?</h2>
+    <div class="actions">
+      <a class="btn" href="{{ '/reserver/' | relative_url }}">Je réserve ma séance offerte</a>
+      <a class="btn btn--contour" href="{{ '/contact/' | relative_url }}">Nous écrire</a>
+    </div>
+  </div>
+</section>

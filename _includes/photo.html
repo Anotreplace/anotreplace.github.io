@@ -1,0 +1,11 @@
+{% comment %}
+  Usage : {% include photo.html src="/assets/img/hero.webp" alt="..." label="..." classe="..." %}
+  Sans "src", un emplacement réservé s'affiche : ajoutez la photo dans assets/img puis renseignez src.
+{% endcomment %}
+<figure class="photo {{ include.classe }}">
+  {% if include.src and include.src != "" %}
+    <img src="{{ include.src | relative_url }}" alt="{{ include.alt }}" loading="lazy" decoding="async">
+  {% else %}
+    <div class="photo__attente" role="img" aria-label="{{ include.alt }}"><span>Photo à venir : {{ include.label | default: include.alt }}</span></div>
+  {% endif %}
+</figure>

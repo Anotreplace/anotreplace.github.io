@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'fr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if page.noindex %}<meta name="robots" content="noindex, follow">{% endif %}
+  {% seo %}
+  {% feed_meta %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,600;1,400&family=League+Spartan:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+  {% if page.url == "/" %}{% include jsonld-club.html %}{% endif %}
+  {% if page.jsonld_faq %}{% include jsonld-faq.html %}{% endif %}
+</head>
+<body class="{{ page.body_class }}">
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+  {% include header.html %}
+  <main id="contenu">
+    {{ content }}
+  </main>
+  {% include footer.html %}
+  {% unless page.sans_cta_mobile %}
+  <a class="cta-mobile btn" href="{{ '/reserver/' | relative_url }}">Réserver ma séance offerte</a>
+  {% endunless %}
+  {% include consentement.html %}
+  <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+---
+layout: page
+permalink: /blog/
+title: "Blog sport féminin : running, trail et santé"
+description: "Conseils running et trail au féminin, sport et règles, nutrition, courses en Charente : les articles du collectif Ànotreplace pour progresser en confiance."
+h1: "Le blog du collectif"
+chapo: "Courir au féminin, santé et performance, courses en Charente, vie du collectif."
+---
+<section class="bande">
+  <div class="conteneur texte">
+    {% if site.posts.size > 0 %}
+    <ul class="liste-articles">
+      {% for post in site.posts %}
+      <li>
+        <p class="meta-article">{{ post.date | date: "%d/%m/%Y" }}{% if post.categorie %}, {{ post.categorie }}{% endif %}</p>
+        <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+        <p>{{ post.description }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>Les premiers articles arrivent bientôt. En attendant, viens courir avec nous.</p>
+    {% endif %}
+  </div>
+</section>

@@ -1,0 +1,10 @@
+{% if site.liens.ga4_id and site.liens.ga4_id != "" %}
+<div class="consentement" id="consentement" hidden>
+  <p>On aimerait mesurer la fréquentation du site avec Google Analytics. Tu acceptes ?</p>
+  <div class="consentement__actions">
+    <button type="button" class="btn btn--contour btn--petit" data-consentement="refuse">Refuser</button>
+    <button type="button" class="btn btn--petit" data-consentement="accepte">Accepter</button>
+  </div>
+</div>
+<script>window.ANOTREPLACE_GA4 = {{ site.liens.ga4_id | jsonify }};</script>
+{% endif %}

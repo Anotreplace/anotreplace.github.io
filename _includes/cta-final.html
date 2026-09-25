@@ -1,0 +1,7 @@
+<section class="bande cta-final">
+  <div class="conteneur texte centre">
+    <h2>{{ include.titre | default: "Ta place t'attend. Réserve ta séance découverte." }}</h2>
+    <p>{{ include.texte | default: "Une heure. Gratuite. Des femmes qui t'attendent au départ." }}</p>
+    <a class="btn btn--grand" href="{{ '/reserver/' | relative_url }}">{{ include.bouton | default: "Je réserve ma séance offerte" }}</a>
+  </div>
+</section>

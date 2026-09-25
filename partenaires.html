@@ -1,0 +1,47 @@
+---
+layout: page
+permalink: /partenaires/
+title: "Partenaire d'un collectif sportif féminin"
+description: "Magasin, cabinet santé ou entreprise locale : soutiens le sport féminin à Angoulême et touche une communauté engagée. Découvre nos offres de partenariat."
+h1: "Devenir partenaire d'un collectif sportif féminin à Angoulême"
+chapo: "Soutiens la place des femmes dans le sport, près de chez toi."
+---
+<section class="bande">
+  <div class="conteneur texte">
+    <h2>Pourquoi nous soutenir ?</h2>
+    <ul class="benefices" style="grid-template-columns:1fr">
+      <li><strong>Une communauté locale engagée</strong> Des sportives actives et fidèles du GrandAngoulême.</li>
+      <li><strong>Une cause qui compte</strong> L'égalité des femmes et des hommes dans le sport.</li>
+      <li><strong>Une visibilité authentique</strong> Sur le terrain, lors de nos événements et sur Instagram.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="bande bande--rose">
+  <div class="conteneur">
+    <h2>Nos formules</h2>
+    <div class="grille-3">
+      <article class="tarif"><h3>Complice</h3><p class="prix">300 €</p><p>Ou dotation équivalente. Logo sur le site, une publication Instagram.</p></article>
+      <article class="tarif tarif--solidaire"><h3>Alliée</h3><p class="prix">600 €</p><p>Formule Complice, plus le logo sur les supports d'événement et une conférence co-organisée.</p></article>
+      <article class="tarif"><h3>Premium</h3><p class="prix">1 000 €</p><p>Formule Alliée, plus le logo sur la tenue du collectif et une présence à notre événement de juin.</p></article>
+    </div>
+    <p class="reassurance">Tu soutiens sans contrepartie publicitaire : c'est du mécénat. Tu souhaites de la visibilité : c'est du sponsoring. On t'aide à choisir.</p>
+  </div>
+</section>
+
+<section class="bande">
+  <div class="conteneur texte">
+    <h2>Parlons-en</h2>
+    <form class="formulaire" action="{{ site.liens.formspree_partenaires }}" method="post">
+      <div><label for="p-nom">Nom et prénom</label><input id="p-nom" name="nom" autocomplete="name" required></div>
+      <div><label for="p-structure">Structure</label><input id="p-structure" name="structure" autocomplete="organization" required></div>
+      <div><label for="p-email">E-mail</label><input id="p-email" name="email" type="email" autocomplete="email" required></div>
+      <div><label for="p-type">Type de structure</label>
+        <select id="p-type" name="type"><option>Magasin de sport</option><option>Cabinet de santé</option><option>Entreprise</option><option>Collectivité</option><option>Autre</option></select></div>
+      <div><label for="p-message">Ton message</label><textarea id="p-message" name="message" required></textarea></div>
+      <label class="case"><input type="checkbox" name="consentement" required> J'accepte que mes données soient utilisées pour répondre à ma demande. <a href="{{ '/confidentialite/' | relative_url }}">Confidentialité</a></label>
+      <input type="hidden" name="_subject" value="Nouvelle demande de partenariat">
+      <button class="btn" type="submit">Proposer un partenariat</button>
+    </form>
+  </div>
+</section>

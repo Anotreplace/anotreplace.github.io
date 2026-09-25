@@ -1,0 +1,40 @@
+---
+layout: default
+permalink: /reserver/
+title: "Séance découverte running femmes à Angoulême"
+description: "Réserve ta séance découverte gratuite avec le collectif féminin Ànotreplace. 1 heure, tous niveaux, sans engagement. Choisis ton créneau en 30 secondes."
+menu_allege: true
+sans_cta_mobile: true
+---
+<section class="bande bande--intro">
+  <div class="conteneur texte">
+    <h1>Réserve ta séance découverte gratuite</h1>
+    <p class="chapo">Une heure, tous niveaux, sans engagement. Choisis ton créneau en 30 secondes.</p>
+  </div>
+</section>
+
+<section class="bande" style="padding-top:1.5rem">
+  <div class="conteneur">
+    <div class="calendrier">
+      <!-- Remplacez l'URL par votre lien Cal.com ou Calendly (réglage _config.yml > liens.reservation).
+           Dans l'outil, activez la redirection après réservation vers https://votre-domaine/merci/ -->
+      <iframe src="{{ site.liens.reservation }}" title="Choisir un créneau de séance découverte" loading="lazy"></iframe>
+    </div>
+    <p class="reassurance">Le calendrier ne s'affiche pas ? <a href="{{ site.liens.reservation }}" rel="noopener">Ouvrir la page de réservation</a>.</p>
+  </div>
+</section>
+
+<section class="bande bande--rose">
+  <div class="conteneur grille-2">
+    <div>
+      <h2>Comment se passe ta séance ?</h2>
+      <p>On t'accueille dix minutes avant le départ. Tu cours avec une binôme de ton allure. On termine ensemble, souvent autour d'un café.</p>
+      <h3>À apporter</h3>
+      <p>Chaussures de running, tenue adaptée à la météo, eau, et une lampe frontale l'hiver.</p>
+    </div>
+    <div class="carte">
+      <p class="verdict">Chaque adhérente signe notre charte : bienveillance, sécurité, aucune comparaison.</p>
+      <a href="{{ '/charte/' | relative_url }}">Lire la charte</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,16 @@
+---
+layout: default
+---
+<article class="bande">
+  <div class="conteneur texte article">
+    <p class="meta-article"><a href="{{ '/blog/' | relative_url }}">Blog</a>, {{ page.date | date: "%d/%m/%Y" }}{% if page.categorie %}, {{ page.categorie }}{% endif %}</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}<p class="chapo">{{ page.description }}</p>{% endif %}
+    {{ content }}
+    <aside class="encart-cta">
+      <h2>Viens essayer une sortie</h2>
+      <p>La première séance est offerte, tous niveaux, sans engagement.</p>
+      <a class="btn" href="{{ '/reserver/' | relative_url }}">Je réserve ma séance offerte</a>
+    </aside>
+  </div>
+</article>

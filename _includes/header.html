@@ -1,0 +1,24 @@
+{% assign navigation = "/le-collectif/|Le collectif,/activites/|Nos activités,/adhesion/|Adhésion,/charte/|La charte,/faq/|FAQ" | split: "," %}
+<header class="entete">
+  <div class="conteneur entete__barre">
+    <a class="logo" href="{{ '/' | relative_url }}" aria-label="Ànotreplace, accueil">Ànotreplace</a>
+    {% unless page.menu_allege %}
+    <button class="entete__burger" type="button" aria-expanded="false" aria-controls="menu-principal">
+      <span class="sr">Ouvrir le menu</span><span aria-hidden="true"></span>
+    </button>
+    <nav id="menu-principal" class="menu" aria-label="Menu principal">
+      <ul>
+        {% for item in navigation %}
+          {% assign parts = item | split: "|" %}
+          <li><a href="{{ parts[0] | relative_url }}" {% if page.url == parts[0] %}aria-current="page"{% endif %}>{{ parts[1] }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endunless %}
+    {% if page.menu_allege %}
+      <a class="entete__retour" href="{{ '/' | relative_url }}">Retour à l'accueil</a>
+    {% else %}
+      <a class="btn btn--petit entete__cta" href="{{ '/reserver/' | relative_url }}">Réserver ma séance</a>
+    {% endif %}
+  </div>
+</header>

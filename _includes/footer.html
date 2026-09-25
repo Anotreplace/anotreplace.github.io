@@ -1,0 +1,30 @@
+<footer class="pied">
+  <div class="conteneur pied__grille">
+    <div>
+      <p class="logo">Ànotreplace</p>
+      <p>Trouver sa place. La construire ensemble.</p>
+      <p><a href="{{ site.liens.instagram }}" rel="noopener">Instagram</a></p>
+    </div>
+    <nav aria-label="Le collectif">
+      <ul>
+        <li><a href="{{ '/le-collectif/' | relative_url }}">Le collectif</a></li>
+        <li><a href="{{ '/activites/' | relative_url }}">Nos activités</a></li>
+        <li><a href="{{ '/adhesion/' | relative_url }}">Adhésion</a></li>
+        <li><a href="{{ '/charte/' | relative_url }}">La charte</a></li>
+        <li><a href="{{ '/faq/' | relative_url }}">FAQ</a></li>
+        <li><a href="{{ '/blog/' | relative_url }}">Blog</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Informations">
+      <ul>
+        <li><a href="{{ '/partenaires/' | relative_url }}">Partenaires</a></li>
+        <li><a href="{{ '/contact/' | relative_url }}">Contact</a></li>
+        <li><a href="{{ '/mentions-legales/' | relative_url }}">Mentions légales</a></li>
+        <li><a href="{{ '/confidentialite/' | relative_url }}">Confidentialité</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="conteneur pied__bas">
+    <p>Association loi 1901, RNA {{ site.association.rna }}, {{ site.association.ville }}.</p>
+  </div>
+</footer>

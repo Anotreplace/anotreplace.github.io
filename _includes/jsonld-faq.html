@@ -1,0 +1,11 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+  {% for groupe in site.data.faq %}{% for q in groupe.questions %}
+    { "@type": "Question", "name": {{ q.q | jsonify }}, "acceptedAnswer": { "@type": "Answer", "text": {{ q.r | jsonify }} } }{% unless forloop.last and forloop.parentloop.last %},{% endunless %}
+  {% endfor %}{% endfor %}
+  ]
+}
+</script>
