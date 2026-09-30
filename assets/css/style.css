@@ -16,7 +16,7 @@
   --degrade: linear-gradient(90deg, #5170FF 0%, #A46BE2 52%, #F266C8 100%);
   --degrade-v: linear-gradient(180deg, #5170FF 0%, #A46BE2 52%, #F266C8 100%);
   --degrade-btn: linear-gradient(90deg, #3F5CF0, #8E4FD6); /* version contrastée (AA) */
-  --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --serif: "Josefin Sans", "Avenir Next", "Century Gothic", system-ui, sans-serif; /* titres : police de la plaquette, plus lisible */
   --sans: "Josefin Sans", "Avenir Next", "Century Gothic", system-ui, sans-serif;
   --wrap: 1180px;
   --r-photo: 22px;
@@ -46,7 +46,7 @@ a:hover { color: #6A3FC4; }
 
 /* ---------- Typographie ---------- */
 h1, h2, h3 { margin: 0 0 .5em; line-height: 1.08; font-weight: 700; text-wrap: balance; }
-h1, h2 { font-family: var(--serif); letter-spacing: -.012em; }
+h1, h2 { font-family: var(--serif); letter-spacing: -.01em; }
 h1 { font-size: clamp(2.7rem, 6.4vw, 5.4rem); }
 h2 { font-size: clamp(2rem, 3.8vw, 3.1rem); }
 h3 { font-family: var(--sans); font-size: 1.25rem; line-height: 1.3; }
@@ -54,7 +54,7 @@ p { margin: 0 0 1em; }
 .lead { font-size: clamp(1.18rem, 1.8vw, 1.38rem); color: var(--gris); max-width: 42ch; }
 .muted { color: var(--gris); }
 .small { font-size: .95rem; }
-.serif-it { font-family: var(--serif); font-style: italic; font-weight: 500; }
+.serif-it { font-style: italic; }
 
 /* ---------- Boutons ---------- */
 .btn {
@@ -132,8 +132,9 @@ p { margin: 0 0 1em; }
 .urgence strong { color: #B0308F; }
 
 /* ---------- Problème ---------- */
+.h2-question { font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; }
 .pains { list-style: none; padding: 0; margin: 0 0 2rem; }
-.pains li { font-family: var(--serif); font-size: clamp(1.4rem, 2.6vw, 1.95rem); line-height: 1.25; padding: 1.05rem 0 1.05rem 2.2rem; border-bottom: 1px solid var(--lavande-2); position: relative; }
+.pains li { font-family: var(--sans); font-weight: 600; font-size: clamp(1.3rem, 2.3vw, 1.7rem); line-height: 1.35; padding: 1.05rem 0 1.05rem 2.2rem; border-bottom: 1px solid var(--lavande-2); position: relative; }
 .pains li::before { content: ""; position: absolute; left: 0; top: 1.72em; width: 1.3rem; height: 2px; background: var(--rose); }
 .amplify { color: var(--gris); font-size: 1.2rem; max-width: 46ch; }
 .punch { font-weight: 700; font-size: clamp(1.3rem, 2vw, 1.55rem); line-height: 1.35; max-width: 32ch; }
@@ -202,7 +203,7 @@ tbody th { font-weight: 600; }
 /* ---------- Témoignages ---------- */
 .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
 .q { margin: 0; }
-.q p { font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.32rem; line-height: 1.4; padding-left: 1.2rem; border-left: 2px solid var(--rose); margin: 0; }
+.q p { font-family: var(--sans); font-style: italic; font-weight: 400; font-size: 1.28rem; line-height: 1.5; padding-left: 1.2rem; border-left: 2px solid var(--rose); margin: 0; }
 .q-note { margin-top: 2rem; color: var(--gris); font-size: .95rem; }
 .question { font-family: var(--serif); font-weight: 700; font-size: clamp(2rem, 4.2vw, 3.4rem); line-height: 1.12; max-width: 20ch; margin: 0 0 1.5rem; }
 .theme { margin-bottom: 3rem; }
@@ -215,6 +216,19 @@ tbody th { font-weight: 600; }
 .trust { display: flex; flex-wrap: wrap; gap: .6rem 2rem; margin-top: 2rem; color: var(--gris); font-size: 1rem; list-style: none; padding: 0; }
 .trust li { position: relative; padding-left: 1.1rem; }
 .trust li::before { content: ""; position: absolute; left: 0; top: .5em; width: .45rem; height: .45rem; border-radius: 50%; background: var(--degrade); }
+
+.support { margin-top: 3.5rem; display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; background: #fff; border-radius: 30px; padding: clamp(1.8rem, 4vw, 3.2rem); box-shadow: 0 24px 60px -44px rgba(34, 28, 71, .45); }
+.support-art { width: 96px; height: auto; margin-bottom: 1.4rem; }
+.support-intro h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); }
+.support-lead { font-size: 1.25rem; color: var(--gris); margin: 0; }
+.support-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.support-list li { display: grid; grid-template-columns: 8.5rem 1fr; gap: 1.2rem; align-items: start; padding: 1.2rem 0; border-bottom: 1px solid var(--lavande-2); }
+.support-list li:last-child { border-bottom: 0; }
+.support-key { font-weight: 700; font-size: 2.3rem; line-height: 1; background: var(--degrade); -webkit-background-clip: text; background-clip: text; color: transparent; padding-top: .15rem; }
+.support-key--word { font-size: 1.25rem; line-height: 1.2; }
+.support-list h3 { margin: 0 0 .2rem; font-size: 1.12rem; }
+.support-list p { margin: 0 0 .3rem; color: var(--gris); font-size: 1rem; }
+.support-list a { font-weight: 700; font-size: 1rem; }
 
 /* ---------- Valeurs, piliers ---------- */
 .values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4rem 3rem; }
@@ -323,6 +337,10 @@ tbody th { font-weight: 600; }
 .charter-list > li { counter-increment: c; position: relative; padding: 1.8rem 0 1.4rem 4.2rem; border-top: 1px solid var(--lavande-2); }
 .charter-list > li::before { content: counter(c); position: absolute; left: 0; top: 1.5rem; font-family: var(--serif); font-size: 2.8rem; font-weight: 800; line-height: 1; background: var(--degrade); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .charter-list h2 { margin-top: 0; font-size: 1.8rem; }
+.charter-photo { margin: 1.6rem 0 .4rem; }
+.charter-photo img { border-radius: 20px; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.charter-photo figcaption { margin-top: .6rem; font-style: italic; color: var(--gris); font-size: .98rem; }
+.pledge-photo { border-radius: 16px; width: 100%; aspect-ratio: 21 / 8; object-fit: cover; margin-bottom: 1.6rem; }
 .pledge { background: #fff; border-radius: 24px; padding: 2rem; margin-top: 2rem; }
 .pledge ul { list-style: none; padding: 0; }
 .pledge li { padding-left: 1.8rem; position: relative; }
@@ -351,7 +369,7 @@ tbody th { font-weight: 600; }
   .nav.is-open { display: flex; }
   .nav ul { flex-direction: column; gap: 1rem; }
   .nav ul a { font-size: 1.3rem; }
-  .hero-grid, .split, .faq-layout, .offer, .page-hero--media .wrap, .event, .footer-grid, .two-ways { grid-template-columns: 1fr; }
+  .hero-grid, .split, .faq-layout, .support, .offer, .page-hero--media .wrap, .event, .footer-grid, .two-ways { grid-template-columns: 1fr; }
   .hero-media { max-width: 520px; margin: 1rem auto 3.5rem; }
   .hero-media .ph-small { left: -4%; }
   .steps, .disciplines, .stats, .logo-wall { grid-template-columns: repeat(2, 1fr); }
@@ -365,6 +383,7 @@ tbody th { font-weight: 600; }
   .steps { grid-template-columns: 1fr; gap: 1.6rem; }
   .steps li { padding: .2rem 0 0 4rem; min-height: 3.4rem; }
   .steps li::after { display: none; }
+  .support-list li { grid-template-columns: 1fr; gap: .4rem; }
   .logo-wall, .stats { grid-template-columns: 1fr 1fr; }
   .actions .btn { width: 100%; }
   .proof img:nth-child(n+2) { display: none; }
