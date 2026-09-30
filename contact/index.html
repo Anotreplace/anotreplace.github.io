@@ -1,0 +1,62 @@
+---
+layout: default
+title: "Contact collectif sportif féminin Angoulême | Ànotreplace"
+description: "Une question sur le collectif, l'adhésion ou un partenariat ? Écrivez à Ànotreplace, collectif sportif féminin d'Angoulême. Réponse sous 72 h."
+---
+
+<section class="page-hero">
+  <div class="wrap">
+    <h1>Parlons-en</h1>
+    <p class="lead">Une question, une idée, une envie de nous rejoindre ? Choisis le bon chemin, on te répond vite.</p>
+  </div>
+</section>
+
+<section class="section section--tint section--tight">
+  <div class="wrap routes">
+    <div class="route"><h2>Tu veux t'entraîner avec nous</h2><p>Le plus simple : viens tester. Ta première séance est offerte.</p><a class="btn" href="/reserver/">Réserver ma séance</a></div>
+    <div class="route"><h2>Vous êtes une entreprise</h2><p>Partenariat, dotation, mécénat : découvrez nos paliers.</p><a class="btn btn--ghost" href="/partenaires/#devenir-partenaire">Devenir partenaire</a></div>
+    <div class="route"><h2>Presse, collectivité, autre</h2><p>Un projet, une interview, une question : écrivez-nous ci-dessous.</p><a class="btn btn--ghost" href="#formulaire">Écrire un message</a></div>
+  </div>
+</section>
+
+<section class="section" id="formulaire">
+  <div class="wrap split">
+    <div>
+      <h2>Écris-nous</h2>
+      <p class="lead">On répond sous 72 heures.</p>
+      <ul class="coords" style="margin-top:2rem">
+        <li><strong>E-mail</strong><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+        <li><strong>Instagram</strong><a href="{{ site.instagram_url }}" rel="noopener">@collectif.anotreplace</a></li>
+        <li><strong>Où ?</strong>Angoulême et alentours, Charente. Siège à Gond-Pontouvre.</li>
+      </ul>
+    </div>
+    <form class="form" action="https://formsubmit.co/{{ site.form_email }}" method="POST">
+      <input type="hidden" name="_subject" value="Nouveau message, site Ànotreplace">
+      <input type="hidden" name="_next" value="{{ site.url }}/merci/">
+      <input type="hidden" name="_template" value="table">
+      <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+      <div class="row-2">
+        <div class="field"><label for="c-prenom">Prénom</label><input id="c-prenom" name="prenom" required autocomplete="given-name"></div>
+        <div class="field"><label for="c-email">E-mail</label><input id="c-email" type="email" name="email" required autocomplete="email"></div>
+      </div>
+      <div class="field">
+        <label for="c-objet">Objet</label>
+        <select id="c-objet" name="objet" required>
+          <option value="">Choisir</option>
+          <option value="seance-decouverte">Séance découverte</option>
+          <option value="adhesion">Adhésion</option>
+          <option value="octobre-rose">Inscription Octobre Rose (31 octobre)</option>
+          <option value="partenariat">Partenariat ou dotation</option>
+          <option value="presse">Presse ou collectivité</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="field"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required></textarea></div>
+      <label class="check"><input type="checkbox" name="consentement" required> J'accepte que mes données soient utilisées pour me répondre. <a href="/mentions-legales/#confidentialite">En savoir plus</a></label>
+      <button class="btn" type="submit">Envoyer mon message</button>
+    </form>
+  </div>
+</section>
+<script>
+  (function(){var o=new URLSearchParams(location.search).get('objet');var s=document.getElementById('c-objet');if(o&&s){s.value=o;}})();
+</script>
