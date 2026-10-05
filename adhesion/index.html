@@ -2,6 +2,7 @@
 layout: default
 title: "Adhérer à un club sportif féminin à Angoulême | Ànotreplace"
 description: "Adhésion saison 2026-2027 : 60€ par an, 40€ en tarif solidaire. Sorties, conférences, ateliers et défis inclus. Viens d'abord tester une séance."
+body_class: "no-mobile-cta"
 ---
 
 <section class="page-hero">
@@ -28,7 +29,7 @@ description: "Adhésion saison 2026-2027 : 60€ par an, 40€ en tarif solidair
       </ul>
       <div class="actions">
         <a class="btn" href="/reserver/">Je teste une séance</a>
-        <a class="btn btn--ghost" href="{{ site.adhesion_url }}" rel="noopener">J'adhère maintenant</a>
+        <a class="btn btn--ghost" href="#dossier">J'adhère maintenant</a>
       </div>
     </div>
     <div class="price-side">
@@ -50,18 +51,185 @@ description: "Adhésion saison 2026-2027 : 60€ par an, 40€ en tarif solidair
     <div class="section-head"><h2>Comment adhérer ?</h2><p>Trois conditions : être une femme majeure, signer la charte, régler ta cotisation.</p></div>
     <ol class="steps">
       <li><h3>Teste une séance</h3><p>Réserve ta séance découverte.</p></li>
-      <li><h3>Lis la charte</h3><p>Six valeurs pour un collectif sûr.</p></li>
-      <li><h3>Adhère en ligne</h3><p>Formulaire, charte, paiement : 3 minutes.</p></li>
-      <li><h3>Rejoins la bande</h3><p>Entre dans le groupe de discussions. Ta saison commence.</p></li>
+      <li><h3>Signe tes documents</h3><p>Quatre documents à télécharger, remplir et signer.</p></li>
+      <li><h3>Envoie ton dossier</h3><p>Dépose-les en ligne et règle ta cotisation.</p></li>
+      <li><h3>Rejoins la bande</h3><p>On valide ton dossier, tu entres dans le groupe. Ta saison commence.</p></li>
     </ol>
-    <div class="actions"><a class="btn" href="/reserver/">Je teste une séance</a><a class="link-arrow" href="/charte/">Lire la charte</a></div>
+    <div class="actions"><a class="btn" href="#dossier">Constituer mon dossier</a><a class="link-arrow" href="/charte/">Lire la charte</a></div>
   </div>
 </section>
 
-<section class="section section--tint" id="faq">
+<!-- DOSSIER D'ADHÉSION -->
+<section class="section section--tint" id="dossier">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Ton dossier d'adhésion</h2>
+      <p>Environ 10 minutes. Ton dossier arrive directement au bureau du collectif, et tu reçois un e-mail de confirmation.</p>
+    </div>
+
+    <div class="dossier">
+      <div class="dossier-step">
+        <p class="dossier-num">1</p>
+        <div>
+          <h3>Télécharge tes documents</h3>
+          <p class="muted">Remplis-les et signe-les. Pas d'imprimante ? Signe-les sur ton téléphone, ou envoie une photo nette de chaque page.</p>
+        </div>
+      </div>
+      <div class="docs docs--4">
+          <a class="doc" href="/assets/docs/formulaire-adhesion-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span><strong>Formulaire d'adhésion</strong><span class="muted">Tes coordonnées et ton contact d'urgence · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
+          <a class="doc" href="/assets/docs/charte-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span><strong>Charte du collectif</strong><span class="muted">Six valeurs, à signer · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
+          <a class="doc" href="/assets/docs/autorisation-droit-image-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span><strong>Autorisation de droit à l'image</strong><span class="muted">Tu choisis oui ou non, puis tu signes · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
+          <a class="doc" href="/assets/docs/reglement-interieur-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span><strong>Règlement intérieur</strong><span class="muted">Lu et approuvé, signé · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
+      </div>
+
+      <div class="dossier-step">
+        <p class="dossier-num">2</p>
+        <div>
+          <h3>Envoie ton dossier et choisis ton paiement</h3>
+          <p class="muted">Formats acceptés : PDF, JPG ou PNG. 8 Mo maximum par fichier.</p>
+        </div>
+      </div>
+
+      <div class="form-notice" id="form-indispo" hidden>
+        <strong>Le dépôt en ligne arrive très bientôt.</strong>
+        <p>En attendant, envoie tes documents signés à <a href="mailto:{{ site.email }}?subject=Dossier%20d'adh%C3%A9sion">{{ site.email }}</a>.</p>
+      </div>
+
+      <form class="form form--dossier" id="form-adhesion" data-endpoint="{{ site.adhesion_script_url }}" data-helloasso="{{ site.adhesion_url }}" data-email="{{ site.email }}" novalidate>
+        <input class="honey" type="text" name="site_web" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <fieldset class="fs">
+          <legend>Toi</legend>
+          <div class="row-2">
+            <div class="field"><label for="a-prenom">Prénom</label><input id="a-prenom" name="prenom" required autocomplete="given-name"></div>
+            <div class="field"><label for="a-nom">Nom</label><input id="a-nom" name="nom" required autocomplete="family-name"></div>
+          </div>
+          <div class="row-2">
+            <div class="field"><label for="a-email">E-mail</label><input id="a-email" type="email" name="email" required autocomplete="email"></div>
+            <div class="field"><label for="a-tel">Téléphone</label><input id="a-tel" type="tel" name="telephone" required autocomplete="tel"></div>
+          </div>
+          <div class="row-2">
+            <div class="field"><label for="a-naissance">Date de naissance</label><input id="a-naissance" type="date" name="naissance" required autocomplete="bday"></div>
+            <div class="field">
+              <span class="field-label" id="a-disc-label">Tes disciplines</span>
+              <div class="chips" role="group" aria-labelledby="a-disc-label">
+                <label class="chip"><input type="checkbox" name="disciplines" value="Running"><span>Running</span></label>
+                <label class="chip"><input type="checkbox" name="disciplines" value="Vélo"><span>Vélo</span></label>
+                <label class="chip"><input type="checkbox" name="disciplines" value="Natation"><span>Natation</span></label>
+                <label class="chip"><input type="checkbox" name="disciplines" value="Trail"><span>Trail</span></label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>Tes documents signés</legend>
+          <div class="uploads">
+            <div class="upload" data-upload>
+              <input class="upload-input" type="file" id="f-formulaire" name="formulaire" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*" required>
+              <label class="upload-zone" for="f-formulaire">
+                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                <span class="upload-text"><strong>Formulaire d'adhésion</strong><span class="upload-file" data-empty="Choisir un fichier">Choisir un fichier</span></span>
+              </label>
+            </div>
+            <div class="upload" data-upload>
+              <input class="upload-input" type="file" id="f-charte" name="charte" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*" required>
+              <label class="upload-zone" for="f-charte">
+                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                <span class="upload-text"><strong>Charte du collectif</strong><span class="upload-file" data-empty="Choisir un fichier">Choisir un fichier</span></span>
+              </label>
+            </div>
+            <div class="upload" data-upload>
+              <input class="upload-input" type="file" id="f-image" name="image" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*" required>
+              <label class="upload-zone" for="f-image">
+                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                <span class="upload-text"><strong>Autorisation de droit à l'image</strong><span class="upload-file" data-empty="Choisir un fichier">Choisir un fichier</span></span>
+              </label>
+            </div>
+            <div class="upload" data-upload>
+              <input class="upload-input" type="file" id="f-reglement" name="reglement" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*" required>
+              <label class="upload-zone" for="f-reglement">
+                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                <span class="upload-text"><strong>Règlement intérieur</strong><span class="upload-file" data-empty="Choisir un fichier">Choisir un fichier</span></span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>Ta cotisation</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="tarif" value="annuel" required checked><span><strong>Adhésion annuelle</strong><span class="choice-price">60€</span><span class="muted">Septembre à août</span></span></label>
+            <label class="choice"><input type="radio" name="tarif" value="solidaire"><span><strong>Tarif solidaire</strong><span class="choice-price">40€</span><span class="muted">Étudiante ou demandeuse d'emploi</span></span></label>
+          </div>
+          <div class="cond" data-show-if="tarif=solidaire" hidden>
+            <div class="upload" data-upload>
+              <input class="upload-input" type="file" id="f-justif-tarif" name="justificatif_tarif" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
+              <label class="upload-zone" for="f-justif-tarif">
+                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                <span class="upload-text"><strong>Justificatif tarif solidaire</strong><span class="upload-file" data-empty="Carte étudiante ou attestation France Travail">Carte étudiante ou attestation France Travail</span></span>
+              </label>
+            </div>
+          </div>
+
+          <span class="field-label" id="a-pay-label">Mode de paiement</span>
+          <div class="choices choices--3" role="radiogroup" aria-labelledby="a-pay-label">
+            <label class="choice"><input type="radio" name="paiement" value="cb" required checked><span><strong>Carte bancaire</strong><span class="muted">Paiement sécurisé HelloAsso, juste après l'envoi</span></span></label>
+            <label class="choice"><input type="radio" name="paiement" value="virement"><span><strong>Virement</strong><span class="muted">Coordonnées bancaires envoyées par e-mail</span></span></label>
+            <label class="choice"><input type="radio" name="paiement" value="main-propre"><span><strong>Chèque ou espèces</strong><span class="muted">À remettre lors d'une sortie</span></span></label>
+          </div>
+          <div class="cond" data-show-if="paiement=virement" hidden>
+            <div class="upload" data-upload>
+              <input class="upload-input" type="file" id="f-justif-paiement" name="justificatif_paiement" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
+              <label class="upload-zone" for="f-justif-paiement">
+                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                <span class="upload-text"><strong>Preuve de virement (facultatif)</strong><span class="upload-file" data-empty="Si tu as déjà fait ton virement">Si tu as déjà fait ton virement</span></span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs fs--last">
+          <legend class="sr-only">Engagements</legend>
+          <label class="check"><input type="checkbox" name="majeure" required><span>Je certifie être majeure.</span></label>
+          <label class="check"><input type="checkbox" name="engagement" required><span>J'ai lu et j'accepte la charte et le règlement intérieur du collectif.</span></label>
+          <label class="check"><input type="checkbox" name="rgpd" required><span>J'accepte que mes informations et documents soient conservés par l'association pour gérer mon adhésion (<a href="/mentions-legales/#confidentialite">confidentialité</a>).</span></label>
+        </fieldset>
+
+        <p class="form-error" id="form-erreur" role="alert" hidden></p>
+        <button class="btn" type="submit" id="btn-envoyer">Envoyer mon dossier</button>
+        <p class="hint">Tu recevras un e-mail de confirmation. Pense à vérifier tes spams.</p>
+      </form>
+
+      <div class="form form--done" id="dossier-ok" hidden tabindex="-1">
+        <p class="done-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></p>
+        <h3 class="done-title">Dossier bien reçu&nbsp;!</h3>
+        <p class="done-ref">Référence : <strong data-ref></strong></p>
+        <div data-done="cb" hidden>
+          <p><strong>Dernière étape&nbsp;:</strong> règle ta cotisation de <span data-montant></span> en ligne. Ton adhésion sera validée dès réception.</p>
+          <div class="actions"><a class="btn" data-helloasso-btn href="#" target="_blank" rel="noopener">Payer ma cotisation sur HelloAsso</a></div>
+        </div>
+        <div data-done="virement" hidden>
+          <p>Les coordonnées bancaires viennent de t'être envoyées par e-mail. Indique ta référence dans le libellé du virement.</p>
+        </div>
+        <div data-done="virement-preuve" hidden>
+          <p>Ta preuve de virement est bien jointe. On vérifie la réception et on valide ton adhésion.</p>
+        </div>
+        <div data-done="main-propre" hidden>
+          <p>Remets ton règlement de <span data-montant></span> lors de ta prochaine sortie (chèque à l'ordre de « ANOTREPLACE »).</p>
+        </div>
+        <p class="muted">Un e-mail récapitulatif t'a été envoyé. Pense à vérifier tes spams.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
   <div class="wrap">
     <div class="section-head"><h2>Questions fréquentes</h2></div>
     <div class="faq">
+      <details><summary>Je n'ai pas d'imprimante. Comment faire ?</summary><p>Ouvre les PDF sur ton téléphone pour les remplir et les signer (Adobe Acrobat ou l'app Fichiers sur iPhone le font gratuitement). Une photo nette et lisible de chaque document signé fonctionne aussi.</p></details>
+      <details><summary>Quand mon adhésion est-elle validée ?</summary><p>Dès que ton dossier est complet et ta cotisation reçue. Tu reçois alors un e-mail de bienvenue avec l'accès au groupe de discussions.</p></details>
       <details><summary>Je débute. J'ai le niveau ?</summary><p>Oui. Les sorties s'adaptent au groupe et personne ne reste derrière. Le collectif est fait pour toutes, de la débutante à la compétitrice.</p></details>
       <details><summary>Je dois venir à toutes les sorties ?</summary><p>Non. Aucune obligation de présence. Tu viens quand tu peux, dans la discipline que tu veux.</p></details>
       <details><summary>Il me faut un vélo de route ?</summary><p>Pour les sorties vélo, oui : un vélo en bon état et un casque obligatoire. Tu peux commencer par la course ou la natation, et te lancer en vélo grâce à nos ateliers mécanique.</p></details>
@@ -82,3 +250,5 @@ description: "Adhésion saison 2026-2027 : 60€ par an, 40€ en tarif solidair
     <div class="actions"><a class="btn" href="/reserver/">Je teste une séance</a></div>
   </div>
 </section>
+
+<script src="/assets/js/adhesion.js" defer></script>

@@ -1,6 +1,6 @@
 # ==========================================================
 # Ànotreplace : configuration du site (GitHub Pages / Jekyll)
-# Les 4 liens marqués A_REMPLACER sont à compléter.
+# Les liens marqués A_REMPLACER sont à compléter.
 # ==========================================================
 title: Ànotreplace
 description: Collectif sportif 100 % féminin à Angoulême. Running, vélo, trail, natation.
@@ -11,10 +11,12 @@ lang: fr
 # Liens de conversion
 booking_url: "https://cal.com/A_REMPLACER/seance-decouverte"      # agenda séance découverte (Cal.com, Calendly…)
 partner_booking_url: "https://cal.com/A_REMPLACER/cafe-partenaire" # agenda « café partenaire » 20 min
-adhesion_url: "https://www.helloasso.com/associations/A_REMPLACER" # formulaire d'adhésion + paiement
+adhesion_url: "https://www.helloasso.com/associations/A_REMPLACER" # page de paiement HelloAsso de la cotisation
+adhesion_script_url: "A_REMPLACER"  # URL /exec du script Google « Dossier d'adhésion » (voir apps-script/LISEZ-MOI.md)
 form_email: "collectif.anotreplace@gmail.com"                      # réception des formulaires (FormSubmit)
 instagram_url: "https://www.instagram.com/collectif.anotreplace/"
 email: "collectif.anotreplace@gmail.com"
 
 exclude:
   - README.md
+  - apps-script

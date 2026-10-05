@@ -6,7 +6,8 @@
 3. Ouvrir `_config.yml` et remplacer les 3 liens `A_REMPLACER` :
    - `booking_url` : agenda séance découverte (Cal.com, Calendly…)
    - `partner_booking_url` : agenda « café partenaire » 20 min
-   - `adhesion_url` : formulaire d'adhésion + paiement (HelloAsso conseillé, gratuit pour les associations)
+   - `adhesion_url` : page de paiement de la cotisation (HelloAsso conseillé, gratuit pour les associations)
+   - `adhesion_script_url` : adresse du script Google des dossiers d'adhésion (voir `apps-script/LISEZ-MOI.md`)
 4. Commit. GitHub reconstruit le site en 1 à 2 minutes.
 5. Formulaires (FormSubmit) : au tout premier envoi, FormSubmit envoie un e-mail d'activation à collectif.anotreplace@gmail.com. Cliquer sur le lien, c'est tout.
 
@@ -17,6 +18,10 @@
 - Couleurs et typographies : haut de `assets/css/style.css`.
 - Ajouter un partenaire : `partenaires/index.html`, remplacer un bloc `.slot` (modèle en commentaire), logo dans `assets/img/partenaires/`.
 - Témoignages d'adhérentes : bloc en commentaire dans `index.html`, section « Preuves sociales ».
+
+## Dossiers d'adhésion
+- Documents à télécharger : déposer dans `assets/docs/` les fichiers `formulaire-adhesion-anotreplace.pdf`, `charte-anotreplace.pdf`, `autorisation-droit-image-anotreplace.pdf`, `reglement-interieur-anotreplace.pdf` (noms exacts).
+- Réception, tableau de suivi et e-mails automatiques : `apps-script/LISEZ-MOI.md`.
 
 ## Nom de domaine
 Le jour de l'achat : changer `url` dans `_config.yml`, ajouter un fichier `CNAME` contenant le domaine, puis Settings > Pages > Custom domain.
