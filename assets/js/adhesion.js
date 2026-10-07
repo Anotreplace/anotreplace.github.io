@@ -1,10 +1,41 @@
 // Dossier d'adhésion : dépôt des documents, choix du paiement, envoi au script Google.
+// Étape 3 : paiement HelloAsso intégré (chargé seulement quand on en a besoin)
+window.anotreplacePaiement = (function () {
+  var bloc = document.querySelector('[data-paiement]');
+  if (!bloc) return { ouvrir: function () {}, masquer: function () {} };
+  var verrou = bloc.querySelector('[data-paiement-lock]');
+  var zone = bloc.querySelector('[data-paiement-widget]');
+  var iframe = zone.querySelector('iframe');
+  var etape = document.getElementById('paiement');
+
+  // Ajuste la hauteur du widget quand HelloAsso l'indique
+  window.addEventListener('message', function (e) {
+    var hote = '';
+    try { hote = new URL(e.origin).hostname; } catch (err) { return; }
+    if (!/(^|\.)helloasso(pay)?\.com$/.test(hote)) return;
+    var h = e.data && parseFloat(e.data.height);
+    if (h && h > 200) iframe.style.height = Math.ceil(h) + 'px';
+  });
+
+  function ouvrir(defiler) {
+    if (!iframe.src) iframe.src = iframe.getAttribute('data-src');
+    verrou.hidden = true;
+    zone.hidden = false;
+    if (defiler) etape.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function masquer() { etape.hidden = true; bloc.hidden = true; }
+
+  bloc.querySelector('[data-paiement-open]').addEventListener('click', function () { ouvrir(true); });
+  // Lien direct depuis un e-mail : /adhesion/#paiement
+  if (location.hash === '#paiement') ouvrir(false);
+  return { ouvrir: ouvrir, masquer: masquer };
+})();
+
 (function () {
   var form = document.getElementById('form-adhesion');
   if (!form) return;
 
   var endpoint = (form.getAttribute('data-endpoint') || '').trim();
-  var helloasso = (form.getAttribute('data-helloasso') || '').trim();
   var email = form.getAttribute('data-email') || '';
   var erreur = document.getElementById('form-erreur');
   var bouton = document.getElementById('btn-envoyer');
@@ -213,8 +244,8 @@
     if (cas === 'virement' && d.fichiers.some(function (f) { return f.champ === 'justificatif_paiement'; })) cas = 'virement-preuve';
     var bloc = done.querySelector('[data-done="' + cas + '"]');
     if (bloc) bloc.hidden = false;
-    var lien = done.querySelector('[data-helloasso-btn]');
-    if (lien) lien.href = helloasso;
+    if (d.paiement === 'cb') window.anotreplacePaiement.ouvrir(false);
+    else window.anotreplacePaiement.masquer();
     form.hidden = true;
     done.hidden = false;
     done.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -21,7 +21,7 @@ const CONFIG = {
   EMAIL_BUREAU: 'collectif.anotreplace@gmail.com',
   NOM_EXPEDITEUR: 'Ànotreplace',
   SITE: 'https://anotreplace.github.io',
-  HELLOASSO_URL: 'https://www.helloasso.com/associations/A_REMPLACER', // page de paiement de la cotisation
+  HELLOASSO_URL: 'https://www.helloasso.com/associations/anotreplace/adhesions/adhesion-anotreplace-saison-2026-2027', // campagne de la cotisation
   GROUPE_URL: '',                                                       // lien d'invitation au groupe de discussions (facultatif)
   VIREMENT: {
     TITULAIRE: 'ANOTREPLACE',
@@ -43,7 +43,7 @@ const PAIEMENTS = {
   virement: 'Virement',
   'main-propre': 'Chèque ou espèces',
 };
-const DOCS_OBLIGATOIRES = ['formulaire', 'charte', 'image', 'reglement'];
+const DOCS_OBLIGATOIRES = ['formulaire', 'charte', 'reglement']; // le droit à l'image reste facultatif
 const TYPES_ACCEPTES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 
 // Tableau de suivi
@@ -51,7 +51,7 @@ const ONGLET = 'Adhésions';
 const COL = {
   date: 'Date', ref: 'Référence', prenom: 'Prénom', nom: 'Nom', email: 'E-mail', tel: 'Téléphone',
   naissance: 'Date de naissance', disciplines: 'Disciplines', tarif: 'Tarif', montant: 'Montant',
-  paiement: 'Mode de paiement', justifTarif: 'Justif. tarif', preuve: 'Preuve paiement', drive: 'Documents',
+  paiement: 'Mode de paiement', droitImage: 'Droit à l\'image', justifTarif: 'Justif. tarif', preuve: 'Preuve paiement', drive: 'Documents',
   statut: 'Statut dossier', etatPaiement: 'Paiement', remarques: 'Pièces manquantes / remarques',
   relance: 'Relance paiement', historique: 'E-mails envoyés',
 };
@@ -162,7 +162,7 @@ function valider_(d) {
   const fichiers = Array.isArray(d.fichiers) ? d.fichiers : [];
   const champs = fichiers.map(function (f) { return f.champ; });
   for (let i = 0; i < DOCS_OBLIGATOIRES.length; i++) {
-    if (champs.indexOf(DOCS_OBLIGATOIRES[i]) === -1) return 'Il manque un document signé. Merci de déposer les quatre documents.';
+    if (champs.indexOf(DOCS_OBLIGATOIRES[i]) === -1) return 'Il manque un document signé : formulaire d\'adhésion, charte et règlement intérieur sont obligatoires.';
   }
   if (d.tarif === 'solidaire' && champs.indexOf('justificatif_tarif') === -1) return 'Le tarif solidaire nécessite un justificatif.';
   for (let i = 0; i < fichiers.length; i++) {
@@ -179,6 +179,8 @@ function enregistrer_(d) {
   const nom = propre_(d.nom).toUpperCase();
   const tarif = TARIFS[d.tarif];
 
+  const champs = d.fichiers.map(function (f) { return f.champ; });
+
   // Documents dans Drive
   const racine = DriveApp.getFolderById(prop_('DOSSIER_ID'));
   const dossier = racine.createFolder(reference + ' · ' + nom + ' ' + prenom);
@@ -189,7 +191,6 @@ function enregistrer_(d) {
     dossier.createFile(blob);
     blobs.push(blob);
   });
-  const champs = d.fichiers.map(function (f) { return f.champ; });
   const aPreuve = champs.indexOf('justificatif_paiement') !== -1;
   const etatPaiement = (d.paiement === 'virement' && aPreuve) ? 'À vérifier' : 'En attente';
 
@@ -207,6 +208,7 @@ function enregistrer_(d) {
   ligne[COL.tarif] = tarif.libelle;
   ligne[COL.montant] = tarif.montant;
   ligne[COL.paiement] = PAIEMENTS[d.paiement];
+  ligne[COL.droitImage] = champs.indexOf('image') !== -1 ? 'Oui' : 'Non';
   ligne[COL.justifTarif] = d.tarif === 'solidaire' ? 'Oui' : '';
   ligne[COL.preuve] = aPreuve ? 'Oui' : '';
   ligne[COL.drive] = '=HYPERLINK("' + dossier.getUrl() + '";"Ouvrir")';
@@ -223,6 +225,7 @@ function enregistrer_(d) {
   const lignesRecap = [
     ['Adhérente', esc_(prenom + ' ' + nom)], ['E-mail', esc_(adh.email)], ['Téléphone', esc_(propre_(d.telephone))],
     ['Date de naissance', esc_(d.naissance)], ['Disciplines', esc_(ligne[COL.disciplines] || '—')],
+    ['Droit à l\'image', champs.indexOf('image') !== -1 ? 'Autorisé' : '<span style="color:#B4234F">Non signé : ne pas publier de photo d\'elle</span>'],
     ['Tarif', tarif.libelle + ' · ' + tarif.montant + '€'], ['Paiement', PAIEMENTS[d.paiement] + (aPreuve ? ' (preuve jointe)' : '')],
     ['Documents', d.fichiers.map(function (f) { return esc_(f.libelle); }).join('<br>')],
   ];
@@ -302,7 +305,7 @@ function envoyer_(adh, cas, remarques) {
 
 function blocPaiement_(adh, montant, relance) {
   if (adh.paiement === 'cb') {
-    return '<p><strong>' + (relance ? 'Pour régler' : 'Dernière étape') + ' :</strong> règle ta cotisation de ' + montant + ' en ligne, en toute sécurité.</p>' +
+    return '<p><strong>' + (relance ? 'Pour régler' : 'Dernière étape') + ' :</strong> règle ta cotisation de ' + montant + ' en ligne, en toute sécurité (choisis le tarif « ' + (TARIFS[adh.tarif] || TARIFS.annuel).libelle + ' »).</p>' +
       '<p>' + bouton_(CONFIG.HELLOASSO_URL, 'Payer ma cotisation sur HelloAsso') + '</p>';
   }
   if (adh.paiement === 'virement') {
@@ -385,7 +388,7 @@ function testerUnDossier() {
     prenom: 'Test', nom: 'Adhérente', email: CONFIG.EMAIL_BUREAU, telephone: '06 00 00 00 00',
     naissance: '1995-05-12', disciplines: ['Vélo', 'Running'], tarif: 'annuel', paiement: 'cb',
     fichiers: [doc('formulaire', 'Formulaire d\'adhésion'), doc('charte', 'Charte du collectif'),
-      doc('image', 'Autorisation de droit à l\'image'), doc('reglement', 'Règlement intérieur')],
+      doc('reglement', 'Règlement intérieur')],
   }) } });
   Logger.log(rep.getContent());
 }

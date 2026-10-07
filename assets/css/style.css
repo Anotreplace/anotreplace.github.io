@@ -552,3 +552,29 @@ tbody th { font-weight: 600; }
   .dossier-num { width: 2.5rem; height: 2.5rem; font-size: 1.15rem; }
   .form--dossier .btn { justify-self: stretch; width: 100%; }
 }
+
+/* ---------- La trace : disciplines en mouvement (accueil) ---------- */
+.trace-riders { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.rider { position: absolute; left: 0; top: 0; width: 48px; height: 48px; margin: -24px 0 0 -24px; opacity: 0; will-change: transform, opacity; }
+.rider-ico { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; border: 2px solid transparent; background: linear-gradient(#fff, #fff) padding-box, var(--degrade) border-box; box-shadow: 0 12px 24px -14px rgba(63, 92, 240, .7); animation: rider-bob 1.6s ease-in-out infinite; }
+.rider:nth-child(2) .rider-ico { animation-delay: -.4s; }
+.rider:nth-child(3) .rider-ico { animation-delay: -.8s; }
+.rider:nth-child(4) .rider-ico { animation-delay: -1.2s; }
+.rider-ico svg { width: 22px; height: 22px; fill: none; stroke: #6E4FD8; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.rider-label { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #6E4FD8; background: rgba(255, 255, 255, .9); border-radius: 999px; padding: .2rem .55rem .05rem; white-space: nowrap; }
+@keyframes rider-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@media (max-width: 640px) { .trace-riders { display: none; } }
+.trace path.is-drawn { stroke-dasharray: none; stroke-dashoffset: 0; animation: none; }
+
+/* ---------- Paiement HelloAsso intégré ---------- */
+.paiement { background: #fff; border-radius: 26px; overflow: hidden; box-shadow: 0 24px 60px -40px rgba(34, 28, 71, .45); }
+.paiement-lock { display: flex; gap: 1.1rem; align-items: flex-start; padding: clamp(1.4rem, 3vw, 2rem); }
+.paiement-lock[hidden] { display: none; }
+.paiement-lock p { margin: 0 0 .5rem; }
+.paiement-lock .btn { margin-top: .6rem; }
+.paiement-lock-ico { flex: none; width: 3rem; height: 3rem; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #E6EAFF, #FBE4F4); }
+.paiement-lock-ico svg { width: 1.4rem; height: 1.4rem; fill: none; stroke: #6E4FD8; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.paiement-widget { padding: clamp(.6rem, 2vw, 1.2rem); }
+.paiement-widget[hidden] { display: none; }
+.paiement-widget iframe { display: block; width: 100%; height: 750px; border: 0; }
+.paiement-widget .hint { padding: .6rem .6rem .2rem; }

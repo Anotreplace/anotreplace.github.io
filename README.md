@@ -6,7 +6,7 @@
 3. Ouvrir `_config.yml` et remplacer les 3 liens `A_REMPLACER` :
    - `booking_url` : agenda séance découverte (Cal.com, Calendly…)
    - `partner_booking_url` : agenda « café partenaire » 20 min
-   - `adhesion_url` : page de paiement de la cotisation (HelloAsso conseillé, gratuit pour les associations)
+   - `adhesion_url` et `helloasso_widget_url` : campagne HelloAsso de la cotisation (déjà renseignées)
    - `adhesion_script_url` : adresse du script Google des dossiers d'adhésion (voir `apps-script/LISEZ-MOI.md`)
 4. Commit. GitHub reconstruit le site en 1 à 2 minutes.
 5. Formulaires (FormSubmit) : au tout premier envoi, FormSubmit envoie un e-mail d'activation à collectif.anotreplace@gmail.com. Cliquer sur le lien, c'est tout.
