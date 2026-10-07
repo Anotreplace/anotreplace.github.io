@@ -25,7 +25,8 @@
   }
 })();
 
-// La trace de l'accueil : les quatre disciplines avancent le long de la ligne
+// La trace de l'accueil : les quatre disciplines parcourent la ligne une seule fois,
+// puis s'arrêtent en file au bout de la ligne
 (function () {
   var hero = document.querySelector('.hero');
   var svg = hero && hero.querySelector('.trace');
@@ -35,10 +36,12 @@
 
   var reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var longueur = path.getTotalLength();
-  var DUREE = 32000;          // un tour complet de la ligne, en ms
+  var DUREE = 5200;               // durée du parcours, en ms
+  var DECALAGE = 260;             // départ échelonné entre deux disciplines
   var DEPART = reduit ? 0 : 2600; // on attend que la ligne soit dessinée
+  var ARRIVEES = riders.map(function (r, i) { return 0.93 - (riders.length - 1 - i) * 0.07; });
   var debut = performance.now();
-  var visible = true, raf = null;
+  var fini = reduit;
   // Une fois dessinée, la ligne s'affiche en entier (évite qu'elle s'arrête avant le bord)
   setTimeout(function () { path.classList.add('is-drawn'); }, reduit ? 0 : 3100);
 
@@ -49,36 +52,31 @@
     if (!m) return;
     var x = p.x * m.a + p.y * m.c + m.e - r.left;
     var y = p.x * m.b + p.y * m.d + m.f - r.top;
-    // Fondu aux deux extrémités de la ligne
-    var o = Math.min(1, t / 0.06, (1 - t) / 0.06);
+    // Fondu à l'entrée sur la ligne
     rider.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
-    rider.style.opacity = Math.max(0, o).toFixed(2);
+    rider.style.opacity = Math.min(1, t / 0.06).toFixed(2);
   }
 
-  function statique() {
-    riders.forEach(function (r, i) { placer(r, 0.14 + i * 0.22); });
+  function arrives() {
+    riders.forEach(function (r, i) { placer(r, ARRIVEES[i]); r.classList.add('is-arrived'); });
   }
 
   function tick(now) {
-    var ecoule = now - debut - DEPART;
-    if (ecoule >= 0) {
-      var base = ecoule / DUREE;
-      riders.forEach(function (r, i) { placer(r, (base + i / riders.length) % 1); });
-    }
-    raf = visible ? requestAnimationFrame(tick) : null;
+    var termine = true;
+    riders.forEach(function (r, i) {
+      var k = (now - debut - DEPART - i * DECALAGE) / DUREE;
+      if (k < 0) return (termine = false);
+      if (k < 1) termine = false;
+      k = Math.min(1, k);
+      var ease = 1 - Math.pow(1 - k, 3); // ralentit à l'arrivée
+      placer(r, ease * ARRIVEES[i]);
+    });
+    if (termine) { fini = true; arrives(); }
+    else requestAnimationFrame(tick);
   }
 
-  if (reduit) {
-    statique();
-    window.addEventListener('resize', statique);
-    return;
-  }
-  // N'anime que lorsque le haut de page est visible
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (e) {
-      visible = e[0].isIntersecting;
-      if (visible && !raf) raf = requestAnimationFrame(tick);
-    }).observe(hero);
-  }
-  raf = requestAnimationFrame(tick);
+  // Les pictos restent bien placés si la fenêtre change de taille
+  window.addEventListener('resize', function () { if (fini) arrives(); });
+  if (reduit) arrives();
+  else requestAnimationFrame(tick);
 })();

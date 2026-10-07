@@ -563,6 +563,7 @@ tbody th { font-weight: 600; }
 .rider-ico svg { width: 22px; height: 22px; fill: none; stroke: #6E4FD8; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .rider-label { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #6E4FD8; background: rgba(255, 255, 255, .9); border-radius: 999px; padding: .2rem .55rem .05rem; white-space: nowrap; }
 @keyframes rider-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.rider.is-arrived .rider-ico { animation: none; }
 @media (max-width: 640px) { .trace-riders { display: none; } }
 .trace path.is-drawn { stroke-dasharray: none; stroke-dashoffset: 0; animation: none; }
 
