@@ -1,7 +1,10 @@
 # Dossiers d'adhésion : installation du script Google (15 min, une seule fois)
 
-Le site envoie chaque dossier à un petit script Google, hébergé gratuitement sur le compte **collectif.anotreplace@gmail.com**.
-Le script range les documents dans Drive, remplit un tableau de suivi, envoie le dossier (pièces jointes) à la boîte du collectif et envoie les e-mails automatiques aux adhérentes.
+Sur la page Adhésion, l'adhérente lit et accepte la charte, le règlement intérieur et le droit à l'image, remplit son formulaire et signe une seule fois en ligne.
+Le site envoie alors son dossier à un petit script Google, hébergé gratuitement sur le compte **collectif.anotreplace@gmail.com**.
+Le script fabrique le PDF du dossier signé, le range dans Drive, remplit un tableau de suivi, l'envoie à la boîte du collectif avec une copie à l'adhérente, note le mode de paiement qu'elle choisit (HelloAsso ou virement) et envoie les e-mails automatiques.
+
+Les textes de la charte, du règlement et du droit à l'image sont dans le site (`_includes/adhesion/`). Le script les relit sur https://anotreplace.github.io/adhesion/textes/ pour composer chaque PDF : pour modifier un texte, il suffit de le modifier dans le site.
 
 ## 1. Créer le script
 1. Se connecter à Google avec **collectif.anotreplace@gmail.com** (important : les e-mails partiront de cette adresse).
@@ -31,7 +34,7 @@ Tant que cette URL n'est pas renseignée, le formulaire de dépôt n'apparaît p
 ## Au quotidien : le tableau de suivi
 | Le bureau fait… | E-mail envoyé automatiquement à l'adhérente |
 |---|---|
-| (rien : dossier reçu) | Confirmation + instructions de paiement selon son choix (lien HelloAsso, lien vers le RIB du site ou remise en main propre) |
+| (rien : dossier reçu) | Confirmation avec la copie de son dossier signé (PDF) + instructions de paiement (HelloAsso ou virement avec le RIB du site) |
 | Écrit les pièces manquantes, puis met « Statut dossier » sur **Incomplet** | Demande des éléments manquants |
 | Met « Paiement » sur **Reçu** | Confirmation du paiement |
 | Dossier **Validé** + Paiement **Reçu** | Bienvenue dans le collectif (+ lien du groupe) |
@@ -40,4 +43,8 @@ Tant que cette URL n'est pas renseignée, le formulaire de dépôt n'apparaît p
 La colonne « E-mails envoyés » garde l'historique. Aucun e-mail n'est envoyé deux fois.
 
 ## Si vous modifiez le script plus tard
-**Déployer** > **Gérer les déploiements** > crayon > Version : **Nouvelle version** > **Déployer**. L'URL ne change pas.
+1. Remplacer tout le contenu de `Code.gs` dans l'éditeur, puis enregistrer.
+2. Exécuter **testerUnDossier** : Google peut demander une nouvelle autorisation (par exemple « se connecter à un service externe », pour relire les textes du site). Vérifier le PDF reçu sur la boîte du collectif, puis supprimer la ligne de test du tableau.
+3. **Déployer** > **Gérer les déploiements** > crayon > Version : **Nouvelle version** > **Déployer**. L'URL ne change pas.
+
+Les nouvelles colonnes du tableau (Adresse, Contact d'urgence, T-shirt) s'ajoutent toutes seules à la fin du tableau au premier dossier reçu.

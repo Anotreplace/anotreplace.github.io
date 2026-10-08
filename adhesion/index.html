@@ -51,182 +51,236 @@ body_class: "no-mobile-cta"
     <div class="section-head"><h2>Comment adhérer ?</h2><p>Trois conditions : être une femme majeure, signer ton dossier d'adhésion, régler ta cotisation.</p></div>
     <ol class="steps steps--3">
       <li><h3>Teste une séance</h3><p>Un message sur Instagram ou un mail, et viens t'entraîner avec nous.</p></li>
-      <li><h3>Envoie ton dossier</h3><p>Un seul document à télécharger, signer et déposer en ligne.</p></li>
+      <li><h3>Signe ton dossier en ligne</h3><p>Tu lis, tu acceptes, tu signes une seule fois. Rien à imprimer.</p></li>
       <li><h3>Rejoins la bande</h3><p>Tu règles ta cotisation, on valide ton dossier. Ta saison commence.</p></li>
     </ol>
-    <div class="actions"><a class="btn" href="#dossier">Constituer mon dossier</a><a class="link-arrow" href="/charte/">Lire la charte</a></div>
+    <div class="actions"><a class="btn" href="#dossier">J'adhère</a><a class="link-arrow" href="/charte/">Lire la charte</a></div>
   </div>
 </section>
 
-<!-- DOSSIER D'ADHÉSION -->
+<!-- DOSSIER D'ADHÉSION : parcours en ligne -->
 <section class="section section--tint" id="dossier">
   <div class="wrap">
     <div class="section-head">
-      <h2>Ton dossier d'adhésion</h2>
-      <p>Environ 10 minutes. Ton dossier arrive directement au bureau du collectif, et tu reçois un e-mail de confirmation.</p>
+      <h2>Adhérer en ligne</h2>
+      <p>Environ 5 minutes, sans rien imprimer. Tu lis et acceptes chaque document, tu remplis ton formulaire, tu signes une seule fois, et ton dossier nous arrive aussitôt.</p>
     </div>
 
-    <ol class="d-progress" aria-label="Les 3 étapes de ton adhésion">
-      <li><a href="#etape-dossier"><span>1</span>Télécharge et signe</a></li>
-      <li><a href="#etape-envoi"><span>2</span>Envoie ton dossier</a></li>
-      <li><a href="#paiement"><span>3</span>Règle ta cotisation</a></li>
-    </ol>
+    <div class="wiz-start" data-wiz-start>
+      <ol class="wiz-plan">
+        <li><span>1</span>La charte du collectif</li>
+        <li><span>2</span>Le règlement intérieur</li>
+        <li><span>3</span>Le droit à l'image <em>(facultatif)</em></li>
+        <li><span>4</span>Ton formulaire d'adhésion</li>
+        <li><span>5</span>Ta signature et l'envoi</li>
+        <li><span>6</span>Ta cotisation</li>
+      </ol>
+      <div class="actions"><button class="btn" type="button" data-wiz-open>J'adhère</button></div>
+      <p class="paper-link">Tu préfères le papier&nbsp;? <a href="/assets/docs/dossier-adhesion-anotreplace.pdf" download>Télécharge le dossier en PDF</a> et renvoie-le signé à <a href="mailto:{{ site.email }}?subject=Dossier%20d'adh%C3%A9sion">{{ site.email }}</a>.</p>
+    </div>
 
-    <div class="dossier">
-      <section class="d-step" id="etape-dossier" aria-labelledby="t-etape-1">
-      <div class="dossier-step">
-        <p class="dossier-num">1</p>
-        <div>
-          <p class="d-step-kicker">Étape 1 sur 3</p>
-          <h3 id="t-etape-1">Télécharge ton dossier d'adhésion</h3>
-          <p class="muted">Un seul document, à remplir et signer. Pas d'imprimante ? Signe-le sur ton téléphone, ou envoie une photo nette de chaque page.</p>
-        </div>
-      </div>
-      <div class="docs">
-          <a class="doc" href="/assets/docs/dossier-adhesion-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span><strong>Dossier d'adhésion 2026-2027</strong><span class="muted">Formulaire d'adhésion, charte, règlement intérieur et droit à l'image · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
-      </div>
-      </section>
-
-      <section class="d-step" id="etape-envoi" aria-labelledby="t-etape-2">
-      <div class="dossier-step">
-        <p class="dossier-num">2</p>
-        <div>
-          <p class="d-step-kicker">Étape 2 sur 3</p>
-          <h3 id="t-etape-2">Envoie ton dossier</h3>
-          <p class="muted">Formats acceptés : PDF, JPG ou PNG. 8 Mo maximum par fichier.</p>
-        </div>
+    <div class="wiz" data-wiz hidden>
+      <div class="wiz-bar" aria-live="polite">
+        <p class="wiz-count">Étape <strong data-wiz-n>1</strong> sur 6 · <span data-wiz-titre>La charte du collectif</span></p>
+        <div class="wiz-track" aria-hidden="true"><span data-wiz-fill></span></div>
       </div>
 
-      <form class="form form--dossier" id="form-adhesion" data-endpoint="{{ site.adhesion_script_url }}" data-email="{{ site.email }}" novalidate>
+      <form id="form-adhesion" class="wiz-form" data-endpoint="{{ site.adhesion_script_url }}" data-email="{{ site.email }}" novalidate>
         <input class="honey" type="text" name="site_web" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-        <fieldset class="fs">
-          <legend>Toi</legend>
-          <div class="row-2">
-            <div class="field"><label for="a-prenom">Prénom</label><input id="a-prenom" name="prenom" required autocomplete="given-name"></div>
-            <div class="field"><label for="a-nom">Nom</label><input id="a-nom" name="nom" required autocomplete="family-name"></div>
+        <!-- 1. Charte -->
+        <section class="wiz-step" data-step="charte" data-titre="La charte du collectif" tabindex="-1">
+          <p class="d-step-kicker">Document 1 sur 4</p>
+          <h3 class="wiz-h">La charte du collectif</h3>
+          <div class="doc-reader" data-reader tabindex="0" role="region" aria-label="Texte de la charte du collectif">
+{% include adhesion/charte.html %}
           </div>
-          <div class="row-2">
+          <p class="reader-hint" data-reader-hint>Fais défiler le document jusqu'en bas pour pouvoir l'accepter.</p>
+          <label class="check check--big"><input type="checkbox" name="ok_charte" required disabled data-gated><span>J'ai lu la charte du collectif et je m'engage à la respecter.</span></label>
+        </section>
+
+        <!-- 2. Règlement intérieur -->
+        <section class="wiz-step" data-step="reglement" data-titre="Le règlement intérieur" tabindex="-1" hidden>
+          <p class="d-step-kicker">Document 2 sur 4</p>
+          <h3 class="wiz-h">Le règlement intérieur</h3>
+          <div class="doc-reader" data-reader tabindex="0" role="region" aria-label="Texte du règlement intérieur">
+{% include adhesion/reglement.html %}
+          </div>
+          <p class="reader-hint" data-reader-hint>Fais défiler le document jusqu'en bas pour pouvoir l'accepter.</p>
+          <label class="check check--big"><input type="checkbox" name="ok_reglement" required disabled data-gated><span>J'ai lu le règlement intérieur et je l'accepte.</span></label>
+        </section>
+
+        <!-- 3. Droit à l'image -->
+        <section class="wiz-step" data-step="image" data-titre="Le droit à l'image" tabindex="-1" hidden>
+          <p class="d-step-kicker">Document 3 sur 4 · facultatif</p>
+          <h3 class="wiz-h">Le droit à l'image</h3>
+          <p class="muted">Tu choisis librement : refuser n'a aucune conséquence sur ton adhésion.</p>
+          <div class="doc-reader" data-reader tabindex="0" role="region" aria-label="Texte de l'autorisation de droit à l'image">
+{% include adhesion/droit-image.html %}
+          </div>
+          <p class="reader-hint" data-reader-hint>Pour accepter, fais d'abord défiler le document jusqu'en bas.</p>
+          <div class="choices" role="radiogroup" aria-label="Ton choix pour le droit à l'image">
+            <label class="choice"><input type="radio" name="droit_image" value="oui" required disabled data-gated><span><strong>J'accepte</strong><span class="muted">d'être photographiée et filmée, dans les conditions ci-dessus</span></span></label>
+            <label class="choice"><input type="radio" name="droit_image" value="non" required><span><strong>Je refuse</strong><span class="muted">aucune photo de moi ne sera publiée</span></span></label>
+          </div>
+        </section>
+
+        <!-- 4. Formulaire d'adhésion -->
+        <section class="wiz-step" data-step="formulaire" data-titre="Ton formulaire d'adhésion" tabindex="-1" hidden>
+          <p class="d-step-kicker">Document 4 sur 4</p>
+          <h3 class="wiz-h">Ton formulaire d'adhésion</h3>
+
+          <fieldset class="fs">
+            <legend>Toi</legend>
+            <div class="row-2">
+              <div class="field"><label for="a-prenom">Prénom</label><input id="a-prenom" name="prenom" required autocomplete="given-name"></div>
+              <div class="field"><label for="a-nom">Nom</label><input id="a-nom" name="nom" required autocomplete="family-name"></div>
+            </div>
+            <div class="row-2">
+              <div class="field"><label for="a-naissance">Date de naissance</label><input id="a-naissance" type="date" name="naissance" required autocomplete="bday"></div>
+              <div class="field"><label for="a-tel">Téléphone</label><input id="a-tel" type="tel" name="telephone" required autocomplete="tel"></div>
+            </div>
             <div class="field"><label for="a-email">E-mail</label><input id="a-email" type="email" name="email" required autocomplete="email"></div>
-            <div class="field"><label for="a-tel">Téléphone</label><input id="a-tel" type="tel" name="telephone" required autocomplete="tel"></div>
-          </div>
-          <div class="row-2">
-            <div class="field"><label for="a-naissance">Date de naissance</label><input id="a-naissance" type="date" name="naissance" required autocomplete="bday"></div>
-            <div class="field">
-              <span class="field-label" id="a-disc-label">Tes disciplines</span>
-              <div class="chips" role="group" aria-labelledby="a-disc-label">
-                                <label class="chip"><input type="checkbox" name="disciplines" value="Natation"><span>Natation</span></label>
-                <label class="chip"><input type="checkbox" name="disciplines" value="Vélo"><span>Vélo</span></label>
-                <label class="chip"><input type="checkbox" name="disciplines" value="Running"><span>Running</span></label>
+            <div class="field" data-show-if="droit_image=oui" hidden><label for="a-adresse">Adresse postale <span class="muted">(demandée pour l'autorisation de droit à l'image)</span></label><input id="a-adresse" name="adresse" autocomplete="street-address"></div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend>Ta personne à prévenir en cas d'urgence</legend>
+            <div class="field"><label for="a-urg-nom">Nom et prénom</label><input id="a-urg-nom" name="urgence_nom" required></div>
+            <div class="row-2">
+              <div class="field"><label for="a-urg-lien">Lien avec toi</label><input id="a-urg-lien" name="urgence_lien" required placeholder="Conjoint, parent, amie…"></div>
+              <div class="field"><label for="a-urg-tel">Téléphone</label><input id="a-urg-tel" type="tel" name="urgence_tel" required></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend>Ta pratique</legend>
+            <span class="field-label" id="a-disc-label">Tes disciplines</span>
+            <div class="chips" role="group" aria-labelledby="a-disc-label">
+              <label class="chip"><input type="checkbox" name="disciplines" value="Natation"><span>Natation</span></label>
+              <label class="chip"><input type="checkbox" name="disciplines" value="Vélo"><span>Vélo</span></label>
+              <label class="chip"><input type="checkbox" name="disciplines" value="Running"><span>Running</span></label>
+            </div>
+            <span class="field-label" id="a-tshirt-label">Ton t-shirt <span class="muted">(pour le pack de bienvenue, offert aux 50 premières adhérentes)</span></span>
+            <div class="chips" role="radiogroup" aria-labelledby="a-tshirt-label">
+              <label class="chip"><input type="radio" name="tshirt" value="XS"><span>XS</span></label>
+              <label class="chip"><input type="radio" name="tshirt" value="S"><span>S</span></label>
+              <label class="chip"><input type="radio" name="tshirt" value="M"><span>M</span></label>
+              <label class="chip"><input type="radio" name="tshirt" value="L"><span>L</span></label>
+              <label class="chip"><input type="radio" name="tshirt" value="XL"><span>XL</span></label>
+              <label class="chip"><input type="radio" name="tshirt" value="XXL"><span>XXL</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend>Ta cotisation 2026-2027</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="tarif" value="annuel" required checked><span><strong>Adhésion annuelle</strong><span class="choice-price">60€</span><span class="muted">Septembre à août</span></span></label>
+              <label class="choice"><input type="radio" name="tarif" value="solidaire"><span><strong>Tarif solidaire</strong><span class="choice-price">40€</span><span class="muted">Étudiante ou demandeuse d'emploi</span></span></label>
+            </div>
+            <div class="cond" data-show-if="tarif=solidaire" hidden>
+              <div class="upload" data-upload>
+                <input class="upload-input" type="file" id="f-justif-tarif" name="justificatif_tarif" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
+                <label class="upload-zone" for="f-justif-tarif">
+                  <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
+                  <span class="upload-text"><strong>Justificatif tarif solidaire</strong><span class="upload-file" data-empty="Carte étudiante ou attestation France Travail">Carte étudiante ou attestation France Travail</span></span>
+                </label>
               </div>
             </div>
-          </div>
-        </fieldset>
+          </fieldset>
 
-        <fieldset class="fs">
-          <legend>Ton dossier signé</legend>
-          <div class="uploads uploads--1">
-            <div class="upload" data-upload>
-              <input class="upload-input" type="file" id="f-dossier" name="dossier" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*" multiple required>
-              <label class="upload-zone" for="f-dossier">
-                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
-                <span class="upload-text"><strong>Dossier d'adhésion</strong><span class="upload-file" data-empty="Un PDF, ou une photo par page">Un PDF, ou une photo par page</span></span>
-              </label>
-            </div>
-          </div>
-        </fieldset>
+          <fieldset class="fs fs--last">
+            <legend>Tes engagements</legend>
+            <label class="check"><input type="checkbox" name="eng_majeure" required><span>Je certifie être une femme majeure.</span></label>
+            <label class="check"><input type="checkbox" name="eng_statuts" required><span>J'accepte les statuts de l'association (disponibles sur simple demande), la charte et le règlement intérieur.</span></label>
+            <label class="check"><input type="checkbox" name="eng_sante" required><span>J'atteste que mon état de santé me permet de pratiquer les activités sportives du collectif.</span></label>
+            <label class="check"><input type="checkbox" name="eng_assurance" required><span>J'ai été informée de l'intérêt de souscrire une assurance individuelle accident couvrant les dommages corporels liés à ma pratique sportive.</span></label>
+            <label class="check"><input type="checkbox" name="eng_rgpd" required><span>J'accepte que mes informations soient conservées par l'association pour gérer mon adhésion, pendant la durée de mon adhésion puis 3 ans au maximum (<a href="/mentions-legales/#confidentialite">confidentialité</a>).</span></label>
+          </fieldset>
+        </section>
 
-        <fieldset class="fs">
-          <legend>Ta cotisation</legend>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="tarif" value="annuel" required checked><span><strong>Adhésion annuelle</strong><span class="choice-price">60€</span><span class="muted">Septembre à août</span></span></label>
-            <label class="choice"><input type="radio" name="tarif" value="solidaire"><span><strong>Tarif solidaire</strong><span class="choice-price">40€</span><span class="muted">Étudiante ou demandeuse d'emploi</span></span></label>
-          </div>
-          <div class="cond" data-show-if="tarif=solidaire" hidden>
-            <div class="upload" data-upload>
-              <input class="upload-input" type="file" id="f-justif-tarif" name="justificatif_tarif" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
-              <label class="upload-zone" for="f-justif-tarif">
-                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
-                <span class="upload-text"><strong>Justificatif tarif solidaire</strong><span class="upload-file" data-empty="Carte étudiante ou attestation France Travail">Carte étudiante ou attestation France Travail</span></span>
-              </label>
-            </div>
+        <!-- 5. Signature et envoi -->
+        <section class="wiz-step" data-step="signature" data-titre="Ta signature et l'envoi" tabindex="-1" hidden>
+          <p class="d-step-kicker">Dernière vérification</p>
+          <h3 class="wiz-h">Relis, puis signe ton dossier</h3>
+          <dl class="recap" data-recap></dl>
+
+          <div class="row-2">
+            <div class="field"><label for="a-ville">Fait à</label><input id="a-ville" name="fait_a" required autocomplete="address-level2" placeholder="Ta ville"></div>
+            <div class="field"><span class="field-label">Le</span><p class="field-static" data-date-jour></p></div>
           </div>
 
-          <span class="field-label" id="a-pay-label">Mode de paiement</span>
-          <div class="choices choices--3" role="radiogroup" aria-labelledby="a-pay-label">
-            <label class="choice"><input type="radio" name="paiement" value="cb" required checked><span><strong>Carte bancaire</strong><span class="muted">Paiement sécurisé HelloAsso, juste en dessous</span></span></label>
-            <label class="choice"><input type="radio" name="paiement" value="virement"><span><strong>Virement</strong><span class="muted">RIB du collectif à télécharger</span></span></label>
-            <label class="choice"><input type="radio" name="paiement" value="main-propre"><span><strong>Chèque ou espèces</strong><span class="muted">À remettre lors d'une sortie</span></span></label>
+          <div class="sig">
+            <div class="sig-head"><span class="field-label" id="sig-label">Ta signature</span><button type="button" class="link-btn" data-sig-effacer>Effacer</button></div>
+            <canvas class="sig-pad" data-sig aria-labelledby="sig-label" role="img"></canvas>
+            <p class="hint">Signe avec ton doigt ou ta souris dans le cadre.</p>
           </div>
-          <div class="cond" data-show-if="paiement=virement" hidden>
-            <div class="upload" data-upload>
-              <input class="upload-input" type="file" id="f-justif-paiement" name="justificatif_paiement" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
-              <label class="upload-zone" for="f-justif-paiement">
-                <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
-                <span class="upload-text"><strong>Preuve de virement (facultatif)</strong><span class="upload-file" data-empty="Si tu as déjà fait ton virement">Si tu as déjà fait ton virement</span></span>
-              </label>
-            </div>
-          </div>
-        </fieldset>
 
-        <fieldset class="fs fs--last">
-          <legend class="sr-only">Engagements</legend>
-          <label class="check"><input type="checkbox" name="majeure" required><span>Je certifie être majeure.</span></label>
-          <label class="check"><input type="checkbox" name="engagement" required><span>J'ai lu et j'accepte la charte et le règlement intérieur du collectif.</span></label>
-          <label class="check"><input type="checkbox" name="droit_image" value="oui"><span>J'accepte d'apparaître sur les photos et vidéos du collectif (droit à l'image, facultatif).</span></label>
-          <label class="check"><input type="checkbox" name="rgpd" required><span>J'accepte que mes informations et documents soient conservés par l'association pour gérer mon adhésion (<a href="/mentions-legales/#confidentialite">confidentialité</a>).</span></label>
-        </fieldset>
+          <label class="check check--big"><input type="checkbox" name="lu_approuve" required><span><strong>Lu et approuvé.</strong> Je signe électroniquement mon dossier d'adhésion : la charte, le règlement intérieur, mon formulaire<span data-recap-image></span>.</span></label>
+        </section>
 
         <p class="form-error" id="form-erreur" role="alert" hidden></p>
-        <button class="btn" type="submit" id="btn-envoyer">Envoyer mon dossier</button>
-        <p class="hint">Tu recevras un e-mail de confirmation. Pense à vérifier tes spams.</p>
+
+        <div class="wiz-nav" data-wiz-nav>
+          <button type="button" class="btn btn--ghost btn--sm" data-wiz-retour>Retour</button>
+          <button type="button" class="link-btn" data-wiz-annuler>Annuler</button>
+          <button type="button" class="btn" data-wiz-suivant>Continuer</button>
+        </div>
+
+        <!-- Confirmation avant l'envoi -->
+        <div class="wiz-confirm" data-wiz-confirm role="alertdialog" aria-modal="true" aria-labelledby="confirm-titre" aria-describedby="confirm-texte" hidden>
+          <div class="wiz-confirm-box">
+            <h3 id="confirm-titre">On t'envoie ton dossier&nbsp;?</h3>
+            <p id="confirm-texte">Ton dossier signé part tout de suite au bureau du collectif, et tu en reçois une copie par e-mail.</p>
+            <div class="actions">
+              <button type="submit" class="btn" id="btn-envoyer">Oui, envoyer mon dossier</button>
+              <button type="button" class="btn btn--ghost" data-confirm-retour>Revenir en arrière</button>
+            </div>
+            <button type="button" class="link-btn" data-wiz-annuler>Annuler mon adhésion</button>
+          </div>
+        </div>
       </form>
 
-      <div class="form form--done" id="dossier-ok" hidden tabindex="-1">
-        <p class="done-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></p>
-        <h3 class="done-title">Dossier bien reçu&nbsp;!</h3>
-        <p class="done-ref">Référence : <strong data-ref></strong></p>
-        <div data-done="cb" hidden>
-          <p><strong>Dernière étape&nbsp;:</strong> règle ta cotisation de <span data-montant></span> juste en dessous. Ton adhésion sera validée dès réception.</p>
-          <div class="actions"><a class="btn" href="#paiement">Payer ma cotisation</a></div>
+      <!-- 6. Cotisation -->
+      <section class="wiz-step wiz-pay" data-step="paiement" data-titre="Ta cotisation" tabindex="-1" hidden>
+        <div class="pay-done">
+          <p class="done-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></p>
+          <div>
+            <h3 class="wiz-h">Dossier envoyé, merci <span data-prenom></span>&nbsp;!</h3>
+            <p class="muted">Référence <strong data-ref></strong>. Une copie de ton dossier signé vient de partir sur ta boîte mail (pense à regarder tes spams).</p>
+          </div>
         </div>
-        <div data-done="virement" hidden>
-          <p>Fais ton virement de <span data-montant></span> avec le RIB du collectif, en indiquant ta référence dans le libellé.</p>
+
+        <h4 class="pay-title">Dernière étape : règle ta cotisation de <span data-montant></span></h4>
+        <div class="pay-choices" role="group" aria-label="Mode de paiement">
+          <button type="button" class="pay-choice" data-pay="cb" aria-pressed="false">
+            <span class="v-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg></span>
+            <span><strong>Carte bancaire</strong><span class="muted">Paiement sécurisé avec HelloAsso, tout de suite</span></span>
+          </button>
+          <button type="button" class="pay-choice" data-pay="virement" aria-pressed="false">
+            <span class="v-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10"/><path d="M19 21V10"/><path d="M9 21V10"/><path d="M15 21V10"/><path d="m2 10 10-7 10 7"/></svg></span>
+            <span><strong>Virement bancaire</strong><span class="muted">Avec le RIB du collectif</span></span>
+          </button>
+        </div>
+
+        <div class="pay-panel" data-pay-panel="cb" hidden>
+          <p class="muted">Choisis le tarif « <span data-tarif-libelle></span> » dans le formulaire HelloAsso.</p>
+          <div class="paiement-widget">
+            <iframe id="haWidget" title="Paiement de l'adhésion sur HelloAsso" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" data-src="{{ site.helloasso_widget_url }}" style="width: 100%; height: 750px; border: none;"></iframe>
+            <p class="hint">Le formulaire de paiement ne s'affiche pas&nbsp;? <a href="{{ site.adhesion_url }}" target="_blank" rel="noopener">Payer directement sur HelloAsso</a>.</p>
+          </div>
+        </div>
+
+        <div class="pay-panel" data-pay-panel="virement" hidden>
+          <ol class="pay-steps">
+            <li>Télécharge le RIB du collectif.</li>
+            <li>Fais un virement de <strong data-montant></strong> avec ce libellé : <strong class="pay-libelle" data-libelle></strong></li>
+            <li>Si tu peux, envoie-nous une capture de ton virement en répondant à l'e-mail de confirmation.</li>
+          </ol>
           <div class="actions"><a class="btn" href="/assets/docs/rib-anotreplace.pdf" download>Télécharger le RIB</a></div>
         </div>
-        <div data-done="virement-preuve" hidden>
-          <p>Ta preuve de virement est bien jointe. On vérifie la réception et on valide ton adhésion.</p>
-        </div>
-        <div data-done="main-propre" hidden>
-          <p>Remets ton règlement de <span data-montant></span> lors de ta prochaine sortie (chèque à l'ordre de « ANOTREPLACE »).</p>
-        </div>
-        <p class="muted">Un e-mail récapitulatif t'a été envoyé. Pense à vérifier tes spams.</p>
-      </div>
 
-      </section>
-
-      <section class="d-step" id="paiement" aria-labelledby="t-etape-3">
-      <div class="dossier-step">
-        <p class="dossier-num">3</p>
-        <div>
-          <p class="d-step-kicker">Étape 3 sur 3</p>
-          <h3 id="t-etape-3">Règle ta cotisation</h3>
-          <p class="muted">Par carte bancaire avec HelloAsso, la plateforme des associations : choisis le tarif de ton dossier, 60€ ou 40€ (solidaire). Par virement : télécharge le RIB du collectif.</p>
-        </div>
-      </div>
-      <div class="paiement" data-paiement>
-        <div class="paiement-note">
-          <span class="paiement-lock-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <p><strong>Pense à envoyer ton dossier (étape 2) avant de payer.</strong> <span class="muted">Tu préfères le virement, le chèque ou les espèces&nbsp;? Choisis-le à l'étape 2. Pour le virement, le RIB est juste en dessous.</span></p>
-        </div>
-        <div class="paiement-widget" data-paiement-widget>
-          <iframe id="haWidget" title="Paiement de l'adhésion sur HelloAsso" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" src="{{ site.helloasso_widget_url }}" loading="lazy" style="width: 100%; height: 750px; border: none;"></iframe>
-          <p class="hint">Le formulaire de paiement ne s'affiche pas&nbsp;? <a href="{{ site.adhesion_url }}" target="_blank" rel="noopener">Payer directement sur HelloAsso</a>.</p>
-        </div>
-      </div>
-      <div class="docs docs--rib">
-          <a class="doc" href="/assets/docs/rib-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10"/><path d="M19 21V10"/><path d="M9 21V10"/><path d="M15 21V10"/><path d="m2 10 10-7 10 7"/></svg></span><span><strong>RIB du collectif</strong><span class="muted">Pour régler par virement · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
-      </div>
+        <p class="pay-next"><strong>Et ensuite&nbsp;?</strong> On vérifie ton dossier et ton paiement, puis tu reçois un e-mail de bienvenue avec l'accès au groupe du collectif.</p>
       </section>
     </div>
   </div>
@@ -236,7 +290,7 @@ body_class: "no-mobile-cta"
   <div class="wrap">
     <div class="section-head"><h2>Questions fréquentes</h2></div>
     <div class="faq">
-      <details><summary>Je n'ai pas d'imprimante. Comment faire ?</summary><p>Ouvre les PDF sur ton téléphone pour les remplir et les signer (Adobe Acrobat ou l'app Fichiers sur iPhone le font gratuitement). Une photo nette et lisible de chaque document signé fonctionne aussi.</p></details>
+      <details><summary>Je dois imprimer quelque chose ?</summary><p>Non. Tout se fait en ligne : tu lis chaque document, tu coches, tu signes au doigt ou à la souris, et ton dossier nous arrive aussitôt. Tu préfères le papier ? Le dossier en PDF reste téléchargeable sous le bouton « J'adhère ».</p></details>
       <details><summary>Le paiement en ligne est-il sécurisé ?</summary><p>Oui. Il passe par HelloAsso, la plateforme de paiement des associations. HelloAsso est gratuit pour le collectif et te propose une contribution volontaire à son fonctionnement : tu peux la modifier ou la mettre à 0€.</p></details>
       <details><summary>Quand mon adhésion est-elle validée ?</summary><p>Dès que ton dossier est complet et ta cotisation reçue. Tu reçois alors un e-mail de bienvenue avec l'accès au groupe de discussions.</p></details>
       <details><summary>Je débute. J'ai le niveau ?</summary><p>Oui. Les sorties s'adaptent au groupe et personne ne reste derrière. Le collectif est fait pour toutes, de la débutante à la compétitrice.</p></details>
