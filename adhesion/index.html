@@ -138,7 +138,7 @@ body_class: "no-mobile-cta"
             </div>
             <div class="row-2">
               <div class="field"><label for="a-naissance">Date de naissance</label><input id="a-naissance" type="date" name="naissance" required autocomplete="bday"></div>
-              <div class="field"><label for="a-tel">Téléphone</label><input id="a-tel" type="tel" name="telephone" required autocomplete="tel"></div>
+              <div class="field"><label for="a-tel">Téléphone</label><input id="a-tel" type="tel" name="telephone" required autocomplete="tel" data-libelle="Ton téléphone"></div>
             </div>
             <div class="field"><label for="a-email">E-mail</label><input id="a-email" type="email" name="email" required autocomplete="email"></div>
             <div class="field" data-show-if="droit_image=oui" hidden><label for="a-adresse">Adresse postale <span class="muted">(demandée pour l'autorisation de droit à l'image)</span></label><input id="a-adresse" name="adresse" autocomplete="street-address"></div>
@@ -146,10 +146,10 @@ body_class: "no-mobile-cta"
 
           <fieldset class="fs">
             <legend>Ta personne à prévenir en cas d'urgence</legend>
-            <div class="field"><label for="a-urg-nom">Nom et prénom</label><input id="a-urg-nom" name="urgence_nom" required></div>
+            <div class="field"><label for="a-urg-nom">Nom et prénom</label><input id="a-urg-nom" name="urgence_nom" required data-libelle="Personne à prévenir : nom et prénom"></div>
             <div class="row-2">
-              <div class="field"><label for="a-urg-lien">Lien avec toi</label><input id="a-urg-lien" name="urgence_lien" required placeholder="Conjoint, parent, amie…"></div>
-              <div class="field"><label for="a-urg-tel">Téléphone</label><input id="a-urg-tel" type="tel" name="urgence_tel" required></div>
+              <div class="field"><label for="a-urg-lien">Lien avec toi</label><input id="a-urg-lien" name="urgence_lien" required data-libelle="Personne à prévenir : lien avec toi" placeholder="Conjoint, parent, amie…"></div>
+              <div class="field"><label for="a-urg-tel">Téléphone</label><input id="a-urg-tel" type="tel" name="urgence_tel" required data-libelle="Personne à prévenir : téléphone"></div>
             </div>
           </fieldset>
 
@@ -180,7 +180,7 @@ body_class: "no-mobile-cta"
             </div>
             <div class="cond" data-show-if="tarif=solidaire" hidden>
               <div class="upload" data-upload>
-                <input class="upload-input" type="file" id="f-justif-tarif" name="justificatif_tarif" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
+                <input class="upload-input" type="file" id="f-justif-tarif" name="justificatif_tarif" data-libelle="Justificatif du tarif solidaire" accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,application/pdf,image/*">
                 <label class="upload-zone" for="f-justif-tarif">
                   <span class="upload-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg></span>
                   <span class="upload-text"><strong>Justificatif tarif solidaire</strong><span class="upload-file" data-empty="Carte étudiante ou attestation France Travail">Carte étudiante ou attestation France Travail</span></span>
@@ -191,11 +191,11 @@ body_class: "no-mobile-cta"
 
           <fieldset class="fs fs--last">
             <legend>Tes engagements</legend>
-            <label class="check"><input type="checkbox" name="eng_majeure" required><span>Je certifie être une femme majeure.</span></label>
-            <label class="check"><input type="checkbox" name="eng_statuts" required><span>J'accepte les statuts de l'association (disponibles sur simple demande), la charte et le règlement intérieur.</span></label>
-            <label class="check"><input type="checkbox" name="eng_sante" required><span>J'atteste que mon état de santé me permet de pratiquer les activités sportives du collectif.</span></label>
-            <label class="check"><input type="checkbox" name="eng_assurance" required><span>J'ai été informée de l'intérêt de souscrire une assurance individuelle accident couvrant les dommages corporels liés à ma pratique sportive.</span></label>
-            <label class="check"><input type="checkbox" name="eng_rgpd" required><span>J'accepte que mes informations soient conservées par l'association pour gérer mon adhésion, pendant la durée de mon adhésion puis 3 ans au maximum (<a href="/mentions-legales/#confidentialite">confidentialité</a>).</span></label>
+            <label class="check"><input type="checkbox" name="eng_majeure" required data-libelle="Engagement : être une femme majeure"><span>Je certifie être une femme majeure.</span></label>
+            <label class="check"><input type="checkbox" name="eng_statuts" required data-libelle="Engagement : statuts, charte et règlement"><span>J'accepte les statuts de l'association (disponibles sur simple demande), la charte et le règlement intérieur.</span></label>
+            <label class="check"><input type="checkbox" name="eng_sante" required data-libelle="Engagement : attestation de santé"><span>J'atteste que mon état de santé me permet de pratiquer les activités sportives du collectif.</span></label>
+            <label class="check"><input type="checkbox" name="eng_assurance" required data-libelle="Engagement : information sur l'assurance"><span>J'ai été informée de l'intérêt de souscrire une assurance individuelle accident couvrant les dommages corporels liés à ma pratique sportive.</span></label>
+            <label class="check"><input type="checkbox" name="eng_rgpd" required data-libelle="Engagement : conservation de tes données"><span>J'accepte que mes informations soient conservées par l'association pour gérer mon adhésion, pendant la durée de mon adhésion puis 3 ans au maximum (<a href="/mentions-legales/#confidentialite">confidentialité</a>).</span></label>
           </fieldset>
         </section>
 
@@ -216,7 +216,7 @@ body_class: "no-mobile-cta"
             <p class="hint">Signe avec ton doigt ou ta souris dans le cadre.</p>
           </div>
 
-          <label class="check check--big"><input type="checkbox" name="lu_approuve" required><span><strong>Lu et approuvé.</strong> Je signe électroniquement mon dossier d'adhésion : la charte, le règlement intérieur, mon formulaire<span data-recap-image></span>.</span></label>
+          <label class="check check--big"><input type="checkbox" name="lu_approuve" required data-libelle="La case « Lu et approuvé »"><span><strong>Lu et approuvé.</strong> Je signe électroniquement mon dossier d'adhésion : la charte, le règlement intérieur, mon formulaire<span data-recap-image></span>.</span></label>
         </section>
 
         <p class="form-error" id="form-erreur" role="alert" hidden></p>

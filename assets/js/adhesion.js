@@ -189,6 +189,7 @@
     var p = point(e);
     ctx.beginPath(); ctx.moveTo(dernier.x, dernier.y); ctx.lineTo(p.x, p.y); ctx.stroke();
     dernier = p; signe = true;
+    wiz.querySelector('.sig').classList.remove('is-missing');
     canvas.classList.add('is-signed');
   });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { canvas.addEventListener(t, function () { trace = false; }); });
@@ -229,12 +230,60 @@
     if (a.getMonth() < d.getMonth() || (a.getMonth() === d.getMonth() && a.getDate() < d.getDate())) age--;
     return age >= 18 && age < 110;
   }
-  function masquerErreur() { erreur.hidden = true; }
-  function afficherErreur(msg, champ) {
-    erreur.textContent = msg;
+  // Intitulé lisible d'un champ, pour dire précisément ce qui manque
+  function libelle(c) {
+    if (c.getAttribute('data-libelle')) return c.getAttribute('data-libelle');
+    var lab = c.id && form.querySelector('label[for="' + c.id + '"]');
+    if (lab) {
+      var t = lab.cloneNode(true);
+      t.querySelectorAll('.muted').forEach(function (m) { m.remove(); });
+      return t.textContent.trim();
+    }
+    return c.name;
+  }
+  // Le bloc à mettre en relief autour d'un champ
+  function blocDe(c) {
+    return c.closest('.field') || c.closest('[data-upload]') || c.closest('.check') || c.closest('.choices') || c;
+  }
+  function marquer(c, texte) {
+    var bloc = blocDe(c);
+    bloc.classList.add('is-missing');
+    c.setAttribute('aria-invalid', 'true');
+    if (texte && bloc.classList.contains('field') && !bloc.querySelector('.field-err')) {
+      var p = document.createElement('p');
+      p.className = 'field-err';
+      p.textContent = texte;
+      bloc.appendChild(p);
+    }
+  }
+  function effacerMarques(zone) {
+    zone.querySelectorAll('.is-missing').forEach(function (b) { b.classList.remove('is-missing'); });
+    zone.querySelectorAll('.field-err').forEach(function (p) { p.remove(); });
+    zone.querySelectorAll('[aria-invalid]').forEach(function (c) { c.removeAttribute('aria-invalid'); });
+  }
+  // Le relief disparaît dès que le champ est corrigé
+  function corrige(e) {
+    var bloc = blocDe(e.target);
+    if (!bloc.classList.contains('is-missing')) return;
+    bloc.classList.remove('is-missing');
+    bloc.querySelectorAll('.field-err').forEach(function (p) { p.remove(); });
+    bloc.querySelectorAll('[aria-invalid]').forEach(function (c) { c.removeAttribute('aria-invalid'); });
+    if (bloc.getAttribute('aria-invalid')) bloc.removeAttribute('aria-invalid');
+  }
+  form.addEventListener('input', corrige);
+  form.addEventListener('change', corrige);
+
+  function masquerErreur() { erreur.hidden = true; effacerMarques(wiz); }
+  function afficherErreur(msg, champ, liste) {
+    erreur.textContent = '';
+    var titre = document.createElement('strong'); titre.textContent = msg; erreur.appendChild(titre);
+    if (liste && liste.length) {
+      var ul = document.createElement('ul');
+      liste.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+      erreur.appendChild(ul);
+    }
     erreur.hidden = false;
-    var cible = champ ? (champ.type === 'file' ? champ.closest('[data-upload]').querySelector('.upload-zone') : champ) : erreur;
-    cible.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    (champ ? blocDe(champ) : erreur).scrollIntoView({ behavior: 'smooth', block: 'center' });
     if (champ && champ.type !== 'file' && !champ.disabled) champ.focus({ preventScroll: true });
     return false;
   }
@@ -242,29 +291,40 @@
     masquerErreur();
     var etape = e.getAttribute('data-step');
     var champs = e.querySelectorAll('input');
+    var manquants = [], premier = null, vus = {};
     for (var i = 0; i < champs.length; i++) {
       var c = champs[i];
-      if (c.closest('[hidden]')) continue;
-      if (c.type === 'file') {
-        if (c.required && !(c.files && c.files[0])) return afficherErreur('Ajoute ton justificatif pour le tarif solidaire.', c);
-        if (!etatFichier(c)) return afficherErreur('Ton justificatif ne convient pas : vérifie le fichier en rouge.', c);
-        continue;
-      }
+      if (c.closest('[hidden]') || c.name === 'site_web') continue;
       // Une case encore verrouillée (document pas lu jusqu'au bout) n'est pas vérifiée par le navigateur
-      var manque = c.type === 'checkbox' && c.required ? !c.checked : !c.checkValidity();
+      var manque = c.type === 'file' ? (c.required && !(c.files && c.files[0])) || !etatFichier(c)
+        : c.type === 'checkbox' && c.required ? !c.checked : !c.checkValidity();
       if (!manque) continue;
+      // Documents : un message simple, propre à chaque cas
       if (c.name === 'ok_charte' || c.name === 'ok_reglement') {
-        return afficherErreur(c.disabled ? "Fais défiler le document jusqu'en bas, puis coche la case pour l'accepter." : "Coche la case pour accepter le document et continuer.", c);
+        marquer(c);
+        return afficherErreur(c.disabled ? "Fais défiler le document jusqu'en bas, puis coche la case pour l'accepter." : 'Coche la case pour accepter le document et continuer.', c);
       }
-      if (c.name === 'droit_image') return afficherErreur("Choisis si tu acceptes ou refuses le droit à l'image.", c);
-      if (c.name === 'lu_approuve') return afficherErreur('Coche « Lu et approuvé » pour signer ton dossier.', c);
-      if (c.type === 'checkbox') return afficherErreur('Merci de cocher tous tes engagements.', c);
-      if (c.type === 'email') return afficherErreur('Ton adresse e-mail ne semble pas valide.', c);
-      return afficherErreur('Merci de remplir tous les champs.', c);
+      if (c.name === 'droit_image') { marquer(c); return afficherErreur("Choisis si tu acceptes ou refuses le droit à l'image.", c); }
+      if (vus[c.name]) continue;
+      vus[c.name] = true;
+      var nomChamp = libelle(c);
+      var texte = c.type === 'email' && c.value ? 'Adresse e-mail invalide'
+        : c.type === 'file' && c.files && c.files[0] ? 'Fichier non accepté' : 'À remplir';
+      marquer(c, texte);
+      manquants.push(texte === 'À remplir' ? nomChamp : nomChamp + ' : ' + texte.toLowerCase());
+      if (!premier) premier = c;
     }
-    if (etape === 'formulaire' && !majeure(form.naissance.value)) return afficherErreur("L'adhésion est réservée aux femmes majeures. Vérifie ta date de naissance.", form.naissance);
-    if (etape === 'signature' && !signe) return afficherErreur('Signe dans le cadre avant de continuer.', null);
-    return true;
+    if (etape === 'formulaire' && form.naissance.value && !majeure(form.naissance.value)) {
+      marquer(form.naissance, 'Réservé aux femmes majeures');
+      manquants.push("Date de naissance : l'adhésion est réservée aux femmes majeures");
+      premier = premier || form.naissance;
+    }
+    if (etape === 'signature' && !signe) {
+      wiz.querySelector('.sig').classList.add('is-missing');
+      manquants.push('Ta signature, dans le cadre');
+    }
+    if (!manquants.length) return true;
+    return afficherErreur(manquants.length > 1 ? 'Il manque encore ' + manquants.length + ' éléments :' : 'Il manque encore un élément :', premier, manquants);
   }
 
   // ---------- Confirmation puis envoi ----------

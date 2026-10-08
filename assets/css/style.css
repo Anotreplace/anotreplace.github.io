@@ -766,3 +766,16 @@ tbody th { font-weight: 600; }
   .wiz-nav [data-wiz-suivant] { width: 100%; order: -1; }
   .doc-reader { padding: 1rem; }
 }
+
+/* ---------- Champs manquants mis en relief ---------- */
+.wiz-form .form-error ul { margin: .45rem 0 0; padding-left: 1.2rem; font-weight: 600; }
+.wiz-form .form-error li { margin: .15rem 0; }
+.field.is-missing input { border-color: #C2185B; box-shadow: 0 0 0 3px rgba(194, 24, 91, .14); background: #FFF7FA; }
+.field.is-missing > label, .field.is-missing > .field-label { color: #B4234F; }
+.field-err { margin: .35rem 0 0; font-size: .9rem; font-weight: 700; color: #B4234F; }
+.check.is-missing { border-radius: 12px; box-shadow: 0 0 0 2px #C2185B; background: #FFF7FA; padding: .55rem .7rem .45rem; }
+.check--big.is-missing { padding: 1rem 1.1rem .85rem; }
+.choices.is-missing .choice > span { box-shadow: inset 0 0 0 2px #C2185B; }
+[data-upload].is-missing .upload-zone { border-color: #C2185B; background: #FFF7FA; }
+.sig.is-missing .sig-pad { border-color: #C2185B; border-style: solid; background: #FFF7FA; }
+.sig.is-missing .sig-head .field-label { color: #B4234F; }
