@@ -43,7 +43,7 @@ const PAIEMENTS = {
   virement: 'Virement',
   'main-propre': 'Chèque ou espèces',
 };
-const DOCS_OBLIGATOIRES = ['formulaire', 'charte', 'reglement']; // le droit à l'image reste facultatif
+const DOCS_OBLIGATOIRES = ['dossier']; // un seul PDF : formulaire, charte, règlement intérieur, droit à l'image
 const TYPES_ACCEPTES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 
 // Tableau de suivi
@@ -162,7 +162,7 @@ function valider_(d) {
   const fichiers = Array.isArray(d.fichiers) ? d.fichiers : [];
   const champs = fichiers.map(function (f) { return f.champ; });
   for (let i = 0; i < DOCS_OBLIGATOIRES.length; i++) {
-    if (champs.indexOf(DOCS_OBLIGATOIRES[i]) === -1) return 'Il manque un document signé : formulaire d\'adhésion, charte et règlement intérieur sont obligatoires.';
+    if (champs.indexOf(DOCS_OBLIGATOIRES[i]) === -1) return 'Il manque ton dossier d\'adhésion signé.';
   }
   if (d.tarif === 'solidaire' && champs.indexOf('justificatif_tarif') === -1) return 'Le tarif solidaire nécessite un justificatif.';
   for (let i = 0; i < fichiers.length; i++) {
@@ -208,7 +208,7 @@ function enregistrer_(d) {
   ligne[COL.tarif] = tarif.libelle;
   ligne[COL.montant] = tarif.montant;
   ligne[COL.paiement] = PAIEMENTS[d.paiement];
-  ligne[COL.droitImage] = champs.indexOf('image') !== -1 ? 'Oui' : 'Non';
+  ligne[COL.droitImage] = d.droit_image === 'oui' ? 'Oui' : 'Non';
   ligne[COL.justifTarif] = d.tarif === 'solidaire' ? 'Oui' : '';
   ligne[COL.preuve] = aPreuve ? 'Oui' : '';
   ligne[COL.drive] = '=HYPERLINK("' + dossier.getUrl() + '";"Ouvrir")';
@@ -225,7 +225,7 @@ function enregistrer_(d) {
   const lignesRecap = [
     ['Adhérente', esc_(prenom + ' ' + nom)], ['E-mail', esc_(adh.email)], ['Téléphone', esc_(propre_(d.telephone))],
     ['Date de naissance', esc_(d.naissance)], ['Disciplines', esc_(ligne[COL.disciplines] || '—')],
-    ['Droit à l\'image', champs.indexOf('image') !== -1 ? 'Autorisé' : '<span style="color:#B4234F">Non signé : ne pas publier de photo d\'elle</span>'],
+    ['Droit à l\'image', d.droit_image === 'oui' ? 'Autorisé' : '<span style="color:#B4234F">Refusé : ne pas publier de photo d\'elle</span>'],
     ['Tarif', tarif.libelle + ' · ' + tarif.montant + '€'], ['Paiement', PAIEMENTS[d.paiement] + (aPreuve ? ' (preuve jointe)' : '')],
     ['Documents', d.fichiers.map(function (f) { return esc_(f.libelle); }).join('<br>')],
   ];
@@ -386,9 +386,8 @@ function testerUnDossier() {
   const doc = function (champ, libelle) { return { champ: champ, libelle: libelle, nom: champ + '.pdf', type: 'application/pdf', data: faux }; };
   const rep = doPost({ postData: { contents: JSON.stringify({
     prenom: 'Test', nom: 'Adhérente', email: CONFIG.EMAIL_BUREAU, telephone: '06 00 00 00 00',
-    naissance: '1995-05-12', disciplines: ['Vélo', 'Running'], tarif: 'annuel', paiement: 'cb',
-    fichiers: [doc('formulaire', 'Formulaire d\'adhésion'), doc('charte', 'Charte du collectif'),
-      doc('reglement', 'Règlement intérieur')],
+    naissance: '1995-05-12', disciplines: ['Natation', 'Vélo'], tarif: 'annuel', paiement: 'cb', droit_image: 'oui',
+    fichiers: [doc('dossier', 'Dossier d\'adhésion')],
   }) } });
   Logger.log(rep.getContent());
 }

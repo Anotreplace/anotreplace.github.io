@@ -1,33 +1,25 @@
 // Dossier d'adhésion : dépôt des documents, choix du paiement, envoi au script Google.
-// Étape 3 : paiement HelloAsso intégré (chargé seulement quand on en a besoin)
+// Étape 3 : widget de paiement HelloAsso, affiché directement sur la page
 window.anotreplacePaiement = (function () {
   var bloc = document.querySelector('[data-paiement]');
   if (!bloc) return { ouvrir: function () {}, masquer: function () {} };
-  var verrou = bloc.querySelector('[data-paiement-lock]');
-  var zone = bloc.querySelector('[data-paiement-widget]');
-  var iframe = zone.querySelector('iframe');
+  var iframe = bloc.querySelector('iframe');
   var etape = document.getElementById('paiement');
 
-  // Ajuste la hauteur du widget quand HelloAsso l'indique
+  // Ajuste la hauteur du widget quand HelloAsso l'indique (messages HelloAsso uniquement)
   window.addEventListener('message', function (e) {
     var hote = '';
     try { hote = new URL(e.origin).hostname; } catch (err) { return; }
     if (!/(^|\.)helloasso(pay)?\.com$/.test(hote)) return;
     var h = e.data && parseFloat(e.data.height);
-    if (h && h > 200) iframe.style.height = Math.ceil(h) + 'px';
+    if (h && h > parseFloat(iframe.style.height || 0)) iframe.style.height = Math.ceil(h) + 'px';
   });
 
   function ouvrir(defiler) {
-    if (!iframe.src) iframe.src = iframe.getAttribute('data-src');
-    verrou.hidden = true;
-    zone.hidden = false;
+    etape.hidden = false; bloc.hidden = false;
     if (defiler) etape.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function masquer() { etape.hidden = true; bloc.hidden = true; }
-
-  bloc.querySelector('[data-paiement-open]').addEventListener('click', function () { ouvrir(true); });
-  // Lien direct depuis un e-mail : /adhesion/#paiement
-  if (location.hash === '#paiement') ouvrir(false);
   return { ouvrir: ouvrir, masquer: masquer };
 })();
 
@@ -88,13 +80,16 @@ window.anotreplacePaiement = (function () {
   function etatFichier(input) {
     var bloc = input.closest('[data-upload]');
     var zone = bloc.querySelector('.upload-file');
-    var f = input.files && input.files[0];
+    var liste = Array.prototype.slice.call(input.files || []);
     bloc.classList.remove('is-ok', 'is-error');
-    if (!f) { zone.textContent = zone.getAttribute('data-empty'); return true; }
-    var pb = verifierFichier(f);
-    if (pb) { bloc.classList.add('is-error'); zone.textContent = pb; return false; }
+    if (!liste.length) { zone.textContent = zone.getAttribute('data-empty'); return true; }
+    for (var i = 0; i < liste.length; i++) {
+      var pb = verifierFichier(liste[i]);
+      if (pb) { bloc.classList.add('is-error'); zone.textContent = (liste.length > 1 ? liste[i].name + ' : ' : '') + pb; return false; }
+    }
     bloc.classList.add('is-ok');
-    zone.textContent = f.name + ' · ' + taille(f.size);
+    var poids = liste.reduce(function (t, f) { return t + f.size; }, 0);
+    zone.textContent = (liste.length > 1 ? liste.length + ' fichiers' : liste[0].name) + ' · ' + taille(poids);
     return true;
   }
 
@@ -193,22 +188,30 @@ window.anotreplacePaiement = (function () {
       disciplines: Array.prototype.map.call(form.querySelectorAll('[name="disciplines"]:checked'), function (c) { return c.value; }),
       tarif: val('tarif'),
       paiement: val('paiement'),
+      droit_image: form.droit_image.checked ? 'oui' : 'non',
       fichiers: []
     };
 
-    var inputs = Array.prototype.filter.call(form.querySelectorAll('input[type="file"]'), function (i) {
-      return !i.closest('[hidden]') && i.files && i.files[0];
+    // Chaque fichier choisi (un dossier peut tenir en plusieurs photos)
+    var envois = [];
+    Array.prototype.forEach.call(form.querySelectorAll('input[type="file"]'), function (input) {
+      if (input.closest('[hidden]') || !input.files) return;
+      var libelle = input.closest('[data-upload]').querySelector('strong').textContent;
+      var n = input.files.length;
+      Array.prototype.forEach.call(input.files, function (file, k) {
+        envois.push({ champ: input.name, libelle: n > 1 ? libelle + ' (' + (k + 1) + '-' + n + ')' : libelle, file: file });
+      });
     });
 
     occupe(true);
     var total = 0;
-    Promise.all(inputs.map(function (input) {
-      return compresser(input.files[0]).then(function (f) {
+    Promise.all(envois.map(function (e) {
+      return compresser(e.file).then(function (f) {
         total += f.size;
         return lireBase64(f).then(function (b64) {
           return {
-            champ: input.name,
-            libelle: input.closest('[data-upload]').querySelector('strong').textContent,
+            champ: e.champ,
+            libelle: e.libelle,
             nom: f.name,
             type: f.type || (/\.pdf$/i.test(f.name) ? 'application/pdf' : 'image/jpeg'),
             data: b64

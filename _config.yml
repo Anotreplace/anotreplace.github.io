@@ -3,7 +3,7 @@
 # Les liens marqués A_REMPLACER sont à compléter.
 # ==========================================================
 title: Ànotreplace
-description: Collectif sportif 100 % féminin à Angoulême. Running, vélo, trail, natation.
+description: Collectif sportif 100 % féminin à Angoulême. Natation, vélo, running.
 url: "https://anotreplace.github.io"   # à changer quand le nom de domaine sera acheté
 baseurl: ""
 lang: fr
@@ -16,6 +16,7 @@ helloasso_widget_url: "https://www.helloasso.com/associations/anotreplace/adhesi
 adhesion_script_url: "A_REMPLACER"  # URL /exec du script Google « Dossier d'adhésion » (voir apps-script/LISEZ-MOI.md)
 form_email: "collectif.anotreplace@gmail.com"                      # réception des formulaires (FormSubmit)
 instagram_url: "https://www.instagram.com/collectif.anotreplace/"
+instagram_dm_url: "https://ig.me/m/collectif.anotreplace"   # ouvre directement la conversation Instagram
 email: "collectif.anotreplace@gmail.com"
 
 exclude:

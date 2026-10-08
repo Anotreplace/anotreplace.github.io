@@ -1,26 +1,36 @@
 ---
 layout: default
 title: "Séance découverte de sport entre femmes | Ànotreplace"
-description: "Viens tester une séance avec le collectif féminin Ànotreplace : running, vélo, natation ou trail. Tous niveaux, sans engagement, en 30 secondes."
+description: "Viens tester une séance avec le collectif féminin Ànotreplace : natation, vélo ou running. Tous niveaux, sans engagement : un message sur Instagram ou un mail suffit."
 body_class: "no-mobile-cta"
 ---
 
 <section class="page-hero">
   <div class="wrap">
     <h1>Viens tester une séance</h1>
-    <p class="lead">Choisis ta discipline et ton créneau. 30 secondes. On s'occupe du reste.</p>
+    <p class="lead">Un message sur Instagram ou un mail, et on te dit où et quand nous retrouver. C'est tout.</p>
   </div>
 </section>
 
 <section class="section section--tint section--tight">
   <div class="wrap split">
-    <div class="calendar">
-      <!-- MODULE CALENDRIER : remplacer booking_url dans _config.yml (Cal.com, Calendly ou Google Agenda) -->
-      <iframe src="{{ site.booking_url }}?embed=true" title="Agenda de réservation de la séance découverte" loading="lazy"></iframe>
+    <div>
+      <h2 class="contact-title">Écris-nous, on te répond vite</h2>
+      <p class="muted">Dis-nous quelle discipline te tente (natation, vélo, running) et ton niveau, même débutante. On t'envoie le prochain créneau.</p>
+      <div class="contact-ways">
+        <a class="contact-way" href="{{ site.instagram_dm_url }}" rel="noopener">
+          <span class="v-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/></svg></span>
+          <span><strong>Un DM sur Instagram</strong><span class="muted">@collectif.anotreplace</span></span>
+        </a>
+        <a class="contact-way" href="mailto:{{ site.email }}?subject=S%C3%A9ance%20d%C3%A9couverte">
+          <span class="v-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+          <span><strong>Un mail</strong><span class="muted">{{ site.email }}</span></span>
+        </a>
+      </div>
+      <p class="muted small">Ta première séance est sans engagement : tu adhères seulement si tu as aimé.</p>
     </div>
     <div>
-      <p class="muted small">Le calendrier ne s'affiche pas ? <a href="{{ site.booking_url }}" rel="noopener">Ouvrir la page de réservation</a> ou <a href="/contact/?objet=seance-decouverte">écris-nous</a>.</p>
-      <h2 style="font-size:2rem;margin-top:1.5rem">Comment se passe ta séance ?</h2>
+      <h2 style="font-size:2rem">Comment se passe ta séance ?</h2>
       <ol class="steps" style="grid-template-columns:minmax(0,1fr);gap:1.4rem">
         <li style="padding:.2rem 0 0 4rem;min-height:3.4rem"><h3>On t'accueille</h3><p>Rendez-vous 10 minutes avant le départ. On se présente, on fait connaissance.</p></li>
         <li style="padding:.2rem 0 0 4rem;min-height:3.4rem"><h3>On part ensemble</h3><p>À un rythme adapté au groupe. Personne ne reste derrière.</p></li>

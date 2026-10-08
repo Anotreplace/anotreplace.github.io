@@ -20,7 +20,7 @@
 - Témoignages d'adhérentes : bloc en commentaire dans `index.html`, section « Preuves sociales ».
 
 ## Dossiers d'adhésion
-- Documents à télécharger : déposer dans `assets/docs/` les fichiers `formulaire-adhesion-anotreplace.pdf`, `charte-anotreplace.pdf`, `autorisation-droit-image-anotreplace.pdf`, `reglement-interieur-anotreplace.pdf` (noms exacts).
+- Dossier d'adhésion : déposer dans `assets/docs/` le fichier unique `dossier-adhesion-anotreplace.pdf` (formulaire, charte, règlement intérieur et droit à l'image, nom exact).
 - Réception, tableau de suivi et e-mails automatiques : `apps-script/LISEZ-MOI.md`.
 
 ## Nom de domaine
