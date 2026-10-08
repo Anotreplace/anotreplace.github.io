@@ -10,7 +10,7 @@ lang: fr
 
 # Liens de conversion
 booking_url: "https://cal.com/A_REMPLACER/seance-decouverte"      # agenda séance découverte (Cal.com, Calendly…)
-partner_booking_url: "https://cal.com/A_REMPLACER/cafe-partenaire" # agenda « café partenaire » 20 min
+partner_booking_url: "https://calendar.google.com/calendar/appointments/schedules/AcZssZ3wWTzitL83g6QN-C7je00R8jRLS7Y1otG0JxtR_Y7qpHUk3NSMVD5ntZMbrGFIj2JPRde-uTpM" # agenda Google « visio partenaire » 20 min
 adhesion_url: "https://www.helloasso.com/associations/anotreplace/adhesions/adhesion-anotreplace-saison-2026-2027" # campagne HelloAsso de la cotisation
 helloasso_widget_url: "https://www.helloasso.com/associations/anotreplace/adhesions/adhesion-anotreplace-saison-2026-2027/widget" # même campagne, version intégrée à la page Adhésion
 adhesion_script_url: "https://script.google.com/macros/s/AKfycbw8TiTGh2mgo1yfrGmntkve441SC9xqO0fbn3zXbQYex3h9xbfWgZyOdnQ7cY_rPZhd4w/exec"  # URL /exec du script Google « Dossier d'adhésion » (voir apps-script/LISEZ-MOI.md)

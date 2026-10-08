@@ -5,7 +5,7 @@
 2. Remplacer le contenu de la branche principale par ce dossier. Garder votre dossier `_posts/` ou `blog/` s'il existe.
 3. Ouvrir `_config.yml` et remplacer les 3 liens `A_REMPLACER` :
    - `booking_url` : agenda séance découverte (Cal.com, Calendly…)
-   - `partner_booking_url` : agenda « café partenaire » 20 min
+   - `partner_booking_url` : agenda Google « visio partenaire » 20 min
    - `adhesion_url` et `helloasso_widget_url` : campagne HelloAsso de la cotisation (déjà renseignées)
    - `adhesion_script_url` : adresse du script Google des dossiers d'adhésion (voir `apps-script/LISEZ-MOI.md`)
 4. Commit. GitHub reconstruit le site en 1 à 2 minutes.
