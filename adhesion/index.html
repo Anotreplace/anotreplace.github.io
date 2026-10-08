@@ -141,7 +141,7 @@ body_class: "no-mobile-cta"
               <div class="field"><label for="a-tel">Téléphone</label><input id="a-tel" type="tel" name="telephone" required autocomplete="tel" data-libelle="Ton téléphone"></div>
             </div>
             <div class="field"><label for="a-email">E-mail</label><input id="a-email" type="email" name="email" required autocomplete="email"></div>
-            <div class="field" data-show-if="droit_image=oui" hidden><label for="a-adresse">Adresse postale <span class="muted">(demandée pour l'autorisation de droit à l'image)</span></label><input id="a-adresse" name="adresse" autocomplete="street-address"></div>
+            <div class="field" data-show-if="droit_image=oui" hidden><label for="a-adresse">Adresse postale</label><input id="a-adresse" name="adresse" autocomplete="street-address"></div>
           </fieldset>
 
           <fieldset class="fs">
@@ -216,6 +216,8 @@ body_class: "no-mobile-cta"
             <p class="hint">Signe avec ton doigt ou ta souris dans le cadre.</p>
           </div>
 
+          <div class="apercu-cta"><button type="button" class="btn btn--ghost btn--sm" data-apercu-ouvrir>Prévisualiser mon dossier</button><span class="hint">Tu vois ton dossier tel qu'il nous sera envoyé.</span></div>
+
           <label class="check check--big"><input type="checkbox" name="lu_approuve" required data-libelle="La case « Lu et approuvé »"><span><strong>Lu et approuvé.</strong> Je signe électroniquement mon dossier d'adhésion : la charte, le règlement intérieur, mon formulaire<span data-recap-image></span>.</span></label>
         </section>
 
@@ -236,10 +238,24 @@ body_class: "no-mobile-cta"
               <button type="submit" class="btn" id="btn-envoyer">Oui, envoyer mon dossier</button>
               <button type="button" class="btn btn--ghost" data-confirm-retour>Revenir en arrière</button>
             </div>
-            <button type="button" class="link-btn" data-wiz-annuler>Annuler mon adhésion</button>
+            <p class="confirm-liens"><button type="button" class="link-btn" data-apercu-ouvrir>Prévisualiser mon dossier</button> · <button type="button" class="link-btn" data-wiz-annuler>Annuler mon adhésion</button></p>
           </div>
         </div>
       </form>
+
+      <!-- Aperçu du dossier, avant l'envoi -->
+      <div class="apercu" data-apercu role="dialog" aria-modal="true" aria-labelledby="apercu-titre" hidden>
+        <div class="apercu-box">
+          <div class="apercu-bar">
+            <h3 id="apercu-titre">Aperçu de ton dossier</h3>
+            <div class="apercu-actions">
+              <button type="button" class="btn btn--ghost btn--sm" data-apercu-imprimer>Imprimer ou enregistrer en PDF</button>
+              <button type="button" class="btn btn--sm" data-apercu-fermer>Fermer</button>
+            </div>
+          </div>
+          <div class="apercu-page" data-apercu-doc tabindex="0"></div>
+        </div>
+      </div>
 
       <!-- 6. Cotisation -->
       <section class="wiz-step wiz-pay" data-step="paiement" data-titre="Ta cotisation" tabindex="-1" hidden>
@@ -266,7 +282,7 @@ body_class: "no-mobile-cta"
         <div class="pay-panel" data-pay-panel="cb" hidden>
           <p class="muted">Choisis le tarif « <span data-tarif-libelle></span> » dans le formulaire HelloAsso.</p>
           <div class="paiement-widget">
-            <iframe id="haWidget" title="Paiement de l'adhésion sur HelloAsso" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" data-src="{{ site.helloasso_widget_url }}" style="width: 100%; height: 750px; border: none;"></iframe>
+            <iframe id="haWidget" title="Paiement de l'adhésion sur HelloAsso" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" data-src="{{ site.helloasso_widget_url }}" style="width: 100%; height: 400px; border: none;"></iframe>
             <p class="hint">Le formulaire de paiement ne s'affiche pas&nbsp;? <a href="{{ site.adhesion_url }}" target="_blank" rel="noopener">Payer directement sur HelloAsso</a>.</p>
           </div>
         </div>

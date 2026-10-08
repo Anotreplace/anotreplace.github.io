@@ -42,6 +42,7 @@
     wiz.querySelector('[data-wiz-titre]').textContent = e.getAttribute('data-titre');
     wiz.querySelector('[data-wiz-fill]').style.width = Math.round((i + 1) / etapes.length * 100) + '%';
     nav.hidden = e === paiement;
+    wiz.classList.toggle('wiz--large', e === paiement); // le widget HelloAsso a besoin de place
     btnRetour.style.visibility = i === 0 ? 'hidden' : 'visible';
     btnSuivant.textContent = e.getAttribute('data-step') === 'signature' ? 'Envoyer mon dossier' : 'Continuer';
     masquerErreur();
@@ -396,6 +397,124 @@
     });
   });
 
+  // ---------- Aperçu du dossier (même présentation que le PDF envoyé) ----------
+  var apercu = wiz.querySelector('[data-apercu]');
+  var apercuDoc = apercu.querySelector('[data-apercu-doc]');
+  var avantApercu = null;
+  function el(tag, cls, texte) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (texte != null) n.textContent = texte;
+    return n;
+  }
+  function tableau(lignes) {
+    var t = el('table', 'ap-champs');
+    lignes.forEach(function (l) {
+      var tr = el('tr');
+      tr.appendChild(el('td', 'l', l[0]));
+      tr.appendChild(el('td', 'v', l[1] || '—'));
+      t.appendChild(tr);
+    });
+    return t;
+  }
+  function filet() {
+    var f = el('div', 'ap-filet');
+    f.appendChild(el('span')); f.appendChild(el('span')); f.appendChild(el('span'));
+    return f;
+  }
+  function titreSection(texte) { var h = el('h4', 'ap-h'); h.appendChild(el('span', 'ap-coeur', '♥ ')); h.appendChild(document.createTextNode(texte)); return h; }
+  function texteDocument(step) {
+    var d = el('div', 'ap-texte');
+    d.innerHTML = wiz.querySelector('[data-step="' + step + '"] [data-reader]').innerHTML; // textes du site, fixes
+    var h = d.querySelector('h3'); if (h) h.remove();
+    return d;
+  }
+  function construireApercu() {
+    var t = TARIFS[val('tarif')] || TARIFS.annuel;
+    var image = val('droit_image') === 'oui';
+    var qui = form.prenom.value.trim() + ' ' + form.nom.value.trim().toUpperCase();
+    var maintenant = new Date();
+    var quand = maintenant.toLocaleDateString('fr-FR') + ' à ' + maintenant.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    var disc = Array.prototype.map.call(form.querySelectorAll('[name="disciplines"]:checked'), function (c) { return c.value; }).join(', ');
+    var accepte = function (quoi) { return el('p', 'ap-ok', '✔ ' + quoi + ' par ' + qui + ' le ' + quand + '.'); };
+    var d = document.createDocumentFragment();
+
+    var entete = el('div', 'ap-entete');
+    var logo = el('img'); logo.src = '/assets/img/logo-anotreplace-2026.webp'; logo.alt = 'Ànotreplace';
+    var titres = el('div');
+    titres.appendChild(el('p', 'ap-surtitre', 'Saison 2026-2027 · Adhésion'));
+    titres.appendChild(el('p', 'ap-grand', "Dossier d'adhésion signé"));
+    entete.appendChild(logo); entete.appendChild(titres);
+    d.appendChild(entete); d.appendChild(filet());
+    d.appendChild(el('p', 'ap-carte', 'Aperçu · ' + qui + ' · la référence et l\'heure exacte seront ajoutées à l\'envoi'));
+
+    d.appendChild(titreSection("Formulaire d'adhésion"));
+    var lignes = [['Nom', form.nom.value.trim().toUpperCase()], ['Prénom', form.prenom.value.trim()], ['Date de naissance', form.naissance.value],
+      ['Téléphone', form.telephone.value.trim()], ['E-mail', form.email.value.trim()]];
+    if (image) lignes.push(['Adresse', form.adresse.value.trim()]);
+    lignes.push(['Personne à prévenir', form.urgence_nom.value.trim() + ' (' + form.urgence_lien.value.trim() + ') · ' + form.urgence_tel.value.trim()]);
+    lignes.push(['Disciplines', disc || 'Non précisées'], ['T-shirt', val('tshirt') || 'Non précisé'],
+      ['Cotisation', t.libelle + ' · ' + t.montant + '€' + (val('tarif') === 'solidaire' ? ' (justificatif joint)' : '')]);
+    d.appendChild(tableau(lignes));
+
+    d.appendChild(titreSection('Engagements'));
+    var ul = el('ul', 'ap-eng');
+    form.querySelectorAll('[name^="eng_"]').forEach(function (c) {
+      ul.appendChild(el('li', c.checked ? '' : 'non', (c.checked ? '✔ ' : '✘ ') + c.closest('label').querySelector('span').textContent.trim()));
+    });
+    d.appendChild(ul);
+
+    d.appendChild(titreSection('Documents'));
+    d.appendChild(tableau([['Charte du collectif', form.ok_charte.checked ? 'Lue et acceptée' : 'Non acceptée'],
+      ['Règlement intérieur', form.ok_reglement.checked ? 'Lu et accepté' : 'Non accepté'],
+      ["Droit à l'image", image ? 'Autorisation acceptée' : 'Autorisation refusée']]));
+
+    d.appendChild(titreSection('Signature'));
+    var sig = el('div', 'ap-sig');
+    sig.appendChild(el('p', '', 'Fait à ' + (form.fait_a.value.trim() || '…') + ', le ' + quand + '. Mention : « Lu et approuvé ». Signé électroniquement par ' + qui + '.'));
+    if (signe) { var img = el('img'); img.src = canvas.toDataURL('image/png'); img.alt = 'Ta signature'; sig.appendChild(img); }
+    else sig.appendChild(el('p', 'ap-manque', 'Ta signature apparaîtra ici.'));
+    d.appendChild(sig);
+
+    [['charte', 'Document 1 sur 3', 'Charte du collectif', 'Charte lue et acceptée'],
+     ['reglement', 'Document 2 sur 3', 'Règlement intérieur', 'Règlement intérieur lu et accepté'],
+     ['image', 'Document 3 sur 3 · Facultatif', "Autorisation de droit à l'image", "Autorisation de droit à l'image acceptée, « bon pour autorisation »,"]].forEach(function (x) {
+      var bloc = el('div', 'ap-doc');
+      bloc.appendChild(el('p', 'ap-surtitre', x[1]));
+      bloc.appendChild(el('p', 'ap-grand ap-grand--doc', x[2]));
+      d.appendChild(bloc); d.appendChild(filet());
+      if (x[0] === 'image' && !image) { d.appendChild(el('p', 'ap-non', "✘ Autorisation refusée par " + qui + ' le ' + quand + " : aucune image d'elle ne doit être publiée.")); return; }
+      d.appendChild(texteDocument(x[0]));
+      d.appendChild(accepte(x[3]));
+    });
+    d.appendChild(el('p', 'ap-pied', 'Ànotreplace · Trouver sa place. La construire ensemble. · ' + emailBureau));
+    apercuDoc.textContent = '';
+    apercuDoc.appendChild(d);
+  }
+  function ouvrirApercu() {
+    avantApercu = document.activeElement;
+    remplirRecap();
+    construireApercu();
+    apercu.hidden = false;
+    document.documentElement.classList.add('apercu-ouvert');
+    apercuDoc.scrollTop = 0;
+    apercu.querySelector('[data-apercu-fermer]').focus();
+  }
+  function fermerApercu() {
+    apercu.hidden = true;
+    document.documentElement.classList.remove('apercu-ouvert');
+    if (avantApercu) avantApercu.focus();
+  }
+  wiz.querySelectorAll('[data-apercu-ouvrir]').forEach(function (b) { b.addEventListener('click', ouvrirApercu); });
+  apercu.querySelector('[data-apercu-fermer]').addEventListener('click', fermerApercu);
+  apercu.addEventListener('click', function (e) { if (e.target === apercu) fermerApercu(); });
+  apercu.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.stopPropagation(); fermerApercu(); } });
+  apercu.querySelector('[data-apercu-imprimer]').addEventListener('click', function () {
+    document.documentElement.classList.add('impression-apercu');
+    window.print();
+  });
+  window.addEventListener('afterprint', function () { document.documentElement.classList.remove('impression-apercu'); });
+
   // ---------- Cotisation ----------
   function versPaiement(prenom) {
     var t = TARIFS[dossier.tarif] || TARIFS.annuel;
@@ -427,6 +546,7 @@
     try { hote = new URL(e.origin).hostname; } catch (err) { return; }
     if (!/(^|\.)helloasso(pay)?\.com$/.test(hote)) return;
     var h = e.data && parseFloat(e.data.height);
-    if (h && h > parseFloat(iframe.style.height || 0)) iframe.style.height = Math.ceil(h) + 'px';
+    // On suit la hauteur réelle du contenu, qu'elle augmente ou diminue (évite un grand blanc)
+    if (h && h > 200) iframe.style.height = Math.ceil(h) + 'px';
   });
 })();
