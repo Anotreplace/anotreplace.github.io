@@ -66,29 +66,35 @@ body_class: "no-mobile-cta"
       <p>Environ 10 minutes. Ton dossier arrive directement au bureau du collectif, et tu reçois un e-mail de confirmation.</p>
     </div>
 
+    <ol class="d-progress" aria-label="Les 3 étapes de ton adhésion">
+      <li><a href="#etape-dossier"><span>1</span>Télécharge et signe</a></li>
+      <li><a href="#etape-envoi"><span>2</span>Envoie ton dossier</a></li>
+      <li><a href="#paiement"><span>3</span>Règle ta cotisation</a></li>
+    </ol>
+
     <div class="dossier">
+      <section class="d-step" id="etape-dossier" aria-labelledby="t-etape-1">
       <div class="dossier-step">
         <p class="dossier-num">1</p>
         <div>
-          <h3>Télécharge ton dossier d'adhésion</h3>
+          <p class="d-step-kicker">Étape 1 sur 3</p>
+          <h3 id="t-etape-1">Télécharge ton dossier d'adhésion</h3>
           <p class="muted">Un seul document, à remplir et signer. Pas d'imprimante ? Signe-le sur ton téléphone, ou envoie une photo nette de chaque page.</p>
         </div>
       </div>
       <div class="docs">
           <a class="doc" href="/assets/docs/dossier-adhesion-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span><strong>Dossier d'adhésion 2026-2027</strong><span class="muted">Formulaire d'adhésion, charte, règlement intérieur et droit à l'image · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
       </div>
+      </section>
 
+      <section class="d-step" id="etape-envoi" aria-labelledby="t-etape-2">
       <div class="dossier-step">
         <p class="dossier-num">2</p>
         <div>
-          <h3>Envoie ton dossier</h3>
+          <p class="d-step-kicker">Étape 2 sur 3</p>
+          <h3 id="t-etape-2">Envoie ton dossier</h3>
           <p class="muted">Formats acceptés : PDF, JPG ou PNG. 8 Mo maximum par fichier.</p>
         </div>
-      </div>
-
-      <div class="form-notice" id="form-indispo" hidden>
-        <strong>Le dépôt en ligne arrive très bientôt.</strong>
-        <p>En attendant, envoie ton dossier d'adhésion signé à <a href="mailto:{{ site.email }}?subject=Dossier%20d'adh%C3%A9sion">{{ site.email }}</a>.</p>
       </div>
 
       <form class="form form--dossier" id="form-adhesion" data-endpoint="{{ site.adhesion_script_url }}" data-email="{{ site.email }}" novalidate>
@@ -149,7 +155,7 @@ body_class: "no-mobile-cta"
           <span class="field-label" id="a-pay-label">Mode de paiement</span>
           <div class="choices choices--3" role="radiogroup" aria-labelledby="a-pay-label">
             <label class="choice"><input type="radio" name="paiement" value="cb" required checked><span><strong>Carte bancaire</strong><span class="muted">Paiement sécurisé HelloAsso, juste en dessous</span></span></label>
-            <label class="choice"><input type="radio" name="paiement" value="virement"><span><strong>Virement</strong><span class="muted">Coordonnées bancaires envoyées par e-mail</span></span></label>
+            <label class="choice"><input type="radio" name="paiement" value="virement"><span><strong>Virement</strong><span class="muted">RIB du collectif à télécharger</span></span></label>
             <label class="choice"><input type="radio" name="paiement" value="main-propre"><span><strong>Chèque ou espèces</strong><span class="muted">À remettre lors d'une sortie</span></span></label>
           </div>
           <div class="cond" data-show-if="paiement=virement" hidden>
@@ -184,9 +190,9 @@ body_class: "no-mobile-cta"
           <p><strong>Dernière étape&nbsp;:</strong> règle ta cotisation de <span data-montant></span> juste en dessous. Ton adhésion sera validée dès réception.</p>
           <div class="actions"><a class="btn" href="#paiement">Payer ma cotisation</a></div>
         </div>
-        </div>
         <div data-done="virement" hidden>
-          <p>Les coordonnées bancaires viennent de t'être envoyées par e-mail. Indique ta référence dans le libellé du virement.</p>
+          <p>Fais ton virement de <span data-montant></span> avec le RIB du collectif, en indiquant ta référence dans le libellé.</p>
+          <div class="actions"><a class="btn" href="/assets/docs/rib-anotreplace.pdf" download>Télécharger le RIB</a></div>
         </div>
         <div data-done="virement-preuve" hidden>
           <p>Ta preuve de virement est bien jointe. On vérifie la réception et on valide ton adhésion.</p>
@@ -197,23 +203,31 @@ body_class: "no-mobile-cta"
         <p class="muted">Un e-mail récapitulatif t'a été envoyé. Pense à vérifier tes spams.</p>
       </div>
 
-      <div class="dossier-step" id="paiement">
+      </section>
+
+      <section class="d-step" id="paiement" aria-labelledby="t-etape-3">
+      <div class="dossier-step">
         <p class="dossier-num">3</p>
         <div>
-          <h3>Règle ta cotisation</h3>
-          <p class="muted">Paiement sécurisé par HelloAsso, la plateforme des associations. Choisis le tarif de ton dossier : 60€ ou 40€ (solidaire).</p>
+          <p class="d-step-kicker">Étape 3 sur 3</p>
+          <h3 id="t-etape-3">Règle ta cotisation</h3>
+          <p class="muted">Par carte bancaire avec HelloAsso, la plateforme des associations : choisis le tarif de ton dossier, 60€ ou 40€ (solidaire). Par virement : télécharge le RIB du collectif.</p>
         </div>
       </div>
       <div class="paiement" data-paiement>
         <div class="paiement-note">
           <span class="paiement-lock-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <p><strong>Pense à envoyer ton dossier (étape 2) avant de payer.</strong> <span class="muted">Tu préfères le virement, le chèque ou les espèces&nbsp;? Choisis-le à l'étape 2, pas besoin de payer ici.</span></p>
+          <p><strong>Pense à envoyer ton dossier (étape 2) avant de payer.</strong> <span class="muted">Tu préfères le virement, le chèque ou les espèces&nbsp;? Choisis-le à l'étape 2. Pour le virement, le RIB est juste en dessous.</span></p>
         </div>
         <div class="paiement-widget" data-paiement-widget>
           <iframe id="haWidget" title="Paiement de l'adhésion sur HelloAsso" allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com" allowtransparency="true" scrolling="auto" src="{{ site.helloasso_widget_url }}" loading="lazy" style="width: 100%; height: 750px; border: none;"></iframe>
           <p class="hint">Le formulaire de paiement ne s'affiche pas&nbsp;? <a href="{{ site.adhesion_url }}" target="_blank" rel="noopener">Payer directement sur HelloAsso</a>.</p>
         </div>
       </div>
+      <div class="docs docs--rib">
+          <a class="doc" href="/assets/docs/rib-anotreplace.pdf" download><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10"/><path d="M19 21V10"/><path d="M9 21V10"/><path d="M15 21V10"/><path d="m2 10 10-7 10 7"/></svg></span><span><strong>RIB du collectif</strong><span class="muted">Pour régler par virement · PDF</span></span><span class="doc-dl" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span></a>
+      </div>
+      </section>
     </div>
   </div>
 </section>

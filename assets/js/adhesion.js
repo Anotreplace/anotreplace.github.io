@@ -39,13 +39,8 @@ window.anotreplacePaiement = (function () {
   var EXT = /\.(pdf|jpe?g|png|webp|heic|heif)$/i;
   var MONTANTS = { annuel: 60, solidaire: 40 };
 
-  // Formulaire pas encore branché : on affiche l'alternative par e-mail
-  var configure = /^https:\/\/script\.google\.com\//.test(endpoint);
-  if (!configure) {
-    document.getElementById('form-indispo').hidden = false;
-    form.hidden = true;
-    return;
-  }
+  // Sans adresse de script Google valide, le formulaire ne peut pas être envoyé
+  if (!/^https:\/\/script\.google\.com\//.test(endpoint)) { form.hidden = true; return; }
 
   // ---------- Champs conditionnels ----------
   function majConditions() {

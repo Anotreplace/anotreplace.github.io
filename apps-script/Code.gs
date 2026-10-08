@@ -24,9 +24,7 @@ const CONFIG = {
   HELLOASSO_URL: 'https://www.helloasso.com/associations/anotreplace/adhesions/adhesion-anotreplace-saison-2026-2027', // campagne de la cotisation
   GROUPE_URL: '',                                                       // lien d'invitation au groupe de discussions (facultatif)
   VIREMENT: {
-    TITULAIRE: 'ANOTREPLACE',
-    IBAN: 'A_REMPLACER',
-    BIC: 'A_REMPLACER',
+    RIB_URL: 'https://anotreplace.github.io/assets/docs/rib-anotreplace.pdf', // le RIB est téléchargeable sur le site, jamais écrit dans les e-mails
   },
   REMISE_EN_MAIN_PROPRE: 'à Lauryn ou Léa, lors de ta prochaine sortie',
   ORDRE_CHEQUE: 'ANOTREPLACE',
@@ -310,10 +308,9 @@ function blocPaiement_(adh, montant, relance) {
   }
   if (adh.paiement === 'virement') {
     if (adh.preuve && !relance) return '<p>Ta preuve de virement est bien jointe. On vérifie la réception sur notre compte.</p>';
-    return '<p><strong>Pour finaliser</strong>, fais un virement de ' + montant + ' :</p>' +
-      tableau_([['Titulaire', CONFIG.VIREMENT.TITULAIRE], ['IBAN', CONFIG.VIREMENT.IBAN], ['BIC', CONFIG.VIREMENT.BIC],
-        ['Libellé', 'Adhésion ' + adh.ref + ' ' + esc_(adh.nom)]]) +
-      '<p>Puis réponds à cet e-mail avec une capture de ton virement.</p>';
+    return '<p><strong>Pour finaliser</strong>, fais un virement de ' + montant + ' avec le RIB du collectif, à télécharger sur le site : ' +
+      '<a href="' + CONFIG.VIREMENT.RIB_URL + '">' + CONFIG.VIREMENT.RIB_URL + '</a>.</p>' +
+      '<p>Libellé du virement : <strong>Adhésion ' + adh.ref + ' ' + esc_(adh.nom) + '</strong>. Puis réponds à cet e-mail avec une capture de ton virement.</p>';
   }
   return '<p><strong>Pour finaliser</strong>, remets ton règlement de ' + montant + ' (chèque à l\'ordre de ' + CONFIG.ORDRE_CHEQUE + ', ou espèces) ' + CONFIG.REMISE_EN_MAIN_PROPRE + '.</p>';
 }
