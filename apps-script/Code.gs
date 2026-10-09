@@ -242,7 +242,7 @@ function enregistrer_(d) {
   const poids = blobs.reduce(function (s, b) { return s + b.getBytes().length; }, 0);
   const lignesRecap = [
     ['Adhérente', esc_(prenom + ' ' + nom)], ['E-mail', esc_(adh.email)], ['Téléphone', esc_(propre_(d.telephone))],
-    ['Date de naissance', esc_(d.naissance)], ['Disciplines', esc_(ligne[COL.disciplines] || '—')], ['T-shirt', esc_(tshirt || '—')],
+    ['Date de naissance', esc_(d.naissance)], ['Disciplines', esc_(ligne[COL.disciplines] || '—')],
     ['Droit à l\'image', image ? 'Autorisé' : '<span style="color:#B4234F">Refusé : ne pas publier de photo d\'elle</span>'],
     ['Tarif', tarif.libelle + ' · ' + tarif.montant + '€' + (d.tarif === 'solidaire' ? ' (justificatif joint)' : '')],
     ['Signé le', Utilities.formatDate(signeLe, FUSEAU, 'dd/MM/yyyy à HH:mm') + ', à ' + esc_(propre_(d.fait_a))],
@@ -349,7 +349,7 @@ function pdfDossier_(d, x) {
     ligne('Téléphone', esc_(propre_(d.telephone))) + ligne('E-mail', esc_(String(d.email).trim())) +
     (image ? ligne('Adresse', esc_(propre_(d.adresse))) : '') +
     ligne('Personne à prévenir', esc_(propre_(d.urgence_nom) + ' (' + propre_(d.urgence_lien) + ') · ' + propre_(d.urgence_tel))) +
-    ligne('Disciplines', esc_(x.disciplines.join(', ') || 'Non précisées')) + ligne('T-shirt', esc_(x.tshirt || 'Non précisé')) +
+    ligne('Disciplines', esc_(x.disciplines.join(', ') || 'Non précisées')) + (x.tshirt ? ligne('T-shirt', esc_(x.tshirt)) : '') +
     ligne('Cotisation', x.tarif.libelle + ' · ' + x.tarif.montant + '€' + (d.tarif === 'solidaire' ? ' (justificatif joint)' : '')) +
     '</table>' +
     section('Engagements') + '<table class="eng">' + ENGAGEMENTS.map(function (t) { return '<tr><td class="c">&#10004;</td><td>' + t + '</td></tr>'; }).join('') + '</table>' +
@@ -489,8 +489,9 @@ function pdfDossierDocs_(d, x) {
       ['TÉLÉPHONE', propre_(d.telephone)], ['E-MAIL', String(d.email).trim()]];
     if (image) lignes.push(['ADRESSE', propre_(d.adresse)]);
     lignes.push(['PERSONNE À PRÉVENIR', propre_(d.urgence_nom) + ' (' + propre_(d.urgence_lien) + ') · ' + propre_(d.urgence_tel)],
-      ['DISCIPLINES', x.disciplines.join(', ') || 'Non précisées'], ['T-SHIRT', x.tshirt || 'Non précisé'],
+      ['DISCIPLINES', x.disciplines.join(', ') || 'Non précisées'],
       ['COTISATION', x.tarif.libelle + ' · ' + x.tarif.montant + '€' + (d.tarif === 'solidaire' ? ' (justificatif joint)' : '')]);
+    if (x.tshirt) lignes.splice(lignes.length - 1, 0, ['T-SHIRT', x.tshirt]);
     tableau(lignes);
 
     titreSection('Engagements');
@@ -846,7 +847,7 @@ function testerUnDossier() {
     action: 'dossier', prenom: 'Test', nom: 'Adhérente', email: CONFIG.EMAIL_BUREAU, telephone: '06 00 00 00 00',
     naissance: '1995-05-12', adresse: '1 rue du Test, 16000 Angoulême',
     urgence_nom: 'Camille Test', urgence_lien: 'Sœur', urgence_tel: '06 11 11 11 11',
-    disciplines: ['Natation', 'Vélo'], tshirt: 'M', tarif: 'annuel', droit_image: 'oui',
+    disciplines: ['Natation', 'Vélo'], tarif: 'annuel', droit_image: 'oui',
     charte: true, reglement: true, engagements: { majeure: true, statuts: true, sante: true, assurance: true, donnees: true },
     fait_a: 'Angoulême', lu_approuve: true, signature: signature, fichiers: [],
   }) } });

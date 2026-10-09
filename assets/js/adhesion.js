@@ -360,7 +360,6 @@
       urgence_lien: form.urgence_lien.value.trim(),
       urgence_tel: form.urgence_tel.value.trim(),
       disciplines: Array.prototype.map.call(form.querySelectorAll('[name="disciplines"]:checked'), function (c) { return c.value; }),
-      tshirt: val('tshirt'),
       tarif: val('tarif'),
       droit_image: val('droit_image'),
       charte: form.ok_charte.checked,
@@ -453,7 +452,7 @@
       ['Téléphone', form.telephone.value.trim()], ['E-mail', form.email.value.trim()]];
     if (image) lignes.push(['Adresse', form.adresse.value.trim()]);
     lignes.push(['Personne à prévenir', form.urgence_nom.value.trim() + ' (' + form.urgence_lien.value.trim() + ') · ' + form.urgence_tel.value.trim()]);
-    lignes.push(['Disciplines', disc || 'Non précisées'], ['T-shirt', val('tshirt') || 'Non précisé'],
+    lignes.push(['Disciplines', disc || 'Non précisées'],
       ['Cotisation', t.libelle + ' · ' + t.montant + '€' + (val('tarif') === 'solidaire' ? ' (justificatif joint)' : '')]);
     d.appendChild(tableau(lignes));
 

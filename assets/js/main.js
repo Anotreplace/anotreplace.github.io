@@ -80,3 +80,22 @@
   if (reduit) arrives();
   else requestAnimationFrame(tick);
 })();
+
+// Tableaux trop larges sur mobile : une petite indication pour faire glisser
+(function () {
+  var cadres = Array.prototype.slice.call(document.querySelectorAll('.table-wrap'));
+  if (!cadres.length) return;
+  cadres.forEach(function (c) {
+    var aide = document.createElement('p');
+    aide.className = 'scroll-hint';
+    aide.setAttribute('aria-hidden', 'true');
+    aide.textContent = 'Fais glisser le tableau pour tout voir';
+    c.parentNode.insertBefore(aide, c);
+    c.addEventListener('scroll', function () { if (c.scrollLeft > 20) c.classList.add('a-glisse'); }, { passive: true });
+  });
+  function maj() {
+    cadres.forEach(function (c) { c.classList.toggle('is-scrollable', c.scrollWidth > c.clientWidth + 4); });
+  }
+  window.addEventListener('resize', maj);
+  maj();
+})();

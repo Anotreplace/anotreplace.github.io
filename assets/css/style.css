@@ -890,3 +890,18 @@ html.apercu-ouvert { overflow: hidden; }
   .docl .doc .ico { display: none; }
   .stat-num { font-size: 2.2rem; }
 }
+
+/* ---------- Tableaux à faire glisser sur mobile ---------- */
+.scroll-hint { display: none; margin: 0 0 .5rem; font-size: .85rem; font-weight: 600; color: var(--gris); }
+.scroll-hint::after { content: " →"; color: var(--violet); }
+.scroll-hint:has(+ .table-wrap.is-scrollable) { display: block; }
+.scroll-hint:has(+ .table-wrap.a-glisse) { opacity: .45; }
+
+/* ---------- Adresse e-mail sur une seule ligne (page Réserver) ---------- */
+@media (max-width: 480px) {
+  .contact-way { padding: 1rem 1.05rem; gap: .8rem; }
+  .contact-way .v-ico { width: 44px; height: 44px; }
+  .contact-way .v-ico svg { width: 20px; height: 20px; }
+  .contact-way > span:last-child { min-width: 0; }
+  .contact-way .muted { white-space: nowrap; overflow-wrap: normal; font-size: clamp(.74rem, 3.7vw, .95rem); }
+}
