@@ -11,4 +11,5 @@ layout: null
   <url><loc>{{ site.url }}/partenaires/</loc><priority>0.8</priority></url>
   <url><loc>{{ site.url }}/contact/</loc><priority>0.6</priority></url>
   <url><loc>{{ site.url }}/charte/</loc><priority>0.5</priority></url>
+  <url><loc>{{ site.url }}/documents/</loc><priority>0.4</priority></url>
 </urlset>
