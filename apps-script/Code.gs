@@ -453,7 +453,7 @@ function pdfDossierDocs_(d, x) {
 
     // En-tête de chaque page : filet en dégradé, puis rappel du document à droite
     const entete = doc.addHeader();
-    const pf = entete.getParagraphs()[0];
+    const pf = entete.getParagraphs()[0] || entete.appendParagraph('');
     image_(pf, img['filet'], C.LARGEUR);
     pf.setSpacingAfter(4);
     para(entete, 'DOSSIER D\'ADHÉSION SIGNÉ  •  SAISON ' + CONFIG.SAISON + '  •  RÉF. ' + x.ref, { taille: 7, couleur: C.GRIS, gras: true, align: DocumentApp.HorizontalAlignment.RIGHT, apres: 0 });
@@ -515,7 +515,7 @@ function pdfDossierDocs_(d, x) {
     };
 
     // ---------- Couverture et formulaire ----------
-    const pb = body.getParagraphs()[0];
+    const pb = body.getParagraphs()[0] || body.appendParagraph('');
     image_(pb, img['bandeau-dossier'], C.LARGEUR);
     pb.setSpacingAfter(18);
     titreDoc('Ànotreplace  •  Saison ' + CONFIG.SAISON + '  •  Référence ' + x.ref, 'Dossier d\'adhésion signé');
@@ -591,7 +591,7 @@ function ajouterHtml_(body, html, outils) {
       const sous = el.getAttribute('class') && el.getAttribute('class').getValue() === 'doc-sub';
       // Repère les passages en gras (<strong>) pour les reproduire
       const morceaux = [];
-      el.getContent().forEach(function (c) {
+      el.getAllContent().forEach(function (c) {
         if (c.getType() === XmlService.ContentTypes.TEXT) morceaux.push({ t: c.getValue(), g: false });
         else if (c.getType() === XmlService.ContentTypes.ELEMENT) morceaux.push({ t: c.asElement().getValue(), g: c.asElement().getName() === 'strong' });
       });
