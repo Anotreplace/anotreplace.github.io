@@ -414,69 +414,31 @@ function pdfDossierDocs_(d, x) {
   const image = d.droit_image === 'oui';
   const qui = x.prenom + ' ' + x.nom;
 
-  const doc = DocumentApp.create(x.ref + ' · dossier en cours de mise en page');
-  const id = doc.getId();
+  // Le document part du modèle (en-tête et pied de page avec numéros de page) s'il existe
+  const nomDoc = x.ref + ' · dossier en cours de mise en page';
+  let doc = null, id = null;
+  const modele = PropertiesService.getScriptProperties().getProperty('MODELE_PDF_ID');
+  if (modele) {
+    try {
+      id = DriveApp.getFileById(modele).makeCopy(nomDoc).getId();
+      doc = DocumentApp.openById(id);
+      doc.getHeader().replaceText('\\{\\{REF\\}\\}', x.ref);
+    } catch (e) {
+      console.error(e);
+      if (id) { try { DriveApp.getFileById(id).setTrashed(true); } catch (e2) { /* rien */ } }
+      doc = null; id = null;
+    }
+  }
+  if (!doc) {
+    doc = DocumentApp.create(nomDoc);
+    id = doc.getId();
+  }
   try {
     const body = doc.getBody();
     body.setMarginTop(50).setMarginBottom(46).setMarginLeft(56).setMarginRight(56);
-
-    // Styles
-    const style = function (o) {
-      const s = {};
-      s[A.FONT_FAMILY] = o.police || C.TEXTE; s[A.FONT_SIZE] = o.taille || 10.5;
-      s[A.FOREGROUND_COLOR] = o.couleur || C.ENCRE; s[A.BOLD] = !!o.gras; s[A.ITALIC] = !!o.italique;
-      return s;
-    };
-    const para = function (zone, texte, o) {
-      o = o || {};
-      const p = zone.appendParagraph(texte);
-      p.setAttributes(style(o));
-      p.setSpacingBefore(o.avant || 0).setSpacingAfter(o.apres === undefined ? 7 : o.apres).setLineSpacing(o.interligne || 1.35);
-      if (o.align) p.setAlignment(o.align);
-      return p;
-    };
-    const image_ = function (p, blob, largeur) {
-      if (!blob) return null;
-      const im = p.appendInlineImage(blob);
-      const px = Math.round(largeur * 4 / 3); // Google Docs mesure les images en pixels
-      const k = px / im.getWidth();
-      im.setWidth(px).setHeight(Math.round(im.getHeight() * k));
-      return im;
-    };
-    const cellule = function (c, o) {
-      c.setPaddingTop(o.ph || 7).setPaddingBottom(o.ph || 7).setPaddingLeft(o.pl || 10).setPaddingRight(o.pl || 10);
-      if (o.fond) c.setBackgroundColor(o.fond);
-      for (let i = 0; i < c.getNumChildren(); i++) {
-        const el = c.getChild(i);
-        if (el.getType() === DocumentApp.ElementType.PARAGRAPH) el.asParagraph().setAttributes(style(o)).setSpacingAfter(o.entre || 0).setLineSpacing(1.25);
-      }
-    };
-
-    // En-tête de chaque page : filet en dégradé, puis rappel du document à droite
-    const entete = doc.addHeader();
-    const pf = entete.getParagraphs()[0] || entete.appendParagraph('');
-    image_(pf, img['filet'], C.LARGEUR);
-    pf.setSpacingAfter(6).setLineSpacing(1);
-    para(entete, 'DOSSIER D\'ADHÉSION SIGNÉ  •  SAISON ' + CONFIG.SAISON + '  •  RÉF. ' + x.ref, { taille: 7, couleur: C.GRIS, gras: true, align: DocumentApp.HorizontalAlignment.RIGHT, apres: 14, interligne: 1 });
-
-    // Pied de page de chaque page : logo, devise et contact, monogramme
-    const pied = doc.addFooter();
-    const tp = pied.appendTable([['', '', '']]);
-    tp.setBorderWidth(0);
-    tp.setColumnWidth(0, 80).setColumnWidth(2, 60);
-    const l0 = tp.getCell(0, 0).getChild(0).asParagraph();
-    image_(l0, img['logo-pied'], 62);
-    const l1 = tp.getCell(0, 1).getChild(0).asParagraph();
-    l1.setText('Trouver sa place. La construire ensemble.');
-    tp.getCell(0, 1).appendParagraph(CONFIG.EMAIL_BUREAU);
-    cellule(tp.getCell(0, 0), { ph: 2 });
-    cellule(tp.getCell(0, 1), { ph: 4, taille: 7.5, couleur: C.GRIS, italique: true });
-    tp.getCell(0, 1).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
-    tp.getCell(0, 1).getChild(1).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER).setAttributes(style({ taille: 7.5, couleur: C.GRIS }));
-    const l2 = tp.getCell(0, 2).getChild(0).asParagraph();
-    image_(l2, img['monogramme'], 22);
-    l2.setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
-    cellule(tp.getCell(0, 2), { ph: 2 });
+    const outils = outilsDocs_();
+    const style = outils.style, para = outils.para, image_ = outils.image, cellule = outils.cellule;
+    if (!modele || !doc.getHeader()) enteteEtPied_(doc, img, x.ref, false);
 
     // Blocs réutilisables
     const titreDoc = function (surtitre, titre, avant) {
@@ -563,9 +525,9 @@ function pdfDossierDocs_(d, x) {
       ['reglement', 'Document 2 sur 3  •  Règlement intérieur', 'Règlement intérieur', 'Règlement intérieur lu et accepté'],
       ['image', 'Document 3 sur 3  •  Facultatif', 'Autorisation de droit à l\'image', 'Autorisation de droit à l\'image acceptée, « bon pour autorisation »,'],
     ];
-    body.appendPageBreak();
-    docs.forEach(function (x2, i) {
-      titreDoc(x2[1], x2[2], i === 0 ? 0 : 40);
+    docs.forEach(function (x2) {
+      body.appendPageBreak();
+      titreDoc(x2[1], x2[2], 0);
       if (x2[0] === 'image' && !image) {
         encadre('✘  Autorisation refusée par ' + qui + ' le ' + quand + ' : aucune image d\'elle ne doit être publiée.', C.ROSE);
         return;
@@ -580,6 +542,84 @@ function pdfDossierDocs_(d, x) {
   } finally {
     try { DriveApp.getFileById(id).setTrashed(true); } catch (e) { /* déjà supprimé */ }
   }
+}
+
+// Styles et petits outils de mise en page Google Docs
+function outilsDocs_() {
+  const C = CHARTE, A = DocumentApp.Attribute;
+  const style = function (o) {
+    const s = {};
+    s[A.FONT_FAMILY] = o.police || C.TEXTE; s[A.FONT_SIZE] = o.taille || 10.5;
+    s[A.FOREGROUND_COLOR] = o.couleur || C.ENCRE; s[A.BOLD] = !!o.gras; s[A.ITALIC] = !!o.italique;
+    return s;
+  };
+  const para = function (zone, texte, o) {
+    o = o || {};
+    const p = zone.appendParagraph(texte);
+    p.setAttributes(style(o));
+    p.setSpacingBefore(o.avant || 0).setSpacingAfter(o.apres === undefined ? 7 : o.apres).setLineSpacing(o.interligne || 1.35);
+    if (o.align) p.setAlignment(o.align);
+    return p;
+  };
+  const image = function (p, blob, largeur) {
+    if (!blob) return null;
+    const im = p.appendInlineImage(blob);
+    const px = Math.round(largeur * 4 / 3); // Google Docs mesure les images en pixels
+    const k = px / im.getWidth();
+    im.setWidth(px).setHeight(Math.round(im.getHeight() * k));
+    return im;
+  };
+  const cellule = function (c, o) {
+    c.setPaddingTop(o.ph || 7).setPaddingBottom(o.ph || 7).setPaddingLeft(o.pl || 10).setPaddingRight(o.pl || 10);
+    if (o.fond) c.setBackgroundColor(o.fond);
+    for (let i = 0; i < c.getNumChildren(); i++) {
+      const el = c.getChild(i);
+      if (el.getType() === DocumentApp.ElementType.PARAGRAPH) el.asParagraph().setAttributes(style(o)).setSpacingAfter(o.entre || 0).setLineSpacing(1.25);
+    }
+  };
+  return { style: style, para: para, image: image, cellule: cellule };
+}
+
+// En-tête (filet en dégradé, rappel du dossier) et pied de page (logo, devise, n° de page, monogramme)
+function enteteEtPied_(doc, img, ref, pourModele) {
+  const C = CHARTE, o = outilsDocs_();
+  const entete = doc.addHeader();
+  const pf = entete.getParagraphs()[0] || entete.appendParagraph('');
+  o.image(pf, img['filet'], C.LARGEUR);
+  pf.setSpacingAfter(6).setLineSpacing(1);
+  o.para(entete, 'DOSSIER D\'ADHÉSION SIGNÉ  •  SAISON ' + CONFIG.SAISON + '  •  RÉF. ' + ref, { taille: 7, couleur: C.GRIS, gras: true, align: DocumentApp.HorizontalAlignment.RIGHT, apres: 14, interligne: 1 });
+
+  const pied = doc.addFooter();
+  const tp = pied.appendTable([['', '', '']]);
+  tp.setBorderWidth(0);
+  tp.setColumnWidth(0, 80).setColumnWidth(2, 90);
+  o.image(tp.getCell(0, 0).getChild(0).asParagraph(), img['logo-pied'], 62);
+  tp.getCell(0, 1).getChild(0).asParagraph().setText('Trouver sa place. La construire ensemble.');
+  tp.getCell(0, 1).appendParagraph(CONFIG.EMAIL_BUREAU);
+  o.cellule(tp.getCell(0, 0), { ph: 2 });
+  o.cellule(tp.getCell(0, 1), { ph: 4, taille: 7.5, couleur: C.GRIS, italique: true });
+  tp.getCell(0, 1).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+  tp.getCell(0, 1).getChild(1).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER).setAttributes(o.style({ taille: 7.5, couleur: C.GRIS }));
+  const l2 = tp.getCell(0, 2).getChild(0).asParagraph();
+  // Dans le modèle, « N » et « T » sont à remplacer une fois par les champs Numéro de page et Nombre de pages
+  if (pourModele) l2.setText('N / T    ');
+  o.image(l2, img['monogramme'], 22);
+  l2.setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+  o.cellule(tp.getCell(0, 2), { ph: 2, taille: 8, couleur: C.ENCRE, gras: true });
+}
+
+// À lancer une fois : crée le modèle Google Docs du dossier signé (voir LISEZ-MOI)
+function creerModelePdf() {
+  const img = imagesPdf_();
+  const doc = DocumentApp.create('Ànotreplace · Modèle du dossier signé (ne pas supprimer)');
+  doc.getBody().setMarginTop(50).setMarginBottom(46).setMarginLeft(56).setMarginRight(56);
+  enteteEtPied_(doc, img, '{{REF}}', true);
+  doc.saveAndClose();
+  const fichier = DriveApp.getFileById(doc.getId());
+  try { fichier.moveTo(DriveApp.getFolderById(prop_('DOSSIER_ID'))); } catch (e) { /* reste à la racine du Drive */ }
+  PropertiesService.getScriptProperties().setProperty('MODELE_PDF_ID', doc.getId());
+  Logger.log('Modèle créé : ' + doc.getUrl());
+  Logger.log('Ouvre-le, puis dans le pied de page : remplace « N » par Insertion > Numéros de page > Numéro de page, et « T » par Insertion > Numéros de page > Nombre de pages.');
 }
 
 // Convertit le texte HTML d'un document du site (h3, h4, p, ul, table) en éléments Google Docs

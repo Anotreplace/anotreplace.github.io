@@ -31,6 +31,15 @@ Tant que cette URL n'est pas renseignée, le formulaire de dépôt n'apparaît p
 - Dans l'éditeur, exécuter **testerUnDossier** : un faux dossier apparaît dans le tableau et deux e-mails arrivent sur la boîte du collectif.
 - Puis faire un vrai essai depuis la page Adhésion du site. Supprimer ensuite les lignes de test du tableau.
 
+## Numéros de page du dossier signé (une seule fois)
+1. Dans l'éditeur, exécuter **creerModelePdf**. Le journal affiche le lien du document « Ànotreplace · Modèle du dossier signé (ne pas supprimer) », rangé dans le dossier Drive des adhésions.
+2. Ouvrir ce document. Dans le pied de page, à droite, il y a « N / T » :
+   - sélectionner « N », puis **Insertion > Numéros de page > Numéro de page** (ou le premier format proposé) ;
+   - sélectionner « T », puis **Insertion > Numéros de page > Nombre de pages**.
+3. Fermer le document. Les dossiers suivants sont fabriqués à partir de ce modèle et affichent « 2 / 9 ».
+
+Sans modèle, le dossier signé est fabriqué quand même, sans numéros de page. Ne pas supprimer ni renommer le modèle ; pour le refaire, relancer **creerModelePdf**.
+
 ## Au quotidien : le tableau de suivi
 | Le bureau fait… | E-mail envoyé automatiquement à l'adhérente |
 |---|---|
