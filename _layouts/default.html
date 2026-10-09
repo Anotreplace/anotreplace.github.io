@@ -6,6 +6,7 @@
   <title>{{ page.title }}</title>
   <meta name="description" content="{{ page.description }}">
   <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+  {% if page.robots %}<meta name="robots" content="{{ page.robots }}">{% endif %}
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_FR">
   <meta property="og:site_name" content="Ànotreplace">

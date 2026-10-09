@@ -201,6 +201,7 @@ body_class: "no-mobile-cta"
       <input type="hidden" name="_next" value="{{ site.url }}/merci/">
       <input type="hidden" name="_template" value="table">
       <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+      <input type="hidden" name="_captcha" value="false"><!-- pas de page de vérification en anglais : le champ piège _honey suffit contre les robots -->
       <div class="row-2">
         <div class="field"><label for="p-structure">Structure</label><input id="p-structure" name="structure" required autocomplete="organization"></div>
         <div class="field"><label for="p-nom">Votre nom</label><input id="p-nom" name="nom" required autocomplete="name"></div>
@@ -233,7 +234,7 @@ body_class: "no-mobile-cta"
       </div>
       <div class="field"><label for="p-msg">Votre message</label><textarea id="p-msg" name="message" placeholder="Votre activité, vos objectifs, vos idées…"></textarea></div>
       <button class="btn" type="submit">Envoyer ma demande</button>
-      <p class="hint">Réponse sous 72h. Vos données servent uniquement à vous recontacter.</p>
+      <p class="hint">Nous vous répondons rapidement. Vos données servent uniquement à vous recontacter.</p>
     </form>
   </div>
 </section>

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Contact collectif sportif féminin Angoulême | Ànotreplace"
-description: "Une question sur le collectif, l'adhésion ou un partenariat ? Écrivez à Ànotreplace, collectif sportif féminin d'Angoulême. Réponse sous 72h."
+description: "Une question sur le collectif, l'adhésion ou un partenariat ? Écrivez à Ànotreplace, collectif sportif féminin d'Angoulême. Réponse rapide."
 ---
 
 <section class="page-hero">
@@ -23,7 +23,7 @@ description: "Une question sur le collectif, l'adhésion ou un partenariat ? Éc
   <div class="wrap split">
     <div>
       <h2>Écris-nous</h2>
-      <p class="lead">On répond sous 72 heures.</p>
+      <p class="lead">On te répond bientôt.</p>
       <ul class="coords" style="margin-top:2rem">
         <li><strong>E-mail</strong><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
         <li><strong>Instagram</strong><a href="{{ site.instagram_url }}" rel="noopener">@collectif.anotreplace</a></li>
@@ -35,6 +35,7 @@ description: "Une question sur le collectif, l'adhésion ou un partenariat ? Éc
       <input type="hidden" name="_next" value="{{ site.url }}/merci/">
       <input type="hidden" name="_template" value="table">
       <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off">
+      <input type="hidden" name="_captcha" value="false"><!-- pas de page de vérification en anglais : le champ piège _honey suffit contre les robots -->
       <div class="row-2">
         <div class="field"><label for="c-prenom">Prénom</label><input id="c-prenom" name="prenom" required autocomplete="given-name"></div>
         <div class="field"><label for="c-email">E-mail</label><input id="c-email" type="email" name="email" required autocomplete="email"></div>
