@@ -42,6 +42,13 @@ const PAIEMENTS = {
 };
 const DISCIPLINES = ['Natation', 'Vélo', 'Running'];
 const TAILLES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const ENGAGEMENTS = [
+  'Je certifie être une femme majeure.',
+  'J\'ai lu et j\'accepte les statuts, la charte et le règlement intérieur de l\'association (statuts téléchargeables sur le site de l\'association).',
+  'J\'atteste que mon état de santé me permet de pratiquer les activités sportives du collectif.',
+  'J\'ai été informée de l\'intérêt de souscrire une assurance individuelle accident couvrant les dommages corporels liés à ma pratique sportive.',
+  'J\'ai pris connaissance de l\'utilisation de mes données : elles servent à gérer mon adhésion, à organiser les activités et à communiquer avec moi. Seuls les membres du bureau y ont accès. Elles sont conservées pendant la durée de mon adhésion, puis 3 ans au maximum.',
+];
 const TYPES_ACCEPTES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 
 // Tableau de suivi
@@ -189,7 +196,7 @@ function enregistrer_(d) {
   // Le PDF du dossier signé, et les pièces dans Drive
   const racine = DriveApp.getFolderById(prop_('DOSSIER_ID'));
   const dossier = racine.createFolder(reference + ' · ' + nom + ' ' + prenom);
-  const pdf = pdfDossier_(d, { ref: reference, prenom: prenom, nom: nom, tarif: tarif, signeLe: signeLe, disciplines: disciplines, tshirt: tshirt })
+  const pdf = pdfDossierSigne_(d, { ref: reference, prenom: prenom, nom: nom, tarif: tarif, signeLe: signeLe, disciplines: disciplines, tshirt: tshirt })
     .setName(reference + ' · Dossier d\'adhésion signé · ' + nom + ' ' + prenom + '.pdf');
   dossier.createFile(pdf);
   dossier.createFile(Utilities.newBlob(Utilities.base64Decode(d.signature), 'image/png', reference + ' · Signature.png'));
@@ -283,13 +290,6 @@ function pdfDossier_(d, x) {
   const quand = Utilities.formatDate(x.signeLe, FUSEAU, 'dd/MM/yyyy à HH:mm');
   const image = d.droit_image === 'oui';
   const qui = esc_(x.prenom + ' ' + x.nom);
-  const eng = [
-    'Je certifie être une femme majeure.',
-    'J\'ai lu et j\'accepte les statuts, la charte et le règlement intérieur de l\'association (statuts téléchargeables sur le site de l\'association).',
-    'J\'atteste que mon état de santé me permet de pratiquer les activités sportives du collectif.',
-    'J\'ai été informée de l\'intérêt de souscrire une assurance individuelle accident couvrant les dommages corporels liés à ma pratique sportive.',
-    'J\'ai pris connaissance de l\'utilisation de mes données : elles servent à gérer mon adhésion, à organiser les activités et à communiquer avec moi. Seuls les membres du bureau y ont accès. Elles sont conservées pendant la durée de mon adhésion, puis 3 ans au maximum.',
-  ];
 
   // Couleurs de la charte graphique
   const BLEU = '#5170FF', VIOLET = '#A16BE3', ROSE = '#EE66C9', CREME = '#F6F4F0';
@@ -352,7 +352,7 @@ function pdfDossier_(d, x) {
     ligne('Disciplines', esc_(x.disciplines.join(', ') || 'Non précisées')) + ligne('T-shirt', esc_(x.tshirt || 'Non précisé')) +
     ligne('Cotisation', x.tarif.libelle + ' · ' + x.tarif.montant + '€' + (d.tarif === 'solidaire' ? ' (justificatif joint)' : '')) +
     '</table>' +
-    section('Engagements') + '<table class="eng">' + eng.map(function (t) { return '<tr><td class="c">&#10004;</td><td>' + t + '</td></tr>'; }).join('') + '</table>' +
+    section('Engagements') + '<table class="eng">' + ENGAGEMENTS.map(function (t) { return '<tr><td class="c">&#10004;</td><td>' + t + '</td></tr>'; }).join('') + '</table>' +
     section('Documents') + '<table class="champs">' +
     ligne('Charte du collectif', 'Lue et acceptée') + ligne('Règlement intérieur', 'Lu et accepté') +
     ligne('Droit à l\'image', image ? 'Autorisation acceptée' : 'Autorisation refusée') + '</table>' +
@@ -377,6 +377,270 @@ function logoBase64_() {
     const rep = UrlFetchApp.fetch(CONFIG.SITE + '/assets/img/logo-anotreplace-2026.png', { muteHttpExceptions: true });
     return rep.getResponseCode() === 200 ? Utilities.base64Encode(rep.getBlob().getBytes()) : '';
   } catch (e) { console.error(e); return ''; }
+}
+
+// ------------------------------------------------------------
+// PDF du dossier signé, mis en page avec Google Docs : en-tête et pied de page
+// sur chaque page, polices et couleurs de la charte graphique.
+// En cas de souci, on revient à la version simple (pdfDossier_), pour ne jamais bloquer une adhésion.
+// ------------------------------------------------------------
+const CHARTE = {
+  ENCRE: '#221C47', GRIS: '#5F5A7D', BLEU: '#5170FF', VIOLET: '#A16BE3', ROSE: '#EE66C9', CREME: '#F6F4F0', FILET: '#E4DEF8',
+  TITRE: 'League Spartan', TEXTE: 'Josefin Sans',
+  LARGEUR: 483, // largeur utile d'une page A4 avec des marges de 56 pt
+};
+
+function pdfDossierSigne_(d, x) {
+  try { return pdfDossierDocs_(d, x); } catch (err) {
+    console.error(err);
+    return pdfDossier_(d, x);
+  }
+}
+
+function imagesPdf_() {
+  const base = CONFIG.SITE + '/assets/img/pdf/';
+  const noms = ['bandeau-dossier', 'filet', 'trait-titre', 'logo-pied', 'monogramme', 'pastille-1', 'pastille-2', 'pastille-3', 'pastille-4', 'pastille-5', 'pastille-6'];
+  const reps = UrlFetchApp.fetchAll(noms.map(function (n) { return { url: base + n + '.png', muteHttpExceptions: true }; }));
+  const img = {};
+  noms.forEach(function (n, i) { if (reps[i].getResponseCode() === 200) img[n] = reps[i].getBlob(); });
+  return img;
+}
+
+function pdfDossierDocs_(d, x) {
+  const C = CHARTE, A = DocumentApp.Attribute;
+  const img = imagesPdf_();
+  const textes = textesDocuments_();
+  const quand = Utilities.formatDate(x.signeLe, FUSEAU, 'dd/MM/yyyy à HH:mm');
+  const image = d.droit_image === 'oui';
+  const qui = x.prenom + ' ' + x.nom;
+
+  const doc = DocumentApp.create(x.ref + ' · dossier en cours de mise en page');
+  const id = doc.getId();
+  try {
+    const body = doc.getBody();
+    body.setMarginTop(50).setMarginBottom(46).setMarginLeft(56).setMarginRight(56);
+
+    // Styles
+    const style = function (o) {
+      const s = {};
+      s[A.FONT_FAMILY] = o.police || C.TEXTE; s[A.FONT_SIZE] = o.taille || 10.5;
+      s[A.FOREGROUND_COLOR] = o.couleur || C.ENCRE; s[A.BOLD] = !!o.gras; s[A.ITALIC] = !!o.italique;
+      return s;
+    };
+    const para = function (zone, texte, o) {
+      o = o || {};
+      const p = zone.appendParagraph(texte);
+      p.setAttributes(style(o));
+      p.setSpacingBefore(o.avant || 0).setSpacingAfter(o.apres === undefined ? 5 : o.apres).setLineSpacing(o.interligne || 1.2);
+      if (o.align) p.setAlignment(o.align);
+      return p;
+    };
+    const image_ = function (p, blob, largeur) {
+      if (!blob) return null;
+      const im = p.appendInlineImage(blob);
+      const k = largeur / im.getWidth();
+      im.setWidth(largeur).setHeight(Math.round(im.getHeight() * k));
+      return im;
+    };
+    const cellule = function (c, o) {
+      c.setPaddingTop(o.ph || 5).setPaddingBottom(o.ph || 5).setPaddingLeft(o.pl || 7).setPaddingRight(o.pl || 7);
+      if (o.fond) c.setBackgroundColor(o.fond);
+      for (let i = 0; i < c.getNumChildren(); i++) {
+        const el = c.getChild(i);
+        if (el.getType() === DocumentApp.ElementType.PARAGRAPH) el.asParagraph().setAttributes(style(o)).setSpacingAfter(0).setLineSpacing(1.15);
+      }
+    };
+
+    // En-tête de chaque page : filet en dégradé, puis rappel du document à droite
+    const entete = doc.addHeader();
+    const pf = entete.getParagraphs()[0];
+    image_(pf, img['filet'], C.LARGEUR);
+    pf.setSpacingAfter(4);
+    para(entete, 'DOSSIER D\'ADHÉSION SIGNÉ  •  SAISON ' + CONFIG.SAISON + '  •  RÉF. ' + x.ref, { taille: 7, couleur: C.GRIS, gras: true, align: DocumentApp.HorizontalAlignment.RIGHT, apres: 0 });
+
+    // Pied de page de chaque page : logo, devise et contact, monogramme
+    const pied = doc.addFooter();
+    const tp = pied.appendTable([['', '', '']]);
+    tp.setBorderWidth(0);
+    tp.setColumnWidth(0, 80).setColumnWidth(2, 60);
+    const l0 = tp.getCell(0, 0).getChild(0).asParagraph();
+    image_(l0, img['logo-pied'], 62);
+    const l1 = tp.getCell(0, 1).getChild(0).asParagraph();
+    l1.setText('Trouver sa place. La construire ensemble.');
+    tp.getCell(0, 1).appendParagraph(CONFIG.EMAIL_BUREAU);
+    cellule(tp.getCell(0, 0), { ph: 2 });
+    cellule(tp.getCell(0, 1), { ph: 4, taille: 7.5, couleur: C.GRIS, italique: true });
+    tp.getCell(0, 1).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    tp.getCell(0, 1).getChild(1).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER).setAttributes(style({ taille: 7.5, couleur: C.GRIS }));
+    const l2 = tp.getCell(0, 2).getChild(0).asParagraph();
+    image_(l2, img['monogramme'], 22);
+    l2.setAlignment(DocumentApp.HorizontalAlignment.RIGHT);
+    cellule(tp.getCell(0, 2), { ph: 2 });
+
+    // Blocs réutilisables
+    const titreDoc = function (surtitre, titre, avant) {
+      para(body, titre, { police: C.TITRE, taille: 24, gras: true, avant: avant || 0, apres: 1, interligne: 1 });
+      para(body, surtitre.toUpperCase(), { taille: 8, gras: true, couleur: C.VIOLET, apres: 4 });
+      const t = para(body, '', { apres: 10 });
+      image_(t, img['trait-titre'], 46);
+    };
+    const titreSection = function (texte) {
+      para(body, texte, { police: C.TITRE, taille: 13.5, gras: true, avant: 12, apres: 5 });
+    };
+    const tableau = function (lignes, entete_) {
+      const t = body.appendTable(lignes);
+      t.setBorderColor(C.FILET).setBorderWidth(0.75);
+      for (let r = 0; r < t.getNumRows(); r++) {
+        const row = t.getRow(r);
+        for (let c = 0; c < row.getNumCells(); c++) {
+          const premiereCol = c === 0 && !entete_ && row.getNumCells() === 2;
+          const enTete = entete_ && r === 0;
+          cellule(row.getCell(c), {
+            taille: premiereCol ? 7.5 : 9.5, gras: enTete || !premiereCol && !entete_,
+            couleur: premiereCol ? C.GRIS : C.ENCRE, fond: enTete ? C.CREME : null,
+          });
+        }
+      }
+      if (!entete_ && t.getRow(0).getNumCells() === 2) t.setColumnWidth(0, 150);
+      body.appendParagraph('').setSpacingAfter(2);
+      return t;
+    };
+    const encadre = function (texte, couleurCoche) {
+      const t = body.appendTable([[texte]]);
+      t.setBorderWidth(0);
+      cellule(t.getCell(0, 0), { fond: C.CREME, gras: true, taille: 9.5, ph: 8, pl: 10 });
+      const tx = t.getCell(0, 0).getChild(0).asParagraph().editAsText();
+      tx.setForegroundColor(0, 0, couleurCoche || C.VIOLET);
+      body.appendParagraph('').setSpacingAfter(2);
+    };
+
+    // ---------- Couverture et formulaire ----------
+    const pb = body.getParagraphs()[0];
+    image_(pb, img['bandeau-dossier'], C.LARGEUR);
+    pb.setSpacingAfter(18);
+    titreDoc('Ànotreplace  •  Saison ' + CONFIG.SAISON + '  •  Référence ' + x.ref, 'Dossier d\'adhésion signé');
+    para(body, 'Signé en ligne par ' + qui + ' le ' + quand + ' (heure de Paris).', { couleur: C.GRIS, apres: 4 });
+
+    titreSection('Formulaire d\'adhésion');
+    const lignes = [['NOM', x.nom], ['PRÉNOM', x.prenom], ['DATE DE NAISSANCE', String(d.naissance)],
+      ['TÉLÉPHONE', propre_(d.telephone)], ['E-MAIL', String(d.email).trim()]];
+    if (image) lignes.push(['ADRESSE', propre_(d.adresse)]);
+    lignes.push(['PERSONNE À PRÉVENIR', propre_(d.urgence_nom) + ' (' + propre_(d.urgence_lien) + ') · ' + propre_(d.urgence_tel)],
+      ['DISCIPLINES', x.disciplines.join(', ') || 'Non précisées'], ['T-SHIRT', x.tshirt || 'Non précisé'],
+      ['COTISATION', x.tarif.libelle + ' · ' + x.tarif.montant + '€' + (d.tarif === 'solidaire' ? ' (justificatif joint)' : '')]);
+    tableau(lignes);
+
+    titreSection('Engagements');
+    ENGAGEMENTS.forEach(function (t) {
+      const p = para(body, '✔   ' + t, { taille: 9.5, apres: 3 });
+      p.editAsText().setForegroundColor(0, 0, C.VIOLET).setBold(0, 0, true);
+    });
+
+    titreSection('Documents');
+    tableau([['CHARTE DU COLLECTIF', 'Lue et acceptée'], ['RÈGLEMENT INTÉRIEUR', 'Lu et accepté'],
+      ['DROIT À L\'IMAGE', image ? 'Autorisation acceptée' : 'Autorisation refusée']]);
+
+    titreSection('Signature');
+    const ts = body.appendTable([['Fait à ' + propre_(d.fait_a) + ', le ' + quand + ' (heure de Paris).']]);
+    ts.setBorderWidth(0);
+    const cs = ts.getCell(0, 0);
+    cs.appendParagraph('Mention : « Lu et approuvé ». Signé électroniquement par ' + qui + '.');
+    const psig = cs.appendParagraph('');
+    image_(psig, Utilities.newBlob(Utilities.base64Decode(d.signature), 'image/png', 'signature.png'), 170);
+    cellule(cs, { fond: C.CREME, taille: 9.5, ph: 9, pl: 11 });
+    body.appendParagraph('').setSpacingAfter(4);
+
+    const tr = body.appendTable([['Réservé à l\'association  ·  Dossier reçu le ' + Utilities.formatDate(x.signeLe, FUSEAU, 'dd/MM/yyyy') +
+      '  ·  Cotisation reçue le ………  ·  Adhésion validée le ………']]);
+    tr.setBorderColor(C.VIOLET).setBorderWidth(0.75);
+    cellule(tr.getCell(0, 0), { taille: 8, couleur: C.GRIS, ph: 6, pl: 9 });
+
+    // ---------- Les documents acceptés, à la suite ----------
+    const docs = [
+      ['charte', 'Document 1 sur 3  •  Charte du collectif', 'Charte du collectif', 'Charte lue et acceptée'],
+      ['reglement', 'Document 2 sur 3  •  Règlement intérieur', 'Règlement intérieur', 'Règlement intérieur lu et accepté'],
+      ['image', 'Document 3 sur 3  •  Facultatif', 'Autorisation de droit à l\'image', 'Autorisation de droit à l\'image acceptée, « bon pour autorisation »,'],
+    ];
+    docs.forEach(function (x2) {
+      titreDoc(x2[1], x2[2], 26);
+      if (x2[0] === 'image' && !image) {
+        encadre('✘  Autorisation refusée par ' + qui + ' le ' + quand + ' : aucune image d\'elle ne doit être publiée.', C.ROSE);
+        return;
+      }
+      if (textes[x2[0]]) ajouterHtml_(body, textes[x2[0]], { para: para, tableau: tableau, image: image_, img: img, style: style });
+      else para(body, 'Texte en vigueur publié sur ' + CONFIG.TEXTES_URL + ' le ' + quand + '.', { italique: true, couleur: C.GRIS });
+      encadre('✔  ' + x2[3] + ' par ' + qui + ' le ' + quand + '.');
+    });
+
+    doc.saveAndClose();
+    return DriveApp.getFileById(id).getAs('application/pdf');
+  } finally {
+    try { DriveApp.getFileById(id).setTrashed(true); } catch (e) { /* déjà supprimé */ }
+  }
+}
+
+// Convertit le texte HTML d'un document du site (h3, h4, p, ul, table) en éléments Google Docs
+function ajouterHtml_(body, html, outils) {
+  const C = CHARTE;
+  const racine = XmlService.parse('<racine>' + html.replace(/&nbsp;/g, ' ') + '</racine>').getRootElement();
+  const texteDe = function (el) { return el.getValue().replace(/\s+/g, ' ').trim(); };
+  racine.getChildren().forEach(function (el) {
+    const nom = el.getName();
+    if (nom === 'h3') return; // le titre est déjà affiché
+    if (nom === 'p') {
+      const sous = el.getAttribute('class') && el.getAttribute('class').getValue() === 'doc-sub';
+      // Repère les passages en gras (<strong>) pour les reproduire
+      const morceaux = [];
+      el.getContent().forEach(function (c) {
+        if (c.getType() === XmlService.ContentTypes.TEXT) morceaux.push({ t: c.getValue(), g: false });
+        else if (c.getType() === XmlService.ContentTypes.ELEMENT) morceaux.push({ t: c.asElement().getValue(), g: c.asElement().getName() === 'strong' });
+      });
+      const texte = morceaux.map(function (m) { return m.t; }).join('').replace(/\s+/g, ' ').trim();
+      if (!texte) return;
+      const p = outils.para(body, texte, sous ? { taille: 8.5, couleur: C.GRIS, apres: 8 } : { taille: 10, apres: 5 });
+      let pos = 0;
+      morceaux.forEach(function (m) {
+        const t = m.t.replace(/\s+/g, ' ');
+        const i = texte.indexOf(t.trim(), pos);
+        if (i === -1 || !t.trim()) return;
+        if (m.g) p.editAsText().setBold(i, i + t.trim().length - 1, true);
+        pos = i + t.trim().length;
+      });
+      return;
+    }
+    if (nom === 'h4') {
+      const t = texteDe(el);
+      const num = t.match(/^(\d)\.\s+(.*)$/);
+      if (num && outils.img['pastille-' + num[1]]) {
+        const p = outils.para(body, '  ' + num[2], { police: C.TITRE, taille: 12.5, gras: true, avant: 10, apres: 4 });
+        const im = p.insertInlineImage(0, outils.img['pastille-' + num[1]]);
+        im.setWidth(15).setHeight(15);
+      } else {
+        outils.para(body, t, { police: C.TITRE, taille: 12, gras: true, avant: 10, apres: 4 });
+      }
+      return;
+    }
+    if (nom === 'ul') {
+      el.getChildren('li').forEach(function (li) {
+        const item = body.appendListItem(texteDe(li));
+        item.setGlyphType(DocumentApp.GlyphType.BULLET);
+        item.setAttributes(outils.style({ taille: 10 }));
+        item.setSpacingAfter(2).setLineSpacing(1.15);
+      });
+      return;
+    }
+    if (nom === 'table') {
+      const lignes = [];
+      el.getDescendants().forEach(function (c) {
+        if (c.getType() !== XmlService.ContentTypes.ELEMENT || c.asElement().getName() !== 'tr') return;
+        lignes.push(c.asElement().getChildren().map(texteDe));
+      });
+      if (lignes.length) outils.tableau(lignes, true);
+      return;
+    }
+    const t = texteDe(el);
+    if (t) outils.para(body, t, { taille: 10 });
+  });
 }
 
 // Textes officiels publiés sur le site (une seule source pour la page et le PDF)
