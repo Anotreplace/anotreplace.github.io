@@ -431,23 +431,24 @@ function pdfDossierDocs_(d, x) {
       o = o || {};
       const p = zone.appendParagraph(texte);
       p.setAttributes(style(o));
-      p.setSpacingBefore(o.avant || 0).setSpacingAfter(o.apres === undefined ? 5 : o.apres).setLineSpacing(o.interligne || 1.2);
+      p.setSpacingBefore(o.avant || 0).setSpacingAfter(o.apres === undefined ? 7 : o.apres).setLineSpacing(o.interligne || 1.35);
       if (o.align) p.setAlignment(o.align);
       return p;
     };
     const image_ = function (p, blob, largeur) {
       if (!blob) return null;
       const im = p.appendInlineImage(blob);
-      const k = largeur / im.getWidth();
-      im.setWidth(largeur).setHeight(Math.round(im.getHeight() * k));
+      const px = Math.round(largeur * 4 / 3); // Google Docs mesure les images en pixels
+      const k = px / im.getWidth();
+      im.setWidth(px).setHeight(Math.round(im.getHeight() * k));
       return im;
     };
     const cellule = function (c, o) {
-      c.setPaddingTop(o.ph || 5).setPaddingBottom(o.ph || 5).setPaddingLeft(o.pl || 7).setPaddingRight(o.pl || 7);
+      c.setPaddingTop(o.ph || 7).setPaddingBottom(o.ph || 7).setPaddingLeft(o.pl || 10).setPaddingRight(o.pl || 10);
       if (o.fond) c.setBackgroundColor(o.fond);
       for (let i = 0; i < c.getNumChildren(); i++) {
         const el = c.getChild(i);
-        if (el.getType() === DocumentApp.ElementType.PARAGRAPH) el.asParagraph().setAttributes(style(o)).setSpacingAfter(0).setLineSpacing(1.15);
+        if (el.getType() === DocumentApp.ElementType.PARAGRAPH) el.asParagraph().setAttributes(style(o)).setSpacingAfter(o.entre || 0).setLineSpacing(1.25);
       }
     };
 
@@ -455,8 +456,8 @@ function pdfDossierDocs_(d, x) {
     const entete = doc.addHeader();
     const pf = entete.getParagraphs()[0] || entete.appendParagraph('');
     image_(pf, img['filet'], C.LARGEUR);
-    pf.setSpacingAfter(4);
-    para(entete, 'DOSSIER D\'ADHÉSION SIGNÉ  •  SAISON ' + CONFIG.SAISON + '  •  RÉF. ' + x.ref, { taille: 7, couleur: C.GRIS, gras: true, align: DocumentApp.HorizontalAlignment.RIGHT, apres: 0 });
+    pf.setSpacingAfter(6).setLineSpacing(1);
+    para(entete, 'DOSSIER D\'ADHÉSION SIGNÉ  •  SAISON ' + CONFIG.SAISON + '  •  RÉF. ' + x.ref, { taille: 7, couleur: C.GRIS, gras: true, align: DocumentApp.HorizontalAlignment.RIGHT, apres: 14, interligne: 1 });
 
     // Pied de page de chaque page : logo, devise et contact, monogramme
     const pied = doc.addFooter();
@@ -479,13 +480,13 @@ function pdfDossierDocs_(d, x) {
 
     // Blocs réutilisables
     const titreDoc = function (surtitre, titre, avant) {
-      para(body, titre, { police: C.TITRE, taille: 24, gras: true, avant: avant || 0, apres: 1, interligne: 1 });
-      para(body, surtitre.toUpperCase(), { taille: 8, gras: true, couleur: C.VIOLET, apres: 4 });
-      const t = para(body, '', { apres: 10 });
-      image_(t, img['trait-titre'], 46);
+      para(body, titre, { police: C.TITRE, taille: 28, gras: true, avant: avant || 0, apres: 4, interligne: 1 });
+      para(body, surtitre.toUpperCase(), { taille: 8.5, gras: true, couleur: C.VIOLET, apres: 8, interligne: 1 });
+      const t = para(body, '', { apres: 18, interligne: 1 });
+      image_(t, img['trait-titre'], 48);
     };
     const titreSection = function (texte) {
-      para(body, texte, { police: C.TITRE, taille: 13.5, gras: true, avant: 12, apres: 5 });
+      para(body, texte, { police: C.TITRE, taille: 15, gras: true, avant: 22, apres: 9 });
     };
     const tableau = function (lignes, entete_) {
       const t = body.appendTable(lignes);
@@ -496,30 +497,30 @@ function pdfDossierDocs_(d, x) {
           const premiereCol = c === 0 && !entete_ && row.getNumCells() === 2;
           const enTete = entete_ && r === 0;
           cellule(row.getCell(c), {
-            taille: premiereCol ? 7.5 : 9.5, gras: enTete || !premiereCol && !entete_,
+            taille: premiereCol ? 7.5 : 10, gras: enTete || !premiereCol && !entete_,
             couleur: premiereCol ? C.GRIS : C.ENCRE, fond: enTete ? C.CREME : null,
           });
         }
       }
-      if (!entete_ && t.getRow(0).getNumCells() === 2) t.setColumnWidth(0, 150);
-      body.appendParagraph('').setSpacingAfter(2);
+      if (!entete_ && t.getRow(0).getNumCells() === 2) t.setColumnWidth(0, 165);
+      body.appendParagraph('').setSpacingAfter(6);
       return t;
     };
     const encadre = function (texte, couleurCoche) {
       const t = body.appendTable([[texte]]);
       t.setBorderWidth(0);
-      cellule(t.getCell(0, 0), { fond: C.CREME, gras: true, taille: 9.5, ph: 8, pl: 10 });
+      cellule(t.getCell(0, 0), { fond: C.CREME, gras: true, taille: 10, ph: 12, pl: 14 });
       const tx = t.getCell(0, 0).getChild(0).asParagraph().editAsText();
       tx.setForegroundColor(0, 0, couleurCoche || C.VIOLET);
-      body.appendParagraph('').setSpacingAfter(2);
+      body.appendParagraph('').setSpacingAfter(6);
     };
 
     // ---------- Couverture et formulaire ----------
     const pb = body.getParagraphs()[0] || body.appendParagraph('');
     image_(pb, img['bandeau-dossier'], C.LARGEUR);
-    pb.setSpacingAfter(18);
+    pb.setSpacingAfter(28).setLineSpacing(1);
     titreDoc('Ànotreplace  •  Saison ' + CONFIG.SAISON + '  •  Référence ' + x.ref, 'Dossier d\'adhésion signé');
-    para(body, 'Signé en ligne par ' + qui + ' le ' + quand + ' (heure de Paris).', { couleur: C.GRIS, apres: 4 });
+    para(body, 'Bienvenue ' + x.prenom + ' ! Voici ton dossier d\'adhésion, signé en ligne le ' + quand + ' (heure de Paris). Garde-le précieusement.', { couleur: C.GRIS, apres: 4 });
 
     titreSection('Formulaire d\'adhésion');
     const lignes = [['NOM', x.nom], ['PRÉNOM', x.prenom], ['DATE DE NAISSANCE', String(d.naissance)],
@@ -532,8 +533,9 @@ function pdfDossierDocs_(d, x) {
 
     titreSection('Engagements');
     ENGAGEMENTS.forEach(function (t) {
-      const p = para(body, '✔   ' + t, { taille: 9.5, apres: 3 });
+      const p = para(body, '✔\t' + t, { taille: 10, apres: 7 });
       p.editAsText().setForegroundColor(0, 0, C.VIOLET).setBold(0, 0, true);
+      p.setIndentStart(20).setIndentFirstLine(0);
     });
 
     titreSection('Documents');
@@ -547,13 +549,13 @@ function pdfDossierDocs_(d, x) {
     cs.appendParagraph('Mention : « Lu et approuvé ». Signé électroniquement par ' + qui + '.');
     const psig = cs.appendParagraph('');
     image_(psig, Utilities.newBlob(Utilities.base64Decode(d.signature), 'image/png', 'signature.png'), 170);
-    cellule(cs, { fond: C.CREME, taille: 9.5, ph: 9, pl: 11 });
-    body.appendParagraph('').setSpacingAfter(4);
+    cellule(cs, { fond: C.CREME, taille: 10, ph: 14, pl: 16, entre: 4 });
+    body.appendParagraph('').setSpacingAfter(10);
 
     const tr = body.appendTable([['Réservé à l\'association  ·  Dossier reçu le ' + Utilities.formatDate(x.signeLe, FUSEAU, 'dd/MM/yyyy') +
       '  ·  Cotisation reçue le ………  ·  Adhésion validée le ………']]);
     tr.setBorderColor(C.VIOLET).setBorderWidth(0.75);
-    cellule(tr.getCell(0, 0), { taille: 8, couleur: C.GRIS, ph: 6, pl: 9 });
+    cellule(tr.getCell(0, 0), { taille: 8, couleur: C.GRIS, ph: 9, pl: 12 });
 
     // ---------- Les documents acceptés, à la suite ----------
     const docs = [
@@ -561,8 +563,9 @@ function pdfDossierDocs_(d, x) {
       ['reglement', 'Document 2 sur 3  •  Règlement intérieur', 'Règlement intérieur', 'Règlement intérieur lu et accepté'],
       ['image', 'Document 3 sur 3  •  Facultatif', 'Autorisation de droit à l\'image', 'Autorisation de droit à l\'image acceptée, « bon pour autorisation »,'],
     ];
-    docs.forEach(function (x2) {
-      titreDoc(x2[1], x2[2], 26);
+    body.appendPageBreak();
+    docs.forEach(function (x2, i) {
+      titreDoc(x2[1], x2[2], i === 0 ? 0 : 40);
       if (x2[0] === 'image' && !image) {
         encadre('✘  Autorisation refusée par ' + qui + ' le ' + quand + ' : aucune image d\'elle ne doit être publiée.', C.ROSE);
         return;
@@ -597,7 +600,7 @@ function ajouterHtml_(body, html, outils) {
       });
       const texte = morceaux.map(function (m) { return m.t; }).join('').replace(/\s+/g, ' ').trim();
       if (!texte) return;
-      const p = outils.para(body, texte, sous ? { taille: 8.5, couleur: C.GRIS, apres: 8 } : { taille: 10, apres: 5 });
+      const p = outils.para(body, texte, sous ? { taille: 8.5, couleur: C.GRIS, apres: 12 } : { taille: 10, apres: 8 });
       let pos = 0;
       morceaux.forEach(function (m) {
         const t = m.t.replace(/\s+/g, ' ');
@@ -612,11 +615,11 @@ function ajouterHtml_(body, html, outils) {
       const t = texteDe(el);
       const num = t.match(/^(\d)\.\s+(.*)$/);
       if (num && outils.img['pastille-' + num[1]]) {
-        const p = outils.para(body, '  ' + num[2], { police: C.TITRE, taille: 12.5, gras: true, avant: 10, apres: 4 });
+        const p = outils.para(body, '   ' + num[2], { police: C.TITRE, taille: 13.5, gras: true, avant: 18, apres: 7 });
         const im = p.insertInlineImage(0, outils.img['pastille-' + num[1]]);
-        im.setWidth(15).setHeight(15);
+        im.setWidth(24).setHeight(24);
       } else {
-        outils.para(body, t, { police: C.TITRE, taille: 12, gras: true, avant: 10, apres: 4 });
+        outils.para(body, t, { police: C.TITRE, taille: 13, gras: true, avant: 18, apres: 7 });
       }
       return;
     }
@@ -625,7 +628,7 @@ function ajouterHtml_(body, html, outils) {
         const item = body.appendListItem(texteDe(li));
         item.setGlyphType(DocumentApp.GlyphType.BULLET);
         item.setAttributes(outils.style({ taille: 10 }));
-        item.setSpacingAfter(2).setLineSpacing(1.15);
+        item.setSpacingAfter(4).setLineSpacing(1.3);
       });
       return;
     }
