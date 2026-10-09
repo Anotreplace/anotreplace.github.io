@@ -905,3 +905,6 @@ html.apercu-ouvert { overflow: hidden; }
   .contact-way > span:last-child { min-width: 0; }
   .contact-way .muted { white-space: nowrap; overflow-wrap: normal; font-size: clamp(.74rem, 3.7vw, .95rem); }
 }
+
+/* ---------- Titre de page sur toute la largeur (page Activités) ---------- */
+.page-hero--titre-large .wrap > h1 { grid-column: 1 / -1; max-width: 30ch; margin-bottom: 0; }
