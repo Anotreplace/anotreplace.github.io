@@ -908,3 +908,7 @@ html.apercu-ouvert { overflow: hidden; }
 
 /* ---------- Titre de page sur toute la largeur (page Activités) ---------- */
 .page-hero--titre-large .wrap > h1 { grid-column: 1 / -1; max-width: 30ch; margin-bottom: 0; }
+
+/* ---------- Mention discrète sur les frais de paiement ---------- */
+.pay-frais { margin: -.2rem 0 0; }
+.price-frais { margin: 1rem 0 0; max-width: 34rem; }
