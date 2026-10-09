@@ -520,7 +520,7 @@ function pdfDossierDocs_(d, x) {
     image_(pb, img['bandeau-dossier'], C.LARGEUR);
     pb.setSpacingAfter(28).setLineSpacing(1);
     titreDoc('Ànotreplace  •  Saison ' + CONFIG.SAISON + '  •  Référence ' + x.ref, 'Dossier d\'adhésion signé');
-    para(body, 'Bienvenue ' + x.prenom + ' ! Voici ton dossier d\'adhésion, signé en ligne le ' + quand + ' (heure de Paris). Garde-le précieusement.', { couleur: C.GRIS, apres: 4 });
+    para(body, 'Signé en ligne par ' + qui + ' le ' + quand + ' (heure de Paris).', { couleur: C.GRIS, apres: 4 });
 
     titreSection('Formulaire d\'adhésion');
     const lignes = [['NOM', x.nom], ['PRÉNOM', x.prenom], ['DATE DE NAISSANCE', String(d.naissance)],
