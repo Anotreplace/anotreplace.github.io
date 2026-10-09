@@ -845,3 +845,16 @@ html.apercu-ouvert { overflow: hidden; }
   .ap-grand { font-size: 1.3rem; }
   .ap-champs td.l { width: 40%; }
 }
+
+/* ---------- Le mojo du collectif ---------- */
+.mojo { padding-block: clamp(3.5rem, 8vw, 6.5rem); background: radial-gradient(ellipse at 10% 0%, #E3E8FF 0, transparent 55%), radial-gradient(ellipse at 95% 100%, #FBE1F3 0, transparent 55%), var(--papier); }
+.mojo-carte { position: relative; max-width: 54rem; margin: 0 auto; padding: clamp(2rem, 5vw, 3.6rem) clamp(1.4rem, 5vw, 4rem); text-align: center; border-radius: 34px; border: 2px solid transparent; background: linear-gradient(#fff, #fff) padding-box, var(--degrade) border-box; box-shadow: 0 30px 70px -48px rgba(63, 92, 240, .6); }
+.mojo-carte::before { content: "\201C"; position: absolute; top: -.35em; left: 50%; transform: translateX(-50%); width: 4.2rem; height: 4.2rem; border-radius: 50%; display: grid; place-items: center; padding-top: .55em; font-family: Georgia, serif; font-size: 3.4rem; line-height: 0; color: #fff; background: var(--degrade); }
+.mojo-carte .eyebrow { margin-bottom: 1.2rem; }
+.mojo blockquote { margin: 0; }
+.mojo-lead { font-family: var(--serif); font-weight: 700; font-size: clamp(1.7rem, 3.6vw, 2.7rem); line-height: 1.15; letter-spacing: -.01em; margin: 0 0 1.4rem; text-wrap: balance; }
+.mojo-lead span { display: block; margin-top: .3em; background: var(--degrade); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.mojo-non { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: 0 0 1.5rem; }
+.mojo-non span { padding: .55rem 1.1rem .4rem; border-radius: 999px; background: var(--lavande); font-weight: 700; font-size: 1.05rem; }
+.mojo-fin { max-width: 40rem; margin: 0 auto; font-size: clamp(1.1rem, 1.8vw, 1.3rem); color: var(--gris); }
+.mojo-fin strong { display: block; margin-top: .4rem; color: var(--encre); font-style: italic; font-weight: 600; }

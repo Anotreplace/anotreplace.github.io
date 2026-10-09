@@ -285,10 +285,10 @@ function pdfDossier_(d, x) {
   const qui = esc_(x.prenom + ' ' + x.nom);
   const eng = [
     'Je certifie être une femme majeure.',
-    'J\'accepte les statuts de l\'association (disponibles sur simple demande), la charte et le règlement intérieur.',
+    'J\'ai lu et j\'accepte les statuts, la charte et le règlement intérieur de l\'association (statuts téléchargeables sur le site de l\'association).',
     'J\'atteste que mon état de santé me permet de pratiquer les activités sportives du collectif.',
     'J\'ai été informée de l\'intérêt de souscrire une assurance individuelle accident couvrant les dommages corporels liés à ma pratique sportive.',
-    'J\'accepte que mes informations soient conservées par l\'association pour gérer mon adhésion, pendant la durée de mon adhésion puis 3 ans au maximum.',
+    'J\'ai pris connaissance de l\'utilisation de mes données : elles servent à gérer mon adhésion, à organiser les activités et à communiquer avec moi. Seuls les membres du bureau y ont accès. Elles sont conservées pendant la durée de mon adhésion, puis 3 ans au maximum.',
   ];
 
   // Couleurs de la charte graphique
