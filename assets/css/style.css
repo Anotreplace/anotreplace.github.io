@@ -877,3 +877,16 @@ html.apercu-ouvert { overflow: hidden; }
   .docs-barre { top: 72px; }
   .docs-actions, .docs-actions .btn { width: 100%; }
 }
+
+/* ---------- Finitions responsive ---------- */
+.docs-liste { grid-template-columns: minmax(0, 1fr); }
+.docl { min-width: 0; }
+.doc strong, .doc .muted { overflow-wrap: break-word; hyphens: auto; }
+/* Liens « → » : une zone confortable au doigt */
+.link-arrow { display: inline-flex; align-items: center; min-height: 44px; }
+@media (max-width: 420px) {
+  .docl { gap: .6rem; }
+  .docl .doc { padding: 1rem 1.05rem; gap: .75rem; }
+  .docl .doc .ico { display: none; }
+  .stat-num { font-size: 2.2rem; }
+}
