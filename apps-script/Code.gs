@@ -930,9 +930,43 @@ function testerUnDossier() {
 // ------------------------------------------------------------
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function prop_(k) {
-  const v = PropertiesService.getScriptProperties().getProperty(k);
-  if (!v) throw new Error('Installation incomplète : lance d\'abord la fonction « installer ».');
+  let v = PropertiesService.getScriptProperties().getProperty(k);
+  if (!v && (k === 'DOSSIER_ID' || k === 'CLASSEUR_ID')) { retrouverReglages(); v = PropertiesService.getScriptProperties().getProperty(k); }
+  if (!v) throw new Error('Installation incomplète : le dossier « Ànotreplace · Adhésions ' + CONFIG.SAISON + ' » ou le tableau de suivi est introuvable sur ce compte Google (' + Session.getEffectiveUser().getEmail() + ').');
   return v;
+}
+
+// Retrouve le dossier Drive, le tableau de suivi et le modèle du PDF par leur nom,
+// et reprend la numérotation des références là où elle s'est arrêtée.
+// Utile si le code a été collé dans un autre projet ou une copie : on peut aussi la lancer à la main.
+function retrouverReglages() {
+  const props = PropertiesService.getScriptProperties();
+  const trouve = function (it) { return it.hasNext() ? it.next() : null; };
+  if (!props.getProperty('DOSSIER_ID')) {
+    const d = trouve(DriveApp.getFoldersByName('Ànotreplace · Adhésions ' + CONFIG.SAISON));
+    if (d) props.setProperty('DOSSIER_ID', d.getId());
+  }
+  if (!props.getProperty('CLASSEUR_ID')) {
+    const c = trouve(DriveApp.getFilesByName('Ànotreplace · Suivi des adhésions ' + CONFIG.SAISON));
+    if (c) props.setProperty('CLASSEUR_ID', c.getId());
+  }
+  if (!props.getProperty('MODELE_PDF_ID')) {
+    const m = trouve(DriveApp.getFilesByName('Ànotreplace · Modèle du dossier signé (ne pas supprimer)'));
+    if (m) props.setProperty('MODELE_PDF_ID', m.getId());
+  }
+  if (!props.getProperty('COMPTEUR') && props.getProperty('CLASSEUR_ID')) {
+    const f = SpreadsheetApp.openById(props.getProperty('CLASSEUR_ID')).getSheetByName(ONGLET);
+    let max = 0;
+    if (f && f.getLastRow() > 1) {
+      f.getRange(2, col_(f, COL.ref), f.getLastRow() - 1, 1).getValues().forEach(function (l) {
+        const m = String(l[0]).match(/-(\d+)$/);
+        if (m) max = Math.max(max, Number(m[1]));
+      });
+    }
+    props.setProperty('COMPTEUR', String(max));
+  }
+  Logger.log('Compte : ' + Session.getEffectiveUser().getEmail());
+  ['DOSSIER_ID', 'CLASSEUR_ID', 'MODELE_PDF_ID', 'COMPTEUR'].forEach(function (k) { Logger.log(k + ' = ' + (props.getProperty(k) || 'introuvable')); });
 }
 function feuille_() { return SpreadsheetApp.openById(prop_('CLASSEUR_ID')).getSheetByName(ONGLET); }
 function col_(f, titre) {
@@ -960,6 +994,7 @@ function nouvelleReference_() {
   lock.waitLock(20000);
   try {
     const props = PropertiesService.getScriptProperties();
+    if (!props.getProperty('COMPTEUR')) retrouverReglages();
     const n = Number(props.getProperty('COMPTEUR') || 0) + 1;
     props.setProperty('COMPTEUR', String(n));
     return 'A' + CONFIG.SAISON.slice(2, 4) + '-' + ('000' + n).slice(-4);
