@@ -145,7 +145,7 @@ function doPost(e) {
     if (d.action === 'paiement') return json_(choixPaiement_(d));
     const probleme = valider_(d);
     if (probleme) return json_({ ok: false, erreur: probleme });
-    return json_(Object.assign({ ok: true }, enregistrer_(d)));
+    return json_(Object.assign({ ok: true }, mettreEnAttente_(d)));
   } catch (err) {
     console.error(err);
     try {
@@ -182,13 +182,11 @@ function valider_(d) {
   return '';
 }
 
-function enregistrer_(d) {
-  const reference = nouvelleReference_();
-  const jeton = Utilities.getUuid();
+function enregistrer_(d, reference, recuLe) {
   const prenom = propre_(d.prenom);
   const nom = propre_(d.nom).toUpperCase();
   const tarif = TARIFS[d.tarif];
-  const signeLe = new Date();
+  const signeLe = recuLe ? new Date(recuLe) : new Date();
   const disciplines = (d.disciplines || []).filter(function (x) { return DISCIPLINES.indexOf(x) !== -1; });
   const tshirt = TAILLES.indexOf(d.tshirt) !== -1 ? d.tshirt : '';
   const image = d.droit_image === 'oui';
@@ -207,7 +205,6 @@ function enregistrer_(d) {
     dossier.createFile(blob);
     blobs.push(blob);
   });
-  PropertiesService.getScriptProperties().setProperty('JETON_' + reference, jeton);
 
   // Ligne du tableau
   const feuille = feuille_();
@@ -226,17 +223,20 @@ function enregistrer_(d) {
   ligne[COL.tshirt] = tshirt;
   ligne[COL.tarif] = tarif.libelle;
   ligne[COL.montant] = tarif.montant;
-  ligne[COL.paiement] = 'À choisir';
+  const props = PropertiesService.getScriptProperties();
+  const choix = props.getProperty('PAIEMENT_' + reference) || '';
+  if (choix) props.deleteProperty('PAIEMENT_' + reference);
+  ligne[COL.paiement] = PAIEMENTS[choix] || 'À choisir';
   ligne[COL.droitImage] = image ? 'Oui' : 'Non';
   ligne[COL.justifTarif] = d.tarif === 'solidaire' ? 'Oui' : '';
   ligne[COL.drive] = '=HYPERLINK("' + dossier.getUrl() + '";"Ouvrir")';
   ligne[COL.statut] = 'À vérifier';
   ligne[COL.etatPaiement] = 'En attente';
-  ligne[COL.historique] = horodatage_() + ' Confirmation';
+  ligne[COL.historique] = horodatage_() + ' Confirmation' + (choix ? '\n' + horodatage_() + ' Choix : ' + PAIEMENTS[choix] : '');
   const entetes = feuille.getRange(1, 1, 1, feuille.getLastColumn()).getValues()[0];
   feuille.appendRow(entetes.map(function (h) { return ligne[h] !== undefined ? ligne[h] : ''; }));
 
-  const adh = { ref: reference, prenom: prenom, nom: nom, email: ligne[COL.email], tarif: d.tarif, paiement: '' };
+  const adh = { ref: reference, prenom: prenom, nom: nom, email: ligne[COL.email], tarif: d.tarif, paiement: PAIEMENTS[choix] ? choix : '' };
 
   // E-mail au bureau, avec le dossier signé
   const poids = blobs.reduce(function (s, b) { return s + b.getBytes().length; }, 0);
@@ -263,7 +263,7 @@ function enregistrer_(d) {
 
   // E-mail de confirmation à l'adhérente, avec la copie de son dossier signé
   envoyer_(adh, 'confirmation', '', [pdf]);
-  return { reference: reference, jeton: jeton };
+  return reference;
 }
 
 // L'adhérente choisit son mode de paiement après l'envoi : on le note dans le tableau
@@ -280,7 +280,76 @@ function choixPaiement_(d) {
     journal_(f, i + 2, 'Choix : ' + PAIEMENTS[d.mode]);
     return { ok: true };
   }
-  return { ok: false };
+  // Dossier encore en cours de traitement : le choix sera reporté dans le tableau
+  PropertiesService.getScriptProperties().setProperty('PAIEMENT_' + ref, d.mode);
+  return { ok: true };
+}
+
+// ------------------------------------------------------------
+// FILE D'ATTENTE : le site reçoit sa réponse tout de suite,
+// le PDF, le tableau et les e-mails sont préparés juste après, en arrière-plan.
+// ------------------------------------------------------------
+function dossierAttente_() {
+  const props = PropertiesService.getScriptProperties();
+  try { return DriveApp.getFolderById(props.getProperty('ATTENTE_ID')); } catch (e) { /* à créer */ }
+  const dossier = DriveApp.getFolderById(prop_('DOSSIER_ID')).createFolder('File d\'attente (ne pas modifier)');
+  props.setProperty('ATTENTE_ID', dossier.getId());
+  return dossier;
+}
+
+function mettreEnAttente_(d) {
+  const reference = nouvelleReference_();
+  const jeton = Utilities.getUuid();
+  PropertiesService.getScriptProperties().setProperty('JETON_' + reference, jeton);
+  const contenu = JSON.stringify({ ref: reference, recuLe: new Date().toISOString(), d: d });
+  try {
+    dossierAttente_().createFile(reference + '.json', contenu, 'application/json');
+    planifierTraitement_();
+  } catch (err) {
+    // Si la file d'attente n'est pas disponible, on traite tout de suite comme avant
+    console.error(err);
+    enregistrer_(d, reference, new Date());
+  }
+  return { reference: reference, jeton: jeton };
+}
+
+function planifierTraitement_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('DECLENCHEUR_ATTENTE');
+  const existe = id && ScriptApp.getProjectTriggers().some(function (t) { return t.getUniqueId() === id; });
+  if (existe) return;
+  const t = ScriptApp.newTrigger('traiterDossiersEnAttente').timeBased().after(1000).create();
+  props.setProperty('DECLENCHEUR_ATTENTE', t.getUniqueId());
+}
+
+// Lancé automatiquement quelques secondes après chaque envoi
+function traiterDossiersEnAttente() {
+  const props = PropertiesService.getScriptProperties();
+  const verrou = LockService.getScriptLock();
+  if (!verrou.tryLock(5000)) return;
+  try {
+    const id = props.getProperty('DECLENCHEUR_ATTENTE');
+    ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getUniqueId() === id) ScriptApp.deleteTrigger(t); });
+    props.deleteProperty('DECLENCHEUR_ATTENTE');
+    const fichiers = dossierAttente_().getFiles();
+    while (fichiers.hasNext()) {
+      const f = fichiers.next();
+      if (!/\.json$/.test(f.getName())) continue;
+      const e = JSON.parse(f.getBlob().getDataAsString('UTF-8'));
+      try {
+        enregistrer_(e.d, e.ref, e.recuLe);
+        f.setTrashed(true);
+      } catch (err) {
+        console.error(err);
+        f.setName('ERREUR · ' + f.getName());
+        MailApp.sendEmail(CONFIG.EMAIL_BUREAU, '[Site] Dossier ' + e.ref + ' à traiter à la main',
+          'Le dossier ' + e.ref + ' (' + e.d.prenom + ' ' + e.d.nom + ', ' + e.d.email + ') n\'a pas pu être traité automatiquement.\n' +
+          'Ses données sont conservées dans le dossier Drive « File d\'attente ».\n\n' + String(err && err.stack || err));
+      }
+    }
+  } finally {
+    verrou.releaseLock();
+  }
 }
 
 // Le PDF du dossier signé : textes acceptés (repris du site), formulaire, engagements, signature
@@ -852,6 +921,7 @@ function testerUnDossier() {
     fait_a: 'Angoulême', lu_approuve: true, signature: signature, fichiers: [],
   }) } });
   Logger.log(rep.getContent());
+  traiterDossiersEnAttente(); // le test traite le dossier tout de suite, sans attendre
 }
 
 
