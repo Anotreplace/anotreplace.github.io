@@ -519,11 +519,17 @@ function pdfDossierDocs_(d, x) {
     const titreSection = function (texte) {
       para(body, texte, { police: C.TITRE, taille: 15, gras: true, avant: 22, apres: 9 });
     };
-    const tableau = function (lignes, entete_) {
+    const tableau = function (lignes, entete_, libelles) {
       const t = body.appendTable(lignes);
       t.setBorderColor(C.FILET).setBorderWidth(0.75);
       for (let r = 0; r < t.getNumRows(); r++) {
         const row = t.getRow(r);
+        if (libelles) {
+          // Tableau d'un document : intitulé à gauche (gras, fond crème), texte à droite
+          cellule(row.getCell(0), { taille: 9.5, gras: true, fond: C.CREME });
+          for (let c = 1; c < row.getNumCells(); c++) cellule(row.getCell(c), { taille: 9.5 });
+          continue;
+        }
         for (let c = 0; c < row.getNumCells(); c++) {
           const premiereCol = c === 0 && !entete_ && row.getNumCells() === 2;
           const enTete = entete_ && r === 0;
@@ -533,7 +539,7 @@ function pdfDossierDocs_(d, x) {
           });
         }
       }
-      if (!entete_ && t.getRow(0).getNumCells() === 2) t.setColumnWidth(0, 165);
+      if ((libelles || !entete_) && t.getRow(0).getNumCells() === 2) t.setColumnWidth(0, libelles ? 150 : 165);
       body.appendParagraph('').setSpacingAfter(6);
       return t;
     };
@@ -748,7 +754,10 @@ function ajouterHtml_(body, html, outils) {
         if (c.getType() !== XmlService.ContentTypes.ELEMENT || c.asElement().getName() !== 'tr') return;
         lignes.push(c.asElement().getChildren().map(texteDe));
       });
-      if (lignes.length) outils.tableau(lignes, true);
+      if (!lignes.length) return;
+      // « Élément / Information », « Situation / Règle »… : en-tête inutile à 2 colonnes, qui resterait seul en bas de page
+      if (lignes[0].length === 2 && lignes.length > 1) outils.tableau(lignes.slice(1), false, true);
+      else outils.tableau(lignes, true);
       return;
     }
     const t = texteDe(el);
