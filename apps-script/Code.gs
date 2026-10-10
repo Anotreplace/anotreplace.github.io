@@ -846,7 +846,6 @@ function envoyer_(adh, cas, remarques, pieces) {
 }
 
 function blocPaiement_(adh, montant, relance) {
-  const tarif = (TARIFS[adh.tarif] || TARIFS.annuel).libelle;
   const carte = function (fond, bord, contenu) {
     return '<table role="presentation" width="100%" style="border-collapse:separate;margin:0 0 14px"><tr><td style="background:' + fond +
       ';border:1px solid ' + bord + ';border-radius:14px;padding:18px 20px">' + contenu + '</td></tr></table>';
@@ -856,7 +855,7 @@ function blocPaiement_(adh, montant, relance) {
   };
   const cb = carte('#FFFFFF', '#E4DEF8',
     titreCarte('💳', 'Par carte, Google Pay ou Apple Pay') +
-    '<p style="margin:0 0 12px">Paiement en ligne sécurisé avec HelloAsso. Choisis le tarif « ' + tarif + ' ».</p>' +
+    '<p style="margin:0 0 12px">Paiement en ligne sécurisé avec HelloAsso.</p>' +
     '<p style="margin:0 0 14px">' + bouton_(CONFIG.HELLOASSO_URL, 'Payer ma cotisation sur HelloAsso') + '</p>' +
     '<p style="margin:0;font-size:13px;color:#5F5A7D"><strong>À savoir :</strong> HelloAsso ajoute à ta cotisation une contribution supplémentaire, qui revient au service et non à Ànotreplace.</p>');
   const virement = carte('#F6F4F0', '#F6F4F0',
