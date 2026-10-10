@@ -803,7 +803,8 @@ function envoyer_(adh, cas, remarques, pieces) {
       tableau_([['Référence', adh.ref], ['Tarif', t.libelle + ' · ' + montant]]) +
       blocPaiement_(adh, montant, false) +
       (adh.tarif === 'solidaire' ? '<p>Ton justificatif de tarif solidaire sera vérifié par le bureau.</p>' : '') +
-      '<p><strong>Et ensuite ?</strong> Le bureau vérifie ton dossier sous quelques jours. Dès que tout est en ordre, tu reçois un e-mail de bienvenue.</p>';
+      '<h2 style="font-size:19px;margin:26px 0 6px;color:#221C47">Et ensuite ?</h2>' +
+      '<p>Le bureau vérifie ton dossier sous quelques jours. Dès que tout est en ordre, tu reçois un e-mail de bienvenue.</p>';
 
   } else if (cas === 'incomplet') {
     sujet = 'Ton dossier d\'adhésion : il manque un élément (réf. ' + adh.ref + ')';
@@ -845,15 +846,30 @@ function envoyer_(adh, cas, remarques, pieces) {
 }
 
 function blocPaiement_(adh, montant, relance) {
-  const cb = '<p><strong>Par carte bancaire</strong> : règle ta cotisation de ' + montant + ' en ligne, en toute sécurité (choisis le tarif « ' + (TARIFS[adh.tarif] || TARIFS.annuel).libelle + ' »).</p>' +
-    '<p>' + bouton_(CONFIG.HELLOASSO_URL, 'Payer ma cotisation sur HelloAsso') + '</p>';
-  const virement = '<p><strong>Par virement</strong> : fais un virement de ' + montant + ' avec le RIB du collectif, à télécharger sur le site : ' +
-    '<a href="' + CONFIG.VIREMENT.RIB_URL + '">' + CONFIG.VIREMENT.RIB_URL + '</a>.<br>Libellé du virement : <strong>Adhésion ' + adh.ref + ' ' + esc_(adh.nom) + '</strong>. ' +
-    'Si tu peux, réponds à cet e-mail avec une capture de ton virement.</p>';
-  const intro = '<p><strong>' + (relance ? 'Pour régler' : 'Dernière étape') + ' :</strong> ' + (adh.paiement ? 'ta cotisation, comme tu l\'as choisi.' : 'ta cotisation, au choix.') + '</p>';
-  if (adh.paiement === 'cb') return intro + cb;
-  if (adh.paiement === 'virement') return intro + virement;
-  return intro + cb + virement + (relance ? '' : '<p>Tu as déjà réglé sur la page du site ? Alors tout est bon, rien d\'autre à faire.</p>');
+  const tarif = (TARIFS[adh.tarif] || TARIFS.annuel).libelle;
+  const carte = function (fond, bord, contenu) {
+    return '<table role="presentation" width="100%" style="border-collapse:separate;margin:0 0 14px"><tr><td style="background:' + fond +
+      ';border:1px solid ' + bord + ';border-radius:14px;padding:18px 20px">' + contenu + '</td></tr></table>';
+  };
+  const titreCarte = function (icone, texte) {
+    return '<p style="margin:0 0 8px;font-size:17px;font-weight:bold;color:#221C47">' + icone + '&nbsp; ' + texte + '</p>';
+  };
+  const cb = carte('#FFFFFF', '#E4DEF8',
+    titreCarte('💳', 'Par carte, Google Pay ou Apple Pay') +
+    '<p style="margin:0 0 12px">Paiement en ligne sécurisé avec HelloAsso. Choisis le tarif « ' + tarif + ' ».</p>' +
+    '<p style="margin:0 0 14px">' + bouton_(CONFIG.HELLOASSO_URL, 'Payer ma cotisation sur HelloAsso') + '</p>' +
+    '<p style="margin:0;font-size:13px;color:#5F5A7D"><strong>À savoir :</strong> HelloAsso ajoute à ta cotisation une contribution supplémentaire, qui revient au service et non à Ànotreplace.</p>');
+  const virement = carte('#F6F4F0', '#F6F4F0',
+    titreCarte('🏦', 'Par virement bancaire, sans frais') +
+    '<ol style="margin:0;padding-left:20px">' +
+    '<li style="margin:0 0 6px"><a href="' + CONFIG.VIREMENT.RIB_URL + '" style="color:#3F5CF0;font-weight:bold">Télécharge le RIB du collectif</a></li>' +
+    '<li style="margin:0 0 6px">Fais un virement de <strong>' + montant + '</strong></li>' +
+    '<li style="margin:0 0 6px">Indique ce libellé : <strong>Adhésion ' + adh.ref + ' ' + esc_(adh.nom) + '</strong></li>' +
+    '<li style="margin:0">Si tu peux, réponds à cet e-mail avec une capture de ton virement</li></ol>');
+  return '<h2 style="font-size:19px;margin:26px 0 6px;color:#221C47">Ta cotisation : ' + montant + '</h2>' +
+    '<p style="margin:0 0 14px">' + (relance ? 'Pour finaliser ton adhésion, ' : 'Si ce n\'est pas déjà fait, ') + 'règle ta cotisation. Tu as deux possibilités :</p>' +
+    (adh.paiement === 'virement' ? virement + cb : cb + virement) +
+    (relance ? '' : '<p style="margin:0 0 6px">Tu as déjà réglé, sur le site ou par virement ? Alors tout est bon, rien d\'autre à faire.</p>');
 }
 
 // Déclencheur : le bureau modifie « Statut dossier » ou « Paiement » dans le tableau
