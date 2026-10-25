@@ -1,264 +1,456 @@
----
-layout: default
-title: "Sport féminin et triathlon à Angoulême | Ànotreplace"
-description: "Natation, vélo et running entre femmes à Angoulême : une, deux ou les trois disciplines du triathlon. Tous niveaux, sans jugement ni comparaison."
----
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Ànotreplace · Calendrier des courses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>window.react = window.React;</script>
+<script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+<script>
+const{useState,useEffect,useMemo,useRef,useCallback}=React,{Waves,Bike,Footprints,Dumbbell,Mountain,CalendarDays,Bell,BellRing,Home,User,Users,Search,Plus,X,ExternalLink,Bus,Car,Download,Ticket,Copy,Trash2,Pencil,Zap,Mail,MessageSquare,MapPin,LayoutGrid,Medal,ClipboardList,Menu,Timer,ChevronRight,Info,Eye}=LucideReact,DISCIPLINES={triathlon:{label:"Triathlon",Icon:Waves,tone:"tri",formats:["Triathlon XS · 0,4 / 10 / 2,5 km","Triathlon S · 0,75 / 20 / 5 km","Triathlon M · 1,5 / 40 / 10 km","Triathlon L · 1,9 / 90 / 21,1 km","Triathlon XL · 3,8 / 180 / 42,2 km"]},running:{label:"Running",Icon:Footprints,tone:"run",formats:["10 km","Semi-marathon · 21,1 km","Marathon · 42,195 km"]},trail:{label:"Trail",Icon:Mountain,tone:"trail",formats:["Trail court · < 30 km","Trail · 30 à 60 km","Ultra-trail · > 80 km"]},cyclisme:{label:"Cyclisme",Icon:Bike,tone:"bike",formats:["Cyclosportive","Gravel","Contre-la-montre"]},hybride:{label:"Hybride",Icon:Dumbbell,tone:"hyb",formats:["Course hybride type Hyrox · 8 km + 8 ateliers","Hyrox · solo","Hyrox · duo","Hyrox · relais à 4"]}},STATUS={today:{label:"Inscriptions aujourd'hui",emoji:"🚨",order:0},avenir:{label:"Ouverture à venir",emoji:"⏳",order:1},veille:{label:"Veille en cours",emoji:"🔍",order:2},open:{label:"Ouvert",emoji:"✅",order:3},done:{label:"Terminée",emoji:"🏁",order:4}},TRAVEL={group:{label:"Aller et retour avec le groupe depuis Angoulême",short:"A/R groupe",Icon:Bus,out:!0,back:!0},outbound:{label:"Aller seulement avec le groupe",short:"Aller groupe",Icon:Bus,out:!0,back:!1},return:{label:"Retour seulement avec le groupe",short:"Retour groupe",Icon:Bus,out:!1,back:!0},solo:{label:"Trajet de son côté",short:"Trajet perso",Icon:Car,out:!1,back:!1}},TRAVEL_ORDER=["group","outbound","return","solo"],TRAVEL_UNKNOWN={short:"Trajet à préciser",Icon:Car,out:!1,back:!1},withGroup=e=>!!(TRAVEL[e.travel]&&(TRAVEL[e.travel].out||TRAVEL[e.travel].back)),LODGING={asso:{label:"Logement collectif avec l'asso",short:"Logement asso",Icon:Home},solo:{label:"De son côté · logement perso",short:"Logement perso",Icon:User}},SEED_RACES=[{id:"ex-maxirace",example:!0,name:"Maxi-Race du lac d'Annecy",discipline:"trail",format:"Marathon Race · 43 km · 2 600 m D+",location:"Annecy (74)",raceDate:"2027-05-29",openAt:"2026-10-25T20:00:00+01:00",url:"https://www.maxi-race.org"},{id:"ex-etape",example:!0,name:"L'Étape du Tour",discipline:"cyclisme",format:"Cyclosportive · ~170 km",location:"Alpes",raceDate:"2027-07-11",openAt:"2026-10-29T12:00:00+01:00",url:"https://www.letapedutour.com"},{id:"ex-deauville",example:!0,name:"Triathlon de Deauville",discipline:"triathlon",format:"Triathlon M · 1,5 / 40 / 10 km",location:"Deauville (14)",raceDate:"2027-06-26",openAt:"2026-11-05T10:00:00+01:00",url:"https://www.trideauville.com"},{id:"ex-templiers",example:!0,name:"Grand Trail des Templiers",discipline:"trail",format:"Ultra-trail · 80 km · 3 500 m D+",location:"Millau (12)",raceDate:"2027-10-24",openAt:"2027-01-15T09:00:00+01:00",url:"https://www.festivaldestempliers.com"},{id:"ex-aix",example:!0,name:"IRONMAN 70.3 Pays d'Aix",discipline:"triathlon",format:"Triathlon L · 1,9 / 90 / 21,1 km",location:"Aix-en-Provence (13)",raceDate:"2027-05-16",openAt:null,url:"https://www.ironman.com"},{id:"ex-paris",example:!0,name:"Marathon de Paris",discipline:"running",format:"Marathon · 42,195 km",location:"Paris (75)",raceDate:"2027-04-11",openAt:"2026-09-15T10:00:00+02:00",url:"https://www.schneiderelectricparismarathon.com"}],SEED_MEMBERS=[{id:"m1",raceId:"ex-maxirace",name:"Camille Roux",lodging:"asso",travel:"group",status:"waiting"},{id:"m2",raceId:"ex-maxirace",name:"Inès Martin",lodging:"asso",travel:"group",status:"waiting"},{id:"m3",raceId:"ex-maxirace",name:"Sarah Lopez",lodging:"solo",travel:"solo",status:"waiting"},{id:"m4",raceId:"ex-paris",name:"Julie Bernard",lodging:"solo",travel:"solo",status:"bib"},{id:"m5",raceId:"ex-paris",name:"Nadia Haddad",lodging:"asso",travel:"group",status:"bib"},{id:"m6",raceId:"ex-paris",name:"Emma Petit",lodging:"asso",travel:"group",status:"waiting"},{id:"m7",raceId:"ex-deauville",name:"Léna Moreau",lodging:"asso",travel:"group",status:"waiting"},{id:"m8",raceId:"ex-deauville",name:"Chloé Faure",lodging:"solo",travel:"solo",status:"waiting"}],LS_KEY="anotreplace-inscriptions:v1",LOGO_SRC="logo-anotreplace.png",FFTRI_DATA_URL="calendrier-fftri.json",SHEET_API_URL="https://script.google.com/macros/s/AKfycbzkkS7KXhcmTdxFr6ptE_3g4L6eyhl01vQpldwbxatlRk6n3OkSQkktGgCsfyHzzvPZ/exec",SITE_URL="https://anotreplace.github.io/courses/",SESSION_KEY="anotreplace-session",DASHBOARD_URL=SHEET_API_URL?SITE_URL:"https://claude.ai/artifact/LgxpyftxL9nDyLNjwP71Ch",FFA_CALENDAR_URL="https://www.athle.fr/bases/liste.aspx?frmpostback=true&frmbase=calendrier&frmmode=1&frmespace=0&frmsaisonffa=2027&frmtype1=Running&frmniveau=R%C3%A9gional&frmligue=N-A",NOUVELLE_AQUITAINE=["16","17","19","23","24","33","40","47","64","79","86","87"],FED_TYPES={all:{label:"Toutes",codes:null},tri:{label:"Triathlon",codes:["TRI","X-TRI","TRI-N"]},dua:{label:"Duathlon",codes:["DUA","X-DUA"]},br:{label:"Bike & Run",codes:["B&R"]},sr:{label:"Swimrun",codes:["S&R","S&B"]},aqua:{label:"Aquathlon",codes:["AQUA"]},raid:{label:"Raid",codes:["RAID","END","CYCL"]}},isYouthFormat=e=>/(^|-)J(-|$)/.test(e.split(" - ")[1]||""),prettyFormat=e=>e.replace(" - "," ").replace(/-OP\b/,"").replace(/-EQ\b/," équipe"),uid=()=>typeof crypto!="undefined"&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)+Date.now().toString(36),fmtDate=(e,t)=>new Intl.DateTimeFormat("fr-FR",t).format(new Date(e.length===10?e+"T12:00:00":e)),fmtRaceDate=e=>fmtDate(e,{weekday:"short",day:"numeric",month:"long",year:"numeric"}),fmtOpen=e=>fmtDate(e,{weekday:"long",day:"numeric",month:"long",hour:"2-digit",minute:"2-digit"}),sameDay=(e,t)=>e.getFullYear()===t.getFullYear()&&e.getMonth()===t.getMonth()&&e.getDate()===t.getDate(),daysUntil=e=>Math.round((new Date(e+"T12:00:00")-new Date(todayIso()+"T12:00:00"))/864e5),todayIso=()=>{const e=new Date;return new Date(e.getTime()-e.getTimezoneOffset()*6e4).toISOString().slice(0,10)};function getStatus(e,t){if(e.raceDate&&e.raceDate<todayIso())return"done";if(!e.openAt)return e.registrationOpen?"open":"veille";const d=new Date(e.openAt);return t>=d.getTime()?"open":sameDay(d,new Date(t))?"today":"avenir"}function splitDuration(e){const t=Math.max(0,Math.floor(e/1e3));return{d:Math.floor(t/86400),h:Math.floor(t%86400/3600),m:Math.floor(t%3600/60),s:t%60}}const toLocalInput=e=>{if(!e)return"";const t=new Date(e);return new Date(t.getTime()-t.getTimezoneOffset()*6e4).toISOString().slice(0,16)},initials=e=>e.split(/\s+/).filter(Boolean).slice(0,2).map(t=>t[0].toUpperCase()).join(""),icsStamp=e=>new Date(e).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,""),icsEscape=e=>String(e||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/([,;])/g,"\\$1"),icsFold=e=>{const t=[];for(let d=0;d<e.length;d+=60)t.push((d?" ":"")+e.slice(d,d+60));return t.join(`\r
+`)};function buildICS(e){const t=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Anotreplace//Veille inscriptions//FR","CALSCALE:GREGORIAN","METHOD:PUBLISH","X-WR-CALNAME:Ànotreplace · Ouvertures des inscriptions"];return e.filter(d=>d.openAt).forEach(d=>{const c=new Date(d.openAt),a=new Date(c.getTime()+30*6e4);t.push("BEGIN:VEVENT",`UID:${d.id}@anotreplace`,`DTSTAMP:${icsStamp(Date.now())}`,`DTSTART:${icsStamp(c)}`,`DTEND:${icsStamp(a)}`,`SUMMARY:${icsEscape("🚨 Ouverture des inscriptions · "+d.name)}`,`DESCRIPTION:${icsEscape(`${d.format}
+Course le ${fmtRaceDate(d.raceDate)} · ${d.location}
+Inscription : ${d.url||"lien à compléter"}
 
-<!-- 1. HERO -->
-<section class="hero">
-  <svg class="trace" viewBox="0 0 1280 700" preserveAspectRatio="none" aria-hidden="true">
-    <defs><linearGradient id="trace-grad" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#5170FF"/><stop offset=".55" stop-color="#A16BE3"/><stop offset="1" stop-color="#EE66C9"/></linearGradient></defs>
-    <path pathLength="1" d="M-20 672 C 160 640, 260 696, 420 676 S 640 612, 780 642 S 960 692, 1060 642 S 1200 540, 1300 480"/>
-  </svg>
-  <div class="trace-riders" aria-hidden="true">
-    <span class="rider"><span class="rider-ico"><svg viewBox="0 0 24 24"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></span><span class="rider-label">Natation</span></span>
-    <span class="rider"><span class="rider-ico"><svg viewBox="0 0 24 24"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg></span><span class="rider-label">Vélo</span></span>
-    <span class="rider"><span class="rider-ico"><svg viewBox="0 0 24 24"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/></svg></span><span class="rider-label">Running</span></span>
-  </div>
-  <div class="wrap hero-grid">
-    <div>
-      <h1><span class="kicker">Collectif sportif féminin à Angoulême</span><span class="big">Ici, tu es à ta place.</span></h1>
-      <p class="lead">Natation, vélo, running : une, deux ou les trois disciplines du triathlon. Tous niveaux. Des femmes qui s'entraînent, progressent et osent, ensemble. Sans jugement. Sans comparaison.</p>
-      <div class="actions">
-        <a class="btn" href="/reserver/">Je teste une séance</a>
-        <a class="btn btn--ghost" href="/le-collectif/">Découvrir le collectif</a>
-      </div>
-      <p class="reassure"><strong>Viens découvrir le collectif&nbsp;!</strong><br>Adhésions 2026-2027 ouvertes : pack de bienvenue pour les 50 premières.</p>
-    </div>
-    <div class="hero-media">
-      <img class="ph-main" src="/assets/img/sortie-velo-groupe-femmes-angouleme.webp" alt="Neuf sportives du collectif Ànotreplace souriantes avec leurs vélos de route, après une sortie près d'Angoulême" width="1398" height="918" fetchpriority="high">
-      <img class="ph-small" src="/assets/img/running-trail-femmes-angouleme.webp" alt="Quatre coureuses du collectif sur une passerelle en bois, après une sortie running" width="1350" height="909">
-    </div>
-  </div>
-</section>
+Collectif Ànotreplace`)}`,`LOCATION:${icsEscape(d.url||d.location)}`,d.url?`URL:${d.url}`:null,"BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:-P3D",`DESCRIPTION:${icsEscape("J-3 · ouverture des inscriptions "+d.name)}`,"END:VALARM","BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:-PT1H",`DESCRIPTION:${icsEscape("Dans 1 h · ouverture des inscriptions "+d.name)}`,"END:VALARM","END:VEVENT")}),t.push("END:VCALENDAR"),t.filter(Boolean).map(icsFold).join(`\r
+`)}function googleCalendarUrl(e){const t=new Date(e.openAt),d=new Date(t.getTime()+30*6e4);return"https://calendar.google.com/calendar/render?"+new URLSearchParams({action:"TEMPLATE",text:"🚨 Ouverture des inscriptions · "+e.name,dates:`${icsStamp(t)}/${icsStamp(d)}`,details:`${e.format}
+Inscription : ${e.url||""}
 
-<!-- 2. PROBLÈME -->
-<section class="section section--tint">
-  <div class="wrap split">
-    <div>
-      <h2 class="h2-question">Est-ce qu'il y a un moment dans ta pratique sportive où tu ne t'es pas sentie à ta place&nbsp;?</h2>
-      <p class="amplify">Alors tu t'entraînes seule. Tu repousses cette séance à la piscine, cette sortie vélo, ce premier triathlon. Ou tu arrêtes.</p>
-    </div>
-    <div>
-      <ul class="pains">
-        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span>Tu es la seule femme du groupe.</span></li>
-        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg></span><span>La peur de ralentir les autres. D'être tout derrière.</span></li>
-        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></span><span>Tu n'oses plus courir seule le soir.</span></li>
-        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="m14.5 7.5-5 5"/><path d="m9.5 7.5 5 5"/></svg></span><span>Des remarques sexistes, sur la route comme au club.</span></li>
-        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg></span><span>La pression de la compétition, même quand ton corps dit stop.</span></li>
-        <li><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 11a4 4 0 0 1 8 0"/><path d="m12 11 1.6-1.8"/></svg></span><span>Des commentaires sur ton poids plutôt que sur tes progrès.</span></li>
-      </ul>
-      <p class="punch">Ànotreplace, c'est le collectif qu'il te faut&nbsp;!</p>
-    </div>
-  </div>
-</section>
+⏰ Ajoute deux notifications à cet événement : 3 jours avant et 1 heure avant.`}).toString()}function googleRaceDayUrl(e){const t=e.date.replace(/-/g,""),d=new Date(e.date+"T12:00:00");return d.setDate(d.getDate()+1),"https://calendar.google.com/calendar/render?"+new URLSearchParams({action:"TEMPLATE",text:e.name,dates:`${t}/${d.toISOString().slice(0,10).replace(/-/g,"")}`,details:`${e.formats.map(prettyFormat).join(", ")}
+${e.url}
 
-<!-- LE MOJO DU COLLECTIF -->
-<section class="mojo" aria-labelledby="mojo-titre">
-  <div class="wrap">
-    <figure class="mojo-carte">
-      <p class="eyebrow" id="mojo-titre">Notre mojo</p>
-      <blockquote>
-        <p class="mojo-lead">Les femmes ont besoin d'avoir d'autres femmes dans leur vie. <span>Des femmes qui les trouvent incroyables.</span></p>
-        <p class="mojo-non"><span>Pas de compétition.</span> <span>Pas de jalousie.</span> <span>Pas de haine.</span></p>
-        <p class="mojo-fin">Juste une énergie bienveillante qui&nbsp;dit <strong>« je suis là pour toi, je crois en toi, tu es capable d'y arriver. »</strong></p>
-      </blockquote>
-    </figure>
-  </div>
-</section>
+Collectif Ànotreplace`,location:`${e.city} ${e.postcode}`}).toString()}function downloadFile(e,t){try{const d=URL.createObjectURL(new Blob([t],{type:"text/calendar;charset=utf-8"})),c=document.createElement("a");return c.href=d,c.download=e,document.body.appendChild(c),c.click(),c.remove(),setTimeout(()=>URL.revokeObjectURL(d),2e3),!0}catch{return!1}}const inClaudeViewer=()=>typeof window!="undefined"&&!!(window.claude&&window.claude.use),readSession=()=>{try{return localStorage.getItem(SESSION_KEY)||""}catch{return""}},writeSession=e=>{try{e?localStorage.setItem(SESSION_KEY,e):localStorage.removeItem(SESSION_KEY)}catch{}};async function sheetCall(e,t={}){let d;try{d=await fetch(SHEET_API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:e,token:readSession(),...t})})}catch{const a=new Error("Connexion impossible : vérifie ton réseau.");throw a.code="network",a}const c=await d.json();if(c.error){const a=new Error(c.error.message);throw a.code=c.error.code,a}return c}function buildGroupMessage(e,t,d){const c=getStatus(e,d),a=t.length,u=[{today:`🚨 Ouverture des inscriptions aujourd'hui · ${e.name}`,avenir:`⏳ Date d'ouverture annoncée · ${e.name}`,veille:`🔍 On surveille · ${e.name}`,open:`✅ Les inscriptions sont ouvertes · ${e.name}`,done:`🏁 ${e.name}`}[c],`🏁 ${e.format}`,`📅 ${fmtRaceDate(e.raceDate)}${e.location?" · "+e.location:""}`];return e.openAt&&c!=="open"&&u.push(`⏰ Ouverture ${fmtOpen(e.openAt)}`),e.note&&u.push(`ℹ️ ${e.note}`),e.url&&u.push(`🔗 ${e.url}`),u.push(""),u.push(a?`👯 Déjà ${a} inscrite${a>1?"s":""} à l'alerte dans le collectif.`:"👯 Personne n'est encore inscrite à l'alerte : lance-toi !"),u.push(`👉 Inscris-toi, et indique ton logement et ton trajet depuis Angoulême : ${DASHBOARD_URL}`),u.join(`
+`)}const needsAnnouncement=e=>!!e.autoDetectedAt&&(!e.announcedAt||e.announcedAt<e.autoDetectedAt);function useCollective(){const[e,t]=useState({mode:"loading",races:[],members:[]}),[d,c]=useState(null),[a,x]=useState({id:null,name:"",isOwner:!1}),u=useRef(null),b=useRef([]);b.current=e.members;const g=useCallback(n=>{var o,l,N;const i=((o=n.me)==null?void 0:o.id)||null;x({id:i,name:((l=n.me)==null?void 0:l.name)||"",isOwner:!!((N=n.me)!=null&&N.isOwner)}),t({mode:"sheet",races:n.races||[],members:(n.members||[]).map(A=>({...A,_doc:A.mine?i:"autre"}))})},[]);useEffect(()=>{let n=!1;const i=[],o=()=>{var N,A;let l=null;try{l=JSON.parse(localStorage.getItem(LS_KEY)||"null")}catch{}n||t({mode:"local",races:(N=l==null?void 0:l.races)!=null?N:SEED_RACES,members:(A=l==null?void 0:l.members)!=null?A:SEED_MEMBERS})};if(!inClaudeViewer()&&SHEET_API_URL){const l=()=>sheetCall("state").then(A=>{n||g(A)}).catch(A=>{n||(A.code==="auth"?(writeSession(""),t({mode:"login",races:[],members:[]})):t(z=>z.mode==="loading"?{...z,mode:"error",error:A.message}:z))});readSession()?l():t({mode:"login",races:[],members:[]}),fetch(SHEET_API_URL+"?action=catalog").then(A=>A.json()).then(A=>{A&&A.events&&!n&&c(A)}).catch(()=>{});const N=setInterval(()=>{document.visibilityState==="visible"&&readSession()&&l()},6e4);return()=>{n=!0,clearInterval(N)}}if(!inClaudeViewer()){o();return}return window.claude.use("user").then(async l=>{if(!l||n)return;const[N,A]=await Promise.all([l.id(),l.me()]);n||x({id:N,name:(A==null?void 0:A.name)||"",isOwner:!!l.isOwner()})}).catch(()=>{}),window.claude.use("db").then(l=>{if(n)return;if(!l)return o();u.current=l;const N={races:null,members:null},A=()=>{N.races&&N.members&&!n&&t({mode:"shared",races:N.races,members:N.members})},z=()=>{N.races||o()};i.push(l.collection("races").onSnapshot(S=>{N.races=S.docs.map(f=>({id:f.id,...f.data()})),A()},z)),i.push(l.collection("members").onSnapshot(S=>{N.members=S.docs.flatMap(f=>(f.data().entries||[]).map(F=>({...F,_doc:f.id}))),A()},z)),i.push(l.doc("catalog/fftri").onSnapshot(S=>{S.exists&&!n&&c(S.data())},()=>{}))}).catch(o),()=>{n=!0,i.forEach(l=>l())}},[]),useEffect(()=>{if(e.mode==="local")try{localStorage.setItem(LS_KEY,JSON.stringify({races:e.races,members:e.members}))}catch{}},[e]);const r=e.mode==="shared",p=e.mode==="sheet",k=()=>u.current,C=useCallback(n=>!(r||p)||a.isOwner||!!a.id&&n._doc===a.id,[r,p,a]),m=async(n,i)=>{const o=b.current.filter(l=>l._doc===n).map(({_doc:l,...N})=>N);await k().doc("members/"+n).set({entries:i(o),updatedAt:new Date().toISOString()})},h=n=>t(i=>({...i,members:n(i.members)})),v=useMemo(()=>({async saveRace(n){const{id:i,...o}=n;if(p){g(await sheetCall("saveRace",{race:n}));return}if(r){i?await k().doc("races/"+i).set(o):await k().collection("races").add({...o,createdAt:new Date().toISOString()});return}t(l=>({...l,races:i?l.races.map(N=>N.id===i?{...n}:N):[...l.races,{...o,id:uid()}]}))},async updateRace(n,i){if(p){g(await sheetCall("updateRace",{id:n,patch:i}));return}if(r){await k().doc("races/"+n).update(i);return}t(o=>({...o,races:o.races.map(l=>l.id===n?{...l,...i}:l)}))},async deleteRace(n){if(p){g(await sheetCall("deleteRace",{id:n}));return}if(r){const i=[...new Set(b.current.filter(o=>o.raceId===n).map(o=>o._doc))];for(const o of i)await m(o,l=>l.filter(N=>N.raceId!==n));await k().doc("races/"+n).delete();return}t(i=>({...i,races:i.races.filter(o=>o.id!==n),members:i.members.filter(o=>o.raceId!==n)}))},async addMember(n){const i={...n,id:uid(),createdAt:new Date().toISOString()};if(p){g(await sheetCall("addMember",{member:n}));return}if(r){if(!a.id)throw new Error("no-identity");await m(a.id,o=>[...o,i]);return}h(o=>[...o,i])},async updateMember(n,i){if(p){h(o=>o.map(l=>l.id===n.id?{...l,...i}:l)),g(await sheetCall("updateMember",{id:n.id,patch:i}));return}if(r){await m(n._doc,o=>o.map(l=>l.id===n.id?{...l,...i}:l));return}h(o=>o.map(l=>l.id===n.id?{...l,...i}:l))},async toggleMember(n){return this.updateMember(n,{status:n.status==="bib"?"waiting":"bib"})},async removeMember(n){if(p){h(i=>i.filter(o=>o.id!==n.id)),g(await sheetCall("removeMember",{id:n.id}));return}if(r){await m(n._doc,i=>i.filter(o=>o.id!==n.id));return}h(i=>i.filter(o=>o.id!==n.id))}}),[r,p,a.id,g]),w=useMemo(()=>({requestCode:n=>sheetCall("requestCode",{email:n}),async verifyCode(n,i){const o=await sheetCall("verifyCode",{email:n,code:i});writeSession(o.token),g(o)},async logout(){try{await sheetCall("logout")}catch{}writeSession(""),x({id:null,name:"",isOwner:!1}),t({mode:"login",races:[],members:[]})}}),[g]);return{...e,fftri:d,me:a,canEdit:C,api:v,auth:w}}function useNow(e=1e3){const[t,d]=useState(()=>Date.now());return useEffect(()=>{const c=setInterval(()=>d(Date.now()),e);return()=>clearInterval(c)},[e]),t}function Countdown({target:e,now:t,size:d="md"}){const{d:c,h:a,m:x,s:u}=splitDuration(new Date(e).getTime()-t),b=[["j",c],["h",a],["min",x],["s",u]];return React.createElement("div",{className:`countdown countdown-${d}`,role:"timer","aria-label":`${c} jours ${a} heures ${x} minutes ${u} secondes`},b.map(([g,r])=>React.createElement("div",{className:"cd-cell",key:g},React.createElement("span",{className:"cd-val"},String(r).padStart(g==="j"?1:2,"0")),React.createElement("span",{className:"cd-unit"},g))))}function StatusPill({status:e}){const t=STATUS[e];return React.createElement("span",{className:`pill pill-${e}`},React.createElement("span",{"aria-hidden":"true"},t.emoji)," ",t.label)}function Sheet({open:e,onClose:t,title:d,children:c,footer:a,wide:x}){return useEffect(()=>{if(!e)return;const u=b=>b.key==="Escape"&&t();return window.addEventListener("keydown",u),()=>window.removeEventListener("keydown",u)},[e,t]),e?React.createElement("div",{className:"sheet-backdrop",onClick:t},React.createElement("div",{className:`sheet ${x?"sheet-wide":""}`,role:"dialog","aria-modal":"true","aria-label":d,onClick:u=>u.stopPropagation()},React.createElement("div",{className:"sheet-grip","aria-hidden":"true"}),React.createElement("header",{className:"sheet-head"},React.createElement("h2",null,d),React.createElement("button",{className:"icon-btn",onClick:t,"aria-label":"Fermer"},React.createElement(X,{size:20}))),React.createElement("div",{className:"sheet-body"},c),a&&React.createElement("footer",{className:"sheet-foot"},a))):null}function RaceCard({race:e,members:t,now:d,me:c,canEdit:a,onAlert:x,onIcs:u,onMessage:b,onEdit:g,onToggle:r,onUpdate:p,onRemove:k}){const[C,m]=useState(!1),[h,v]=useState(null),w=DISCIPLINES[e.discipline]||DISCIPLINES.running,n=getStatus(e,d),i=n==="done",o=t.filter(f=>f.status==="bib").length,l=t.filter(f=>f.lodging==="asso").length,N=t.filter(withGroup).length,A=e.lodgingDeadline&&!i&&daysUntil(e.lodgingDeadline)>=0&&daysUntil(e.lodgingDeadline)<=14,z=w.Icon,S=f=>TRAVEL_ORDER[(TRAVEL_ORDER.indexOf(f)+1)%TRAVEL_ORDER.length];return React.createElement("article",{className:`bib tone-${w.tone} status-${n}`},React.createElement("span",{className:"pin pin-tl","aria-hidden":"true"}),React.createElement("span",{className:"pin pin-tr","aria-hidden":"true"}),React.createElement("header",{className:"bib-top"},React.createElement("span",{className:"disc"},React.createElement(z,{size:16,strokeWidth:2.2})," ",w.label),React.createElement(StatusPill,{status:n})),React.createElement("div",{className:"bib-title"},React.createElement("div",{className:"bib-title-text"},React.createElement("h3",null,e.name),React.createElement("p",{className:"format"},e.format)),React.createElement("button",{className:"icon-btn ghost",onClick:g,"aria-label":`Modifier ${e.name}`},React.createElement(Pencil,{size:17}))),React.createElement("p",{className:"meta"},React.createElement("span",null,React.createElement(MapPin,{size:15})," ",e.location||"Lieu à préciser"),React.createElement("span",null,React.createElement(CalendarDays,{size:15})," ",fmtRaceDate(e.raceDate)),e.url&&React.createElement("a",{className:"meta-link",href:e.url,target:"_blank",rel:"noopener noreferrer"},React.createElement(ExternalLink,{size:15})," Site officiel"),e.example&&React.createElement("span",{className:"example-tag"},"Exemple")),!i&&React.createElement("div",{className:"opening"},React.createElement("div",{className:"opening-label"},React.createElement(Timer,{size:15}),n==="veille"?"Date d'ouverture pas encore annoncée":n==="open"?e.openAt?"Inscriptions ouvertes depuis le "+fmtDate(e.openAt,{day:"numeric",month:"long"}):"Inscriptions ouvertes":"Ouverture "+fmtOpen(e.openAt)),(n==="avenir"||n==="today")&&React.createElement(Countdown,{target:e.openAt,now:d}),n==="veille"&&React.createElement("p",{className:"opening-note"},"On surveille le site officiel. Inscris-toi pour être prévenue dès l'annonce."),n==="open"&&React.createElement("p",{className:"opening-note"},"C'est le moment : prends ton dossard sur le site officiel, puis coche-le ici."),e.note&&React.createElement("p",{className:"race-note"},React.createElement(Info,{size:14})," ",React.createElement("span",null,e.note)),A&&React.createElement("p",{className:"race-note"},React.createElement(Home,{size:14})," ",React.createElement("span",null,"Logement collectif à confirmer avant le ",fmtDate(e.lodgingDeadline,{day:"numeric",month:"long"}),"."))),React.createElement("dl",{className:"stats","data-tour":"stats"},React.createElement("div",null,React.createElement("dt",null,React.createElement(Users,{size:15})," Inscrites"),React.createElement("dd",null,t.length)),React.createElement("div",null,React.createElement("dt",null,React.createElement(Ticket,{size:15})," Dossards"),React.createElement("dd",null,o,React.createElement("small",null,"/",t.length))),React.createElement("div",null,React.createElement("dt",null,React.createElement(Home,{size:15})," Logement asso"),React.createElement("dd",null,l,React.createElement("small",null,e.lodgingCapacity?`/${e.lodgingCapacity} pl.`:`/${t.length}`))),React.createElement("div",null,React.createElement("dt",null,React.createElement(Bus,{size:15})," Trajet groupe"),React.createElement("dd",null,N,React.createElement("small",null,"/",t.length)))),!i&&React.createElement("div",{className:"card-actions"},React.createElement("button",{className:"btn btn-primary","data-tour":"alert",onClick:x,"aria-label":`S'inscrire pour recevoir l'alerte de ${e.name}`},React.createElement(BellRing,{size:18})," Recevoir l'alerte"),React.createElement("button",{className:"btn btn-soft","data-tour":"ics",onClick:u,disabled:!e.openAt,"aria-label":"Rappel calendrier J-3 et H-1",title:e.openAt?"Rappel calendrier J-3 et H-1":"Disponible quand la date sera connue"},React.createElement(CalendarDays,{size:18})),React.createElement("button",{className:`btn btn-soft ${needsAnnouncement(e)?"has-dot":""}`,onClick:b,"aria-label":`Message pour le groupe à propos de ${e.name}`,title:"Message prêt à poster dans le groupe"},React.createElement(MessageSquare,{size:18}))),t.length>0&&React.createElement("button",{className:"members-toggle",onClick:()=>m(f=>!f),"aria-expanded":C},React.createElement("span",{className:"avatars","aria-hidden":"true"},t.slice(0,4).map(f=>React.createElement("span",{key:f.id,className:"avatar"},initials(f.name)))),C?"Masquer les inscrites":`Voir les ${t.length} inscrite${t.length>1?"s":""}`,React.createElement(ChevronRight,{size:16,className:C?"rot":""})),C&&React.createElement("ul",{className:"members"},t.map(f=>{const F=LODGING[f.lodging]||LODGING.solo,I=TRAVEL[f.travel]||TRAVEL_UNKNOWN,T=a(f),M=!!c.id&&f._doc===c.id;return React.createElement("li",{key:f.id,className:"member"},React.createElement("span",{className:"avatar"},initials(f.name)),React.createElement("div",{className:"member-main"},React.createElement("strong",null,f.name," ",M&&React.createElement("span",{className:"me-tag"},"toi")),React.createElement("span",{className:"member-tags"},React.createElement("button",{className:"tag-btn",disabled:!T,onClick:()=>p(f,{lodging:f.lodging==="asso"?"solo":"asso"}),"aria-label":`${F.short} pour ${f.name}${T?". Changer":""}`},React.createElement(F.Icon,{size:14})," ",F.short),React.createElement("button",{className:`tag-btn ${f.travel?"":"is-missing"}`,disabled:!T,onClick:()=>p(f,{travel:S(f.travel)}),"aria-label":`${I.short} pour ${f.name}${T?". Changer":""}`},React.createElement(I.Icon,{size:14})," ",I.short),f.seats>0&&withGroup(f)&&React.createElement("span",{className:"tag-static"},React.createElement(Car,{size:14})," Conduit · ",f.seats," place",f.seats>1?"s":""))),React.createElement("button",{className:`status-toggle ${f.status==="bib"?"is-bib":""}`,disabled:!T,onClick:()=>r(f),"aria-label":`Statut de ${f.name} : ${f.status==="bib"?"dossard obtenu":"en attente"}${T?". Changer":""}`},f.status==="bib"?"🎟️ Dossard obtenu !":"⏳ En attente"),T&&(h===f.id?React.createElement("span",{className:"confirm"},React.createElement("button",{className:"link-btn danger",onClick:()=>{k(f),v(null)}},"Retirer"),React.createElement("button",{className:"link-btn",onClick:()=>v(null)},"Annuler")):React.createElement("button",{className:"icon-btn ghost sm",onClick:()=>v(f.id),"aria-label":`Retirer ${f.name}`},React.createElement(X,{size:16}))))})))}function MemberForm({race:e,defaultName:t,onSubmit:d,onCancel:c}){const[a,x]=useState(t||""),[u,b]=useState("asso"),[g,r]=useState("group"),[p,k]=useState("0"),[C,m]=useState("");return React.createElement("form",{onSubmit:v=>{if(v.preventDefault(),a.trim().length<2){m("Indique ton prénom et ton nom.");return}const w=TRAVEL[g].out||TRAVEL[g].back?Math.max(0,Math.min(8,parseInt(p,10)||0)):0;d({raceId:e.id,name:a.trim(),lodging:u,travel:g,seats:w,status:"waiting"})},className:"form",id:"member-form"},React.createElement("p",{className:"form-intro"},React.createElement("strong",null,e.name)," · ",e.format,React.createElement("br",null),e.openAt?`Ouverture ${fmtOpen(e.openAt)}`:e.registrationOpen?"Inscriptions ouvertes":"Date d'ouverture en cours de veille"),React.createElement("label",{className:"field"},React.createElement("span",null,"Prénom et nom"),React.createElement("input",{id:"member-name",autoFocus:!0,value:a,onChange:v=>{x(v.target.value),m("")},placeholder:"Ex. Camille Roux",autoComplete:"name"}),C&&React.createElement("em",{className:"field-error"},C)),React.createElement("fieldset",{className:"field"},React.createElement("legend",null,"Logement"),React.createElement("div",{className:"choice-grid"},Object.entries(LODGING).map(([v,w])=>React.createElement("label",{key:v,className:`choice ${u===v?"is-on":""}`},React.createElement("input",{type:"radio",name:"lodging",id:`lodging-${v}`,value:v,checked:u===v,onChange:()=>b(v)}),React.createElement(w.Icon,{size:22}),React.createElement("span",null,w.label))))),React.createElement("fieldset",{className:"field"},React.createElement("legend",null,"Trajet depuis Angoulême"),React.createElement("div",{className:"choice-grid"},Object.entries(TRAVEL).map(([v,w])=>React.createElement("label",{key:v,className:`choice ${g===v?"is-on":""}`},React.createElement("input",{type:"radio",name:"travel",id:`travel-${v}`,value:v,checked:g===v,onChange:()=>r(v)}),React.createElement(w.Icon,{size:22}),React.createElement("span",null,w.label))))),g!=="solo"&&React.createElement("label",{className:"field"},React.createElement("span",null,"Je conduis et je propose des places (0 si je suis passagère)"),React.createElement("input",{id:"member-seats",type:"number",inputMode:"numeric",min:"0",max:"8",value:p,onChange:v=>k(v.target.value)})),React.createElement("p",{className:"privacy"},React.createElement(Info,{size:14})," ",React.createElement("span",null,"Ton nom, ton logement et ton trajet sont visibles des adhérentes qui ont accès au calendrier, pour organiser la course. Tu peux retirer ton inscription à tout moment.")),React.createElement("div",{className:"form-actions"},React.createElement("button",{type:"button",className:"btn btn-soft",onClick:c},"Annuler"),React.createElement("button",{type:"submit",className:"btn btn-primary"},React.createElement(Bell,{size:18})," Recevoir l'alerte")))}function RaceForm({race:e,onSubmit:t,onDelete:d,onCancel:c}){const[a,x]=useState(()=>{var m,h;return{name:(e==null?void 0:e.name)||"",discipline:(e==null?void 0:e.discipline)||"triathlon",format:(e==null?void 0:e.format)||"",location:(e==null?void 0:e.location)||"",raceDate:(e==null?void 0:e.raceDate)||"",openAt:toLocalInput(e==null?void 0:e.openAt),openMode:e?e.openAt?"date":e.registrationOpen?"open":"veille":"date",url:(e==null?void 0:e.url)||"",note:(e==null?void 0:e.note)||"",lodgingName:(e==null?void 0:e.lodgingName)||"",lodgingCapacity:(m=e==null?void 0:e.lodgingCapacity)!=null?m:"",lodgingCost:(h=e==null?void 0:e.lodgingCost)!=null?h:"",lodgingDeadline:(e==null?void 0:e.lodgingDeadline)||""}}),[u,b]=useState(""),[g,r]=useState(!1),p=m=>h=>x(v=>({...v,[m]:h.target.type==="checkbox"?h.target.checked:h.target.value})),k=m=>m===""||m===null||isNaN(Number(m))?null:Number(m);return React.createElement("form",{onSubmit:m=>{if(m.preventDefault(),!a.name.trim()||!a.raceDate){b("Le nom et la date de la course sont nécessaires.");return}if(a.openMode==="date"&&!a.openAt){b("Indique la date d'ouverture, ou choisis « Pas encore annoncée ».");return}t({...e||{},name:a.name.trim(),discipline:a.discipline,format:a.format.trim()||DISCIPLINES[a.discipline].label,location:a.location.trim(),raceDate:a.raceDate,openAt:a.openMode==="date"?new Date(a.openAt).toISOString():null,registrationOpen:a.openMode==="open",url:a.url.trim(),note:a.note.trim(),example:!1,lodgingName:a.lodgingName.trim(),lodgingCapacity:k(a.lodgingCapacity),lodgingCost:k(a.lodgingCost),lodgingDeadline:a.lodgingDeadline||null})},className:"form",id:"race-form"},React.createElement("label",{className:"field"},React.createElement("span",null,"Nom de la course"),React.createElement("input",{id:"race-name",value:a.name,onChange:p("name"),placeholder:"Ex. Triathlon de Gérardmer"})),React.createElement("fieldset",{className:"field"},React.createElement("legend",null,"Discipline"),React.createElement("div",{className:"seg"},Object.entries(DISCIPLINES).map(([m,h])=>React.createElement("label",{key:m,className:`seg-item tone-${h.tone} ${a.discipline===m?"is-on":""}`},React.createElement("input",{type:"radio",name:"discipline",id:`disc-${m}`,value:m,checked:a.discipline===m,onChange:p("discipline")}),React.createElement(h.Icon,{size:16})," ",h.label)))),React.createElement("label",{className:"field"},React.createElement("span",null,"Format / distance"),React.createElement("input",{id:"race-format",list:"format-list",value:a.format,onChange:p("format"),placeholder:DISCIPLINES[a.discipline].formats[0]}),React.createElement("datalist",{id:"format-list"},DISCIPLINES[a.discipline].formats.map(m=>React.createElement("option",{key:m,value:m})))),React.createElement("div",{className:"field-row"},React.createElement("label",{className:"field"},React.createElement("span",null,"Lieu"),React.createElement("input",{id:"race-location",value:a.location,onChange:p("location"),placeholder:"Ville (dpt)"})),React.createElement("label",{className:"field"},React.createElement("span",null,"Date de la course"),React.createElement("input",{id:"race-date",type:"date",value:a.raceDate,onChange:p("raceDate")}))),React.createElement("fieldset",{className:"field"},React.createElement("legend",null,"Ouverture des inscriptions"),React.createElement("div",{className:"seg"},[["date","Date connue"],["veille","Pas encore annoncée"],["open","Déjà ouvertes"]].map(([m,h])=>React.createElement("label",{key:m,className:`seg-item ${a.openMode===m?"is-on":""}`},React.createElement("input",{type:"radio",name:"openMode",id:`open-${m}`,value:m,checked:a.openMode===m,onChange:p("openMode")})," ",h))),a.openMode==="date"&&React.createElement("input",{id:"race-open",type:"datetime-local",value:a.openAt,onChange:p("openAt"),"aria-label":"Date et heure d'ouverture"})),React.createElement("label",{className:"field"},React.createElement("span",null,"Lien officiel"),React.createElement("input",{id:"race-url",type:"url",value:a.url,onChange:p("url"),placeholder:"https://"})),React.createElement("label",{className:"field"},React.createElement("span",null,"Note (tarifs, échéances, quotas)"),React.createElement("input",{id:"race-note",value:a.note,onChange:p("note"),placeholder:"Ex. Tarif 1 jusqu'au 15/11"})),React.createElement("fieldset",{className:"field form-group"},React.createElement("legend",null,"Logement collectif (facultatif)"),React.createElement("label",{className:"field"},React.createElement("span",null,"Hébergement"),React.createElement("input",{id:"race-lodging-name",value:a.lodgingName,onChange:p("lodgingName"),placeholder:"Ex. Gîte des Pertuis"})),React.createElement("div",{className:"field-row field-row-3"},React.createElement("label",{className:"field"},React.createElement("span",null,"Places"),React.createElement("input",{id:"race-lodging-cap",type:"number",inputMode:"numeric",min:"0",value:a.lodgingCapacity,onChange:p("lodgingCapacity")})),React.createElement("label",{className:"field"},React.createElement("span",null,"€ / personne"),React.createElement("input",{id:"race-lodging-cost",type:"number",inputMode:"decimal",min:"0",step:"0.5",value:a.lodgingCost,onChange:p("lodgingCost")})),React.createElement("label",{className:"field"},React.createElement("span",null,"Réserver avant le"),React.createElement("input",{id:"race-lodging-deadline",type:"date",value:a.lodgingDeadline,onChange:p("lodgingDeadline")})))),u&&React.createElement("em",{className:"field-error"},u),React.createElement("div",{className:"form-actions"},(e==null?void 0:e.id)&&(g?React.createElement("button",{type:"button",className:"btn btn-danger",onClick:()=>d(e.id)},React.createElement(Trash2,{size:17})," Confirmer"):React.createElement("button",{type:"button",className:"btn btn-soft danger-text",onClick:()=>r(!0)},React.createElement(Trash2,{size:17})," Supprimer")),React.createElement("span",{className:"spacer"}),React.createElement("button",{type:"button",className:"btn btn-soft",onClick:c},"Annuler"),React.createElement("button",{type:"submit",className:"btn btn-primary"},e!=null&&e.id?"Enregistrer":"Ajouter la course")))}function MessagePanel({race:e,members:t,now:d,onPosted:c,notify:a}){const[x,u]=useState(()=>buildGroupMessage(e,t,d)),b=useRef(null),g=async()=>{var r;try{await navigator.clipboard.writeText(x),a("Message copié : colle-le dans le groupe du collectif")}catch{(r=b.current)==null||r.select(),a("Texte sélectionné : copie-le avec Ctrl/Cmd + C")}};return React.createElement("div",{className:"message"},needsAnnouncement(e)&&React.createElement("p",{className:"race-note"},React.createElement(Zap,{size:14})," ",React.createElement("span",null,"Changement repéré par la veille le ",fmtDate(e.autoDetectedAt,{day:"numeric",month:"long"}),". Vérifie le site officiel avant de poster.")),React.createElement("label",{className:"field"},React.createElement("span",null,"Message (modifiable)"),React.createElement("textarea",{id:"group-message",ref:b,value:x,onChange:r=>u(r.target.value),rows:10})),React.createElement("div",{className:"ics-actions"},React.createElement("button",{className:"btn btn-primary",onClick:g},React.createElement(Copy,{size:18})," Copier le message"),React.createElement("a",{className:"btn btn-soft",href:"https://wa.me/?text="+encodeURIComponent(x),target:"_blank",rel:"noopener noreferrer"},React.createElement(MessageSquare,{size:18})," WhatsApp")),needsAnnouncement(e)&&React.createElement("button",{className:"btn btn-soft",onClick:c},React.createElement(Eye,{size:18})," J'ai posté le message"),React.createElement("p",{className:"hint"},React.createElement(Info,{size:15})," ",React.createElement("span",null,"Copie le message et colle-le dans le canal du collectif. Le bouton WhatsApp ouvre WhatsApp avec le texte déjà rempli.")))}function IcsPanel({races:e,notify:t}){const d=useMemo(()=>buildICS(e),[e]),c=useRef(null),a=e.filter(r=>r.openAt),x=a.length===1?a[0]:null,u=inClaudeViewer(),b=x?`anotreplace-${x.name.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g,"-")}.ics`:"anotreplace-ouvertures.ics",g=async()=>{var r;try{await navigator.clipboard.writeText(d),t("Contenu .ics copié")}catch{(r=c.current)==null||r.select(),t("Texte sélectionné : copie-le avec Ctrl/Cmd + C")}};return a.length?React.createElement("div",{className:"ics"},React.createElement("ul",{className:"ics-list"},a.map(r=>React.createElement("li",{key:r.id},React.createElement(CalendarDays,{size:16})," ",React.createElement("span",null,React.createElement("strong",null,r.name),React.createElement("br",null),React.createElement("small",null,fmtOpen(r.openAt)))))),React.createElement("div",{className:"alarms"},React.createElement("div",null,React.createElement(Bell,{size:16})," ",React.createElement("span",null,React.createElement("strong",null,"J-3")," rappel trois jours avant")),React.createElement("div",null,React.createElement(BellRing,{size:16})," ",React.createElement("span",null,React.createElement("strong",null,"H-1")," rappel une heure avant l'heure H"))),React.createElement("div",{className:"ics-actions"},u?React.createElement("button",{className:"btn btn-primary",onClick:g},React.createElement(Copy,{size:18})," Copier le contenu .ics"):React.createElement(React.Fragment,null,React.createElement("button",{className:"btn btn-primary",onClick:()=>downloadFile(b,d)&&t("Fichier .ics généré")},React.createElement(Download,{size:18})," Télécharger le .ics"),React.createElement("button",{className:"btn btn-soft",onClick:g},React.createElement(Copy,{size:18})," Copier")),x&&React.createElement("a",{className:"btn btn-soft",href:googleCalendarUrl(x),target:"_blank",rel:"noopener noreferrer"},React.createElement(CalendarDays,{size:18})," Google Agenda")),React.createElement("p",{className:"hint"},React.createElement(Info,{size:15})," ",React.createElement("span",null,"Le fichier .ics programme les rappels J-3 et H-1 tout seul dans Apple Calendrier et Outlook. ",u&&"Colle le contenu copié dans un fichier texte nommé « anotreplace.ics », puis ouvre-le. ","Le bouton Google Agenda demande un compte Google et applique tes notifications par défaut : ouvre l'événement et ajoute « 3 jours avant » et « 1 heure avant ».")),React.createElement("details",{className:"ics-raw"},React.createElement("summary",null,"Voir le contenu du fichier"),React.createElement("textarea",{id:"ics-raw",ref:c,readOnly:!0,value:d,rows:8}))):React.createElement("div",{className:"ics"},React.createElement("p",{className:"ics-empty"},React.createElement(Bell,{size:20})," ",React.createElement("span",null,"Aucune date d'ouverture n'est encore connue pour les courses à venir. Dès qu'une date sera annoncée, tu pourras l'ajouter ici à ton agenda, avec un rappel 3 jours avant et 1 heure avant.")),React.createElement("p",{className:"hint"},React.createElement(Info,{size:15})," ",React.createElement("span",null,"En attendant, touche « Recevoir l'alerte » sur les courses qui t'intéressent.")))}function FederalView({races:e,remote:t,onFollow:d}){const[c,a]=useState({status:"loading",data:null}),[x,u]=useState("all"),[b,g]=useState("na"),[r,p]=useState(!0),[k,C]=useState("");useEffect(()=>{if(t){a({status:"ok",data:t});return}let n=!0;return fetch(FFTRI_DATA_URL).then(i=>i.ok?i.json():Promise.reject()).then(i=>n&&a({status:"ok",data:i})).catch(()=>n&&a({status:"error",data:null})),()=>{n=!1}},[t]);const m=useMemo(()=>new Set(e.map(n=>n.fedId).filter(Boolean)),[e]),h=new Date().toISOString().slice(0,10),v=useMemo(()=>{if(!c.data)return[];const n=k.trim().toLowerCase(),i=FED_TYPES[x].codes,o=new Map;return c.data.events.forEach(l=>{if(l.date<h||b==="na"&&!NOUVELLE_AQUITAINE.includes(l.dept))return;const N=l.formats.filter(z=>(!r||!isYouthFormat(z))&&(!i||i.includes(z.split(" - ")[0])));if(!N.length||n&&!(l.name+" "+l.city+" "+l.postcode).toLowerCase().includes(n))return;const A=l.date.slice(0,7);o.has(A)||o.set(A,[]),o.get(A).push({...l,shown:N})}),[...o.entries()]},[c.data,x,b,r,k,h]),w=v.reduce((n,[,i])=>n+i.length,0);return React.createElement("section",{className:"federal"},React.createElement("div",{className:"section-head"},React.createElement("h2",null,"Agenda des fédérations"),React.createElement("p",null,"Les épreuves du calendrier FFTri. Ajoute une date à ton agenda, ou suis une course pour lancer la veille de ses inscriptions.")),React.createElement("div",{className:"toolbar"},React.createElement("label",{className:"search"},React.createElement(Search,{size:18}),React.createElement("input",{id:"fed-search",type:"search",value:k,onChange:n=>C(n.target.value),placeholder:"Course, ville ou code postal"})),React.createElement("div",{className:"chips",role:"group","aria-label":"Zone"},React.createElement("button",{className:`chip ${b==="na"?"is-on":""}`,onClick:()=>g("na")},React.createElement(MapPin,{size:15})," Nouvelle-Aquitaine"),React.createElement("button",{className:`chip ${b==="fr"?"is-on":""}`,onClick:()=>g("fr")},"Toute la France"),React.createElement("button",{className:`chip ${r?"is-on":""}`,onClick:()=>p(n=>!n),"aria-pressed":r},"Formats adultes")),React.createElement("div",{className:"chips",role:"group","aria-label":"Discipline"},Object.entries(FED_TYPES).map(([n,i])=>React.createElement("button",{key:n,className:`chip ${x===n?"is-on":""}`,onClick:()=>u(n)},i.label)))),c.status==="loading"&&React.createElement("div",{className:"loading"},React.createElement("span",{className:"spinner"})," Chargement du calendrier FFTri…"),c.status==="error"&&React.createElement("div",{className:"empty"},React.createElement(Info,{size:28}),React.createElement("p",null,"Le calendrier FFTri n'a pas pu être chargé ici."),React.createElement("a",{className:"btn btn-soft",href:"https://fftri.t2area.com/calendrier.html",target:"_blank",rel:"noopener noreferrer"},React.createElement(ExternalLink,{size:17})," Ouvrir le calendrier FFTri")),c.status==="ok"&&(w?React.createElement("div",{className:"fed-months"},React.createElement("p",{className:"fed-count"},w," épreuve",w>1?"s":""),v.map(([n,i])=>React.createElement("div",{key:n,className:"fed-month"},React.createElement("h3",{className:"fed-month-title"},fmtDate(n+"-01",{month:"long",year:"numeric"})),React.createElement("ul",{className:"fed-list"},i.map(o=>{const l=m.has(o.id);return React.createElement("li",{key:o.id,className:`fed-row ${o.cancelled?"is-cancelled":""}`},React.createElement("div",{className:"fed-date","aria-hidden":"true"},React.createElement("span",{className:"fed-day"},Number(o.date.slice(8))),React.createElement("span",{className:"fed-wd"},fmtDate(o.date,{weekday:"short"}))),React.createElement("div",{className:"fed-main"},React.createElement("strong",null,o.name),React.createElement("span",{className:"fed-place"},React.createElement(MapPin,{size:13})," ",o.city," · ",o.postcode,o.cancelled&&React.createElement("span",{className:"pill pill-veille"},"Annulée")),React.createElement("span",{className:"fed-formats"},o.shown.map(N=>React.createElement("span",{key:N,className:"fmt"},prettyFormat(N))))),!o.cancelled&&React.createElement("div",{className:"fed-actions"},React.createElement("a",{className:"btn btn-soft",href:googleRaceDayUrl(o),target:"_blank",rel:"noopener noreferrer","aria-label":`Ajouter ${o.name} à Google Agenda`},React.createElement(CalendarDays,{size:17})," ",React.createElement("span",{className:"hide-sm"},"Agenda")),React.createElement("button",{className:`btn ${l?"btn-soft is-followed":"btn-primary"}`,disabled:l,onClick:()=>d(o)},l?React.createElement(React.Fragment,null,React.createElement(Eye,{size:17})," Suivie"):React.createElement(React.Fragment,null,React.createElement(Plus,{size:17})," Suivre"))))}))))):React.createElement("div",{className:"empty"},React.createElement(Search,{size:28}),React.createElement("p",null,"Aucune épreuve à venir avec ces filtres."))),React.createElement("div",{className:"fed-sources"},c.data&&React.createElement("p",null,React.createElement(Info,{size:15})," Source : ",React.createElement("a",{href:c.data.sourceUrl,target:"_blank",rel:"noopener noreferrer"},"calendrier FFTri"),", mis à jour le ",fmtDate(c.data.fetchedAt,{day:"numeric",month:"long",year:"numeric"}),". Vérifie les dates sur la fiche officielle avant de t'inscrire."),React.createElement("div",{className:"ffa-card"},React.createElement(Footprints,{size:22}),React.createElement("div",null,React.createElement("strong",null,"Courses running FFA · Nouvelle-Aquitaine"),React.createElement("p",null,"La FFA ne permet pas de reprendre son calendrier ailleurs. Consulte-le sur athle.fr, puis ajoute ici les courses qui intéressent le collectif.")),React.createElement("a",{className:"btn btn-soft",href:FFA_CALENDAR_URL,target:"_blank",rel:"noopener noreferrer"},React.createElement(ExternalLink,{size:17})," athle.fr"))))}function SeatLine({label:e,members:t,dir:d}){const c=t.filter(g=>(TRAVEL[g.travel]||TRAVEL_UNKNOWN)[d]);if(!c.length)return null;const a=c.filter(g=>g.seats>0),x=a.reduce((g,r)=>g+r.seats,0),u=c.length-a.length,b=u-x;return React.createElement("p",{className:`seat-line ${b>0?"is-short":"is-ok"}`},React.createElement(Car,{size:15}),React.createElement("span",null,React.createElement("strong",null,e)," · ",c.length," personne",c.length>1?"s":"",", ",a.length," conductrice",a.length>1?"s":"",", ",x," place",x>1?"s":""," proposée",x>1?"s":""," pour ",u," passagère",u>1?"s":""," · ",b>0?`il manque ${b} place${b>1?"s":""}`:"c'est bon"))}function NameList({list:e}){return e.length?React.createElement("ul",null,e.map(t=>React.createElement("li",{key:t.id},t.name,t.status==="bib"&&React.createElement("span",{title:"Dossard obtenu"}," 🎟️"),t.seats>0&&withGroup(t)&&React.createElement("span",{className:"li-meta"}," · conduit (",t.seats," pl.)")))):React.createElement("p",{className:"empty-line"},"Personne pour l'instant")}function LogisticsView({races:e,members:t,now:d,onAlert:c}){const a=e.filter(r=>getStatus(r,d)!=="done").sort((r,p)=>r.raceDate.localeCompare(p.raceDate)),x=new Set(a.map(r=>r.id)),u=t.filter(r=>x.has(r.raceId)),b=u.filter(r=>r.lodging==="asso").length,g=u.filter(withGroup).length;return React.createElement("section",{className:"logistics"},React.createElement("div",{className:"section-head"},React.createElement("h2",null,"Logistique de groupe"),React.createElement("p",null,b," place",b>1?"s":""," en logement collectif et ",g," personne",g>1?"s":""," au départ d'Angoulême sur les courses à venir.")),!a.length&&React.createElement("div",{className:"empty"},React.createElement(ClipboardList,{size:28}),React.createElement("p",null,"Aucune course à venir pour l'instant.")),React.createElement("div",{className:"logi-list"},a.map(r=>{const p=t.filter(l=>l.raceId===r.id),k=p.filter(l=>l.status==="bib").length,C=p.filter(l=>l.lodging==="asso"),m=p.filter(l=>l.lodging!=="asso"),h=p.filter(withGroup),v=p.filter(l=>l.travel==="solo"),w=p.length-h.length-v.length,n=DISCIPLINES[r.discipline]||DISCIPLINES.running,i=r.lodgingCapacity&&C.length>r.lodgingCapacity,o=r.lodgingDeadline?daysUntil(r.lodgingDeadline):null;return React.createElement("article",{key:r.id,className:`logi tone-${n.tone}`},React.createElement("header",null,React.createElement("div",null,React.createElement("h3",null,React.createElement(n.Icon,{size:17})," ",r.name),React.createElement("p",null,fmtRaceDate(r.raceDate)," · ",r.location)),React.createElement(StatusPill,{status:getStatus(r,d)})),React.createElement("div",{className:"progress","aria-label":`${k} dossards sur ${p.length} inscrites`},React.createElement("div",{className:"progress-bar",style:{width:p.length?`${k/p.length*100}%`:0}})),React.createElement("p",{className:"progress-label"},React.createElement(Ticket,{size:14})," ",k," dossard",k>1?"s":""," sur ",p.length," inscrite",p.length>1?"s":""),(r.lodgingName||r.lodgingCapacity||r.lodgingCost||r.lodgingDeadline)&&React.createElement("p",{className:`seat-line ${i||o!==null&&o>=0&&o<=7?"is-short":"is-ok"}`},React.createElement(Home,{size:15}),React.createElement("span",null,React.createElement("strong",null,r.lodgingName||"Logement collectif"),r.lodgingCapacity?` · ${C.length}/${r.lodgingCapacity} places${i?` (${C.length-r.lodgingCapacity} de trop)`:""}`:"",r.lodgingCost?` · ${r.lodgingCost} € / pers. (${(r.lodgingCost*C.length).toLocaleString("fr-FR")} € au total)`:"",r.lodgingDeadline?` · ${o<0?"date de réservation passée":`à réserver avant le ${fmtDate(r.lodgingDeadline,{day:"numeric",month:"long"})}${o<=7?` (J-${o})`:""}`}`:"")),React.createElement(SeatLine,{label:"Aller",members:p,dir:"out"}),React.createElement(SeatLine,{label:"Retour",members:p,dir:"back"}),React.createElement("div",{className:"logi-cols"},React.createElement("div",null,React.createElement("h4",null,React.createElement(Home,{size:15})," Logement asso · ",C.length),React.createElement(NameList,{list:C})),React.createElement("div",null,React.createElement("h4",null,React.createElement(User,{size:15})," De son côté · ",m.length),React.createElement(NameList,{list:m})),React.createElement("div",null,React.createElement("h4",null,React.createElement(Bus,{size:15})," Départ d'Angoulême · ",h.length),h.length?React.createElement("ul",null,h.map(l=>React.createElement("li",{key:l.id},l.name," ",React.createElement("span",{className:"li-meta"},"· ",TRAVEL[l.travel].short,l.seats>0?`, conduit (${l.seats} pl.)`:"")))):React.createElement("p",{className:"empty-line"},"Personne pour l'instant")),React.createElement("div",null,React.createElement("h4",null,React.createElement(Car,{size:15})," Trajet perso · ",v.length),React.createElement(NameList,{list:v}))),w>0&&React.createElement("p",{className:"empty-line"},w," inscrite",w>1?"s":""," sans trajet précisé : touche « Trajet à préciser » sur la carte de la course."),React.createElement("button",{className:"link-btn",onClick:()=>c(r.id)},React.createElement(Plus,{size:15})," Ajouter une inscrite"))})))}function LoginScreen({auth:e}){const[t,d]=useState("email"),[c,a]=useState(""),[x,u]=useState(""),[b,g]=useState(!1),[r,p]=useState("");return React.createElement("section",{className:"login"},React.createElement("img",{className:"login-logo",src:LOGO_SRC,alt:"Ànotreplace"}),React.createElement("h1",null,"Calendrier des courses"),React.createElement("p",null,"Réservé aux adhérentes du collectif. Pas de mot de passe : tu reçois un code par email."),t==="email"?React.createElement("form",{className:"form",onSubmit:async m=>{if(m.preventDefault(),!/^\S+@\S+\.\S+$/.test(c.trim())){p("Indique une adresse email valide.");return}g(!0),p("");try{await e.requestCode(c.trim()),d("code")}catch(h){p(h.message)}finally{g(!1)}},id:"login-email-form"},React.createElement("label",{className:"field"},React.createElement("span",null,"Ton adresse email d'adhérente"),React.createElement("input",{id:"login-email",type:"email",autoComplete:"email",inputMode:"email",value:c,onChange:m=>a(m.target.value),placeholder:"prenom@exemple.fr",autoFocus:!0})),r&&React.createElement("em",{className:"field-error"},r),React.createElement("button",{className:"btn btn-primary",type:"submit",disabled:b},React.createElement(Mail,{size:18})," ",b?"Envoi…":"Recevoir mon code")):React.createElement("form",{className:"form",onSubmit:async m=>{m.preventDefault(),g(!0),p("");try{await e.verifyCode(c.trim(),x)}catch(h){p(h.message),g(!1)}},id:"login-code-form"},React.createElement("p",{className:"login-info"},React.createElement(Mail,{size:16})," ",React.createElement("span",null,"Si ",React.createElement("strong",null,c.trim())," est dans la liste des adhérentes, un code à 6 chiffres vient de partir. Pense à regarder dans les spams.")),React.createElement("label",{className:"field"},React.createElement("span",null,"Code reçu par email"),React.createElement("input",{id:"login-code",className:"code-input",inputMode:"numeric",autoComplete:"one-time-code",maxLength:6,value:x,onChange:m=>u(m.target.value.replace(/\D/g,"")),placeholder:"••••••",autoFocus:!0})),r&&React.createElement("em",{className:"field-error"},r),React.createElement("button",{className:"btn btn-primary",type:"submit",disabled:b||x.length!==6},b?"Vérification…":"Me connecter"),React.createElement("button",{className:"link-btn",type:"button",onClick:()=>{d("email"),u(""),p("")}},"Changer d'email ou renvoyer un code")))}const TOUR_KEY="anotreplace-tuto-v1",TOUR_STEPS=[{target:"next",title:"La prochaine ouverture",text:"Ici, la prochaine course dont les inscriptions ouvrent, avec le compte à rebours jusqu'à l'heure H."},{target:"alert",title:"Je suis intéressée",text:"Sur une course qui te plaît, touche « Recevoir l'alerte ». Tu indiques ton logement et ton trajet depuis Angoulême."},{target:"rappels",title:"Ne rate pas l'heure H",text:"Dans « Rappels », ajoute les ouvertures à ton agenda : tu es prévenue 3 jours avant et 1 heure avant."},{target:"stats",title:"Mon dossard",text:"Ton dossard pris ? Ouvre la liste des inscrites sous la carte et touche « En attente » pour passer à « Dossard obtenu ! »."},{target:"logistique",title:"La logistique",text:"Qui loge avec l'asso, qui part d'Angoulême, les places en voiture : tout est ici, course par course."},{target:"help",title:"Besoin d'un rappel ?",text:"Ce bouton relance ce tutoriel quand tu veux. Bonnes courses !"}],visibleTarget=e=>[...document.querySelectorAll(`[data-tour="${e}"]`)].find(t=>{const d=t.getBoundingClientRect();return d.width>0&&d.height>0});function Tour({onClose:e}){const t=useMemo(()=>TOUR_STEPS.filter(w=>visibleTarget(w.target)),[]),[d,c]=useState(0),[a,x]=useState(null),u=useRef(null),b=t[d];if(useEffect(()=>{if(!b){e();return}const w=visibleTarget(b.target);if(!w){x(null);return}w.scrollIntoView({block:"center",behavior:"smooth"});const n=()=>{const o=w.getBoundingClientRect();x({top:o.top,left:o.left,width:o.width,height:o.height})},i=setTimeout(n,380);return window.addEventListener("resize",n),window.addEventListener("scroll",n,!0),()=>{clearTimeout(i),window.removeEventListener("resize",n),window.removeEventListener("scroll",n,!0)}},[b,e]),useEffect(()=>{var w;(w=u.current)==null||w.focus({preventScroll:!0})},[d,a]),useEffect(()=>{const w=n=>{n.key==="Escape"&&e()};return window.addEventListener("keydown",w),()=>window.removeEventListener("keydown",w)},[e]),!b)return null;const g=d===t.length-1,r=8,p=window.innerWidth,k=window.innerHeight,C=Math.min(320,p-32);let m={left:(p-C)/2,top:k/2-90},h="center";if(a){const w=a.top+a.height+r+14;h=k-w>200?"below":"above";const n=Math.min(Math.max(16,a.left+a.width/2-C/2),p-C-16);m=h==="below"?{left:n,top:w}:{left:n,bottom:k-a.top+r+14}}const v=a?Math.min(Math.max(20,a.left+a.width/2-m.left),C-20):0;return React.createElement("div",{className:"tour",role:"dialog","aria-modal":"true","aria-label":`Tutoriel, étape ${d+1} sur ${t.length}`},a?React.createElement("div",{className:"tour-spot",style:{top:a.top-r,left:a.left-r,width:a.width+r*2,height:a.height+r*2}}):React.createElement("div",{className:"tour-dim"}),React.createElement("div",{className:`tour-bubble tour-${h}`,style:{...m,width:C}},a&&React.createElement("span",{className:"tour-arrow",style:{left:v},"aria-hidden":"true"}),React.createElement("p",{className:"tour-count"},d+1," / ",t.length),React.createElement("h3",null,b.title),React.createElement("p",null,b.text),React.createElement("div",{className:"tour-actions"},!g&&React.createElement("button",{className:"link-btn",onClick:e},"Passer"),React.createElement("button",{ref:u,className:"btn btn-primary",onClick:()=>g?e():c(d+1)},g?"C'est parti !":"OK"))))}function AnotreplaceDashboard(){const{mode:e,races:t,members:d,fftri:c,me:a,canEdit:x,api:u,auth:b,error:g}=useCollective(),[r,p]=useState(!1),k=useNow(1e3),[C,m]=useState(()=>{const s=typeof location!="undefined"?location.hash.slice(1):"";return["logistique","agenda"].includes(s)?s:"courses"}),[h,v]=useState("all"),[w,n]=useState(""),[i,o]=useState(null),[l,N]=useState(null),[A,z]=useState(!1),S=useRef(null),f=useCallback((s,y)=>{clearTimeout(S.current),N({msg:s,action:y}),S.current=setTimeout(()=>N(null),y?6e3:3500)},[]),F=useCallback(()=>o(null),[]),I=async(s,y,L)=>{try{await s(),y&&f(y,L)}catch(E){if(E&&E.code==="auth"){f(E.message),b.logout();return}f(E&&E.message==="no-identity"?"Connecte-toi à ton compte Claude pour t'inscrire.":E&&E.code?E.message:"Enregistrement refusé : il faut un accès en écriture à ce calendrier.")}},T=useMemo(()=>{const s={};return d.forEach(y=>{(s[y.raceId]=s[y.raceId]||[]).push(y)}),s},[d]),M=s=>getStatus(s,k),U=useMemo(()=>{const s=w.trim().toLowerCase();return t.filter(y=>r||M(y)!=="done").filter(y=>h==="all"||y.discipline===h).filter(y=>!s||y.name.toLowerCase().includes(s)||(y.location||"").toLowerCase().includes(s)).sort((y,L)=>{const E=STATUS[M(y)].order,V=STATUS[M(L)].order;return E!==V?E-V:y.openAt&&L.openAt?new Date(y.openAt)-new Date(L.openAt):y.raceDate.localeCompare(L.raceDate)})},[t,h,w,r,Math.floor(k/6e4)]),R=useMemo(()=>t.filter(s=>s.openAt&&new Date(s.openAt).getTime()>k).sort((s,y)=>new Date(s.openAt)-new Date(y.openAt))[0],[t,Math.floor(k/1e3)]),j=t.filter(s=>M(s)!=="done"),_=t.length-j.length,G=new Set(j.map(s=>s.id)),q=d.filter(s=>G.has(s.raceId)),O={races:j.length,members:q.length,bibs:q.filter(s=>s.status==="bib").length,asso:q.filter(s=>s.lodging==="asso").length,group:q.filter(withGroup).length},H=j.reduce((s,y)=>({...s,[y.discipline]:(s[y.discipline]||0)+1}),{}),B=j.filter(needsAnnouncement),D=i!=null&&i.raceId?t.find(s=>s.id===i.raceId):null,P=t.filter(s=>s.openAt&&new Date(s.openAt).getTime()>k),$=s=>{m(s);try{history.replaceState(null,"","#"+s)}catch{}window.scrollTo({top:0,behavior:"smooth"})},J=()=>{o(null),$("courses"),setTimeout(()=>z(!0),250)},Y=useCallback(()=>{z(!1);try{localStorage.setItem(TOUR_KEY,"vu")}catch{}},[]);useEffect(()=>{if(!["sheet","shared","local"].includes(e))return;let s=!1;try{s=localStorage.getItem(TOUR_KEY)==="vu"}catch{s=!1}if(s)return;const y=setTimeout(()=>z(!0),700);return()=>clearTimeout(y)},[e]);const W=s=>I(()=>u.saveRace({fedId:s.id,name:s.name.replace(/\s*\(\w+\)\s*$/,""),discipline:"triathlon",format:s.shown.map(prettyFormat).join(" · "),location:`${s.city} (${s.dept})`,raceDate:s.date,openAt:null,url:s.url,example:!1}),"Course ajoutée à la veille",{label:"Voir",onClick:()=>$("courses")});return React.createElement("div",{className:"anp"},React.createElement("style",null,CSS),React.createElement("header",{className:"topbar"},React.createElement("div",{className:"topbar-inner"},React.createElement("div",{className:"brand"},React.createElement("img",{className:"logo",src:LOGO_SRC,alt:"Ànotreplace",width:"88",height:"48",onError:s=>{s.currentTarget.replaceWith(Object.assign(document.createElement("span"),{className:"wordmark",textContent:"Ànotreplace"}))}}),React.createElement("span",{className:"brand-sub"},"Calendrier des courses")),React.createElement("nav",{className:"desk-nav","aria-label":"Sections"},React.createElement("button",{className:C==="courses"?"is-on":"",onClick:()=>$("courses")},React.createElement(Medal,{size:17})," Mes courses"),React.createElement("button",{className:C==="agenda"?"is-on":"",onClick:()=>$("agenda")},React.createElement(CalendarDays,{size:17})," Agenda"),React.createElement("button",{className:C==="logistique"?"is-on":"","data-tour":"logistique",onClick:()=>$("logistique")},React.createElement(ClipboardList,{size:17})," Logistique"),React.createElement("button",{"data-tour":"rappels",onClick:()=>o({type:"ics-all"})},React.createElement(Bell,{size:17})," Rappels")),React.createElement("div",{className:"desk-actions"},React.createElement("button",{className:"btn btn-primary",onClick:()=>o({type:"race"})},React.createElement(Plus,{size:18})," Course")),e!=="login"&&e!=="loading"&&React.createElement("button",{className:"help-btn","data-tour":"help",onClick:J,"aria-label":"Revoir le tutoriel",title:"Revoir le tutoriel"},React.createElement(Info,{size:20})))),React.createElement("main",{className:"main"},e==="loading"?React.createElement("div",{className:"loading"},React.createElement("span",{className:"spinner"})," Chargement du calendrier du collectif…"):e==="login"?React.createElement(LoginScreen,{auth:b}):e==="error"?React.createElement("div",{className:"empty"},React.createElement(Info,{size:28}),React.createElement("p",null,g||"Le calendrier n'a pas pu être chargé."),React.createElement("button",{className:"btn btn-primary",onClick:()=>location.reload()},"Réessayer")):React.createElement(React.Fragment,null,React.createElement("section",{className:"hero"},React.createElement("div",{className:"board","data-tour":"next"},R?React.createElement(React.Fragment,null,React.createElement("p",{className:"board-eyebrow"},React.createElement(BellRing,{size:15})," Prochaine ouverture"),React.createElement("h1",null,R.name),React.createElement("p",{className:"board-sub"},R.format," · ",fmtOpen(R.openAt)),React.createElement(Countdown,{target:R.openAt,now:k,size:"lg"}),React.createElement("div",{className:"board-actions"},React.createElement("button",{className:"btn btn-light",onClick:()=>o({type:"member",raceId:R.id})},React.createElement(Bell,{size:18})," M'alerter"),React.createElement("button",{className:"btn btn-outline-light",onClick:()=>o({type:"ics",raceId:R.id})},React.createElement(CalendarDays,{size:18})," Rappel J-3 · H-1"))):React.createElement(React.Fragment,null,React.createElement("p",{className:"board-eyebrow"},React.createElement(Eye,{size:15})," Veille"),React.createElement("h1",null,"Aucune ouverture programmée"),React.createElement("p",{className:"board-sub"},"Ajoute une course et sa date d'ouverture pour lancer le compte à rebours."),React.createElement("div",{className:"board-actions"},React.createElement("button",{className:"btn btn-light",onClick:()=>o({type:"race"})},React.createElement(Plus,{size:18})," Ajouter une course")))),React.createElement("dl",{className:"kpis"},React.createElement("div",{className:"kpi"},React.createElement("dt",null,React.createElement(Timer,{size:16})," Courses suivies"),React.createElement("dd",null,O.races)),React.createElement("div",{className:"kpi"},React.createElement("dt",null,React.createElement(Users,{size:16})," Inscrites aux alertes"),React.createElement("dd",null,O.members)),React.createElement("div",{className:"kpi"},React.createElement("dt",null,React.createElement(Ticket,{size:16})," Dossards sécurisés"),React.createElement("dd",null,O.bibs,React.createElement("small",null,"/",O.members))),React.createElement("div",{className:"kpi"},React.createElement("dt",null,React.createElement(Home,{size:16})," Logement asso · trajet groupe"),React.createElement("dd",null,O.asso,React.createElement("small",null," · "),O.group)))),e==="local"&&React.createElement("p",{className:"mode-note"},React.createElement(Info,{size:15})," Mode local : les données restent sur cet appareil. Les courses marquées « Exemple » sont là pour la démonstration, modifie-les ou supprime-les."),B.length>0&&React.createElement("section",{className:"announce","aria-label":"Messages à poster"},React.createElement("p",{className:"announce-title"},React.createElement(MessageSquare,{size:18})," ",B.length," message",B.length>1?"s":""," prêt",B.length>1?"s":""," à poster dans le groupe du collectif"),React.createElement("ul",null,B.map(s=>React.createElement("li",{key:s.id},React.createElement("span",null,React.createElement("strong",null,s.name)," · ",STATUS[M(s)].label.toLowerCase()),React.createElement("button",{className:"btn btn-primary",onClick:()=>o({type:"message",raceId:s.id})},"Voir le message"))))),C==="courses"?React.createElement("section",{className:"races"},React.createElement("div",{className:"toolbar"},React.createElement("label",{className:"search"},React.createElement(Search,{size:18}),React.createElement("input",{id:"race-search",type:"search",value:w,onChange:s=>n(s.target.value),placeholder:"Rechercher une course ou une ville"})),React.createElement("div",{className:"chips",role:"group","aria-label":"Filtrer par discipline"},React.createElement("button",{className:`chip ${h==="all"?"is-on":""}`,onClick:()=>v("all")},"Toutes ",React.createElement("span",null,j.length)),Object.entries(DISCIPLINES).map(([s,y])=>React.createElement("button",{key:s,className:`chip tone-${y.tone} ${h===s?"is-on":""}`,onClick:()=>v(s)},React.createElement(y.Icon,{size:15})," ",y.label," ",React.createElement("span",null,H[s]||0))),_>0&&React.createElement("button",{className:`chip ${r?"is-on":""}`,onClick:()=>p(s=>!s),"aria-pressed":r},"🏁 Terminées ",React.createElement("span",null,_)))),U.length?React.createElement("div",{className:"grid"},U.map(s=>React.createElement(RaceCard,{key:s.id,race:s,now:k,members:T[s.id]||[],me:a,canEdit:x,onAlert:()=>o({type:"member",raceId:s.id}),onIcs:()=>o({type:"ics",raceId:s.id}),onMessage:()=>o({type:"message",raceId:s.id}),onEdit:()=>o({type:"race",raceId:s.id}),onUpdate:(y,L)=>I(()=>u.updateMember(y,L),"Inscrite mise à jour"),onToggle:y=>I(()=>u.toggleMember(y),y.status==="bib"?"Remis en attente":`🎟️ Dossard obtenu pour ${y.name.split(" ")[0]} !`),onRemove:y=>I(()=>u.removeMember(y),"Inscrite retirée")}))):React.createElement("div",{className:"empty"},React.createElement(Search,{size:28}),React.createElement("p",null,t.length?"Aucune course ne correspond à ces filtres.":"Aucune course suivie pour l'instant."),t.length?React.createElement("button",{className:"btn btn-soft",onClick:()=>{n(""),v("all")}},"Effacer les filtres"):React.createElement("button",{className:"btn btn-primary",onClick:()=>o({type:"race"})},React.createElement(Plus,{size:18})," Ajouter la première course"))):C==="agenda"?React.createElement(FederalView,{races:t,remote:c,onFollow:W}):React.createElement(LogisticsView,{races:t,members:d,now:k,onAlert:s=>o({type:"member",raceId:s})})),React.createElement("footer",{className:"foot"},React.createElement("span",null,"Trouver sa place. La construire ensemble. · ",e==="local"?"Données enregistrées sur cet appareil":"Calendrier partagé du collectif"),e==="sheet"&&React.createElement("span",{className:"foot-user"},"Connectée : ",a.name||a.id," · ",React.createElement("button",{className:"link-btn",onClick:()=>b.logout()},"Se déconnecter")))),e!=="login"&&React.createElement("button",{className:"fab",onClick:()=>o({type:"actions"}),"aria-label":"Actions rapides"},React.createElement(Plus,{size:26})),React.createElement("nav",{className:"bottom-nav","aria-label":"Navigation",hidden:e==="login"},React.createElement("button",{className:C==="courses"?"is-on":"",onClick:()=>$("courses")},React.createElement(Medal,{size:22}),React.createElement("span",null,"Mes courses")),React.createElement("button",{className:C==="agenda"?"is-on":"",onClick:()=>$("agenda")},React.createElement(CalendarDays,{size:22}),React.createElement("span",null,"Agenda")),React.createElement("span",{className:"fab-slot","aria-hidden":"true"}),React.createElement("button",{className:C==="logistique"?"is-on":"","data-tour":"logistique",onClick:()=>$("logistique")},React.createElement(ClipboardList,{size:22}),React.createElement("span",null,"Logistique")),React.createElement("button",{"data-tour":"rappels",onClick:()=>o({type:"ics-all"})},React.createElement(Bell,{size:22}),React.createElement("span",null,"Rappels"))),React.createElement(Sheet,{open:(i==null?void 0:i.type)==="actions",onClose:F,title:"Actions rapides"},React.createElement("div",{className:"drawer"},React.createElement("button",{onClick:()=>o({type:"race"})},React.createElement(Plus,{size:22}),React.createElement("span",null,React.createElement("strong",null,"Ajouter une course"),React.createElement("small",null,"Nom, discipline, date d'ouverture"))),R&&React.createElement("button",{onClick:()=>o({type:"member",raceId:R.id})},React.createElement(BellRing,{size:22}),React.createElement("span",null,React.createElement("strong",null,"M'alerter pour ",R.name),React.createElement("small",null,"Prochaine ouverture"))),React.createElement("button",{onClick:()=>o({type:"ics-all"})},React.createElement(CalendarDays,{size:22}),React.createElement("span",null,React.createElement("strong",null,"Exporter toutes les alertes"),React.createElement("small",null,P.length," ouverture",P.length>1?"s":""," · fichier .ics"))),React.createElement("button",{onClick:()=>{F(),$("logistique")}},React.createElement(ClipboardList,{size:22}),React.createElement("span",null,React.createElement("strong",null,"Voir la logistique"),React.createElement("small",null,"Dossards, logements et trajets par course"))))),React.createElement(Sheet,{open:(i==null?void 0:i.type)==="member"&&!!D,onClose:F,title:"S'inscrire pour l'alerte"},D&&React.createElement(MemberForm,{race:D,defaultName:(T[D.id]||[]).some(s=>a.id&&s._doc===a.id)?"":a.name,onCancel:F,onSubmit:s=>{F(),I(()=>u.addMember(s),`${s.name.split(" ")[0]} est inscrite à l'alerte`,D.openAt?{label:"Ajouter le rappel",onClick:()=>o({type:"ics",raceId:D.id})}:null)}})),React.createElement(Sheet,{open:(i==null?void 0:i.type)==="race",onClose:F,title:D?"Modifier la course":"Ajouter une course"},React.createElement(RaceForm,{key:(i==null?void 0:i.raceId)||"new",race:D,onCancel:F,onSubmit:s=>{F(),I(()=>u.saveRace(s),s.id?"Course mise à jour":"Course ajoutée")},onDelete:s=>{F(),I(()=>u.deleteRace(s),"Course supprimée")}})),React.createElement(Sheet,{open:(i==null?void 0:i.type)==="ics"&&!!D,onClose:F,title:"Rappel calendrier"},D&&React.createElement(IcsPanel,{races:[D],notify:f})),React.createElement(Sheet,{open:(i==null?void 0:i.type)==="ics-all",onClose:F,title:"Mes rappels d'ouverture"},React.createElement(IcsPanel,{races:P,notify:f})),React.createElement(Sheet,{open:(i==null?void 0:i.type)==="message"&&!!D,onClose:F,title:"Message pour le groupe"},D&&React.createElement(MessagePanel,{key:D.id,race:D,members:T[D.id]||[],now:k,notify:f,onPosted:()=>{F(),I(()=>u.updateRace(D.id,{announcedAt:new Date().toISOString()}),"Message marqué comme posté")}})),A&&React.createElement(Tour,{onClose:Y}),l&&React.createElement("div",{className:"toast",role:"status"},React.createElement("span",null,l.msg),l.action&&React.createElement("button",{onClick:()=>{l.action.onClick(),N(null)}},l.action.label)))}const CSS=`
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,600&display=swap');
 
-<!-- 3. SOLUTION -->
-<section class="section">
-  <div class="wrap split split--center">
-    <div>
-      <h2>De « je n'ose pas » à « on y va ensemble ».</h2>
-      <p class="lead">Ànotreplace est un collectif sportif 100% féminin, né à Angoulême en 2026. Un espace sain, où le respect domine et où l'on se veut du bien. Tout simplement.</p>
-      <p><a class="link-arrow" href="/le-collectif/">Pourquoi on a créé Ànotreplace</a></p>
-    </div>
-    <div class="photo-duo">
-      <img src="/assets/img/cyclistes-coucher-de-soleil.webp" alt="Deux cyclistes du collectif posent avec leurs vélos au bord de l'eau, au coucher du soleil" width="989" height="1571" loading="lazy">
-      <img src="/assets/img/cycliste-route-charente.webp" alt="Une adhérente sourit pendant une sortie vélo sur une route de Charente" width="630" height="1358" loading="lazy">
-    </div>
-  </div>
-  <div class="wrap facts">
-    <div class="fact"><h3>100% féminin</h3><p>Entre femmes majeures, pour pratiquer en confiance.</p></div>
-    <div class="fact"><h3>Tous niveaux</h3><p>Débutante ou compétitrice : chacune avance à son rythme.</p></div>
-    <div class="fact"><h3>Une charte signée</h3><p>Bienveillance, sécurité. Pas de comparaison entre les filles.</p></div>
-  </div>
-</section>
-
-<!-- 4. BÉNÉFICES -->
-<section class="section section--tint">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Ce que tu y gagnes</h2>
-      <p>Le collectif t'apporte bien plus qu'un entraînement&nbsp;: une place, une équipe et de vraies amitiés.</p>
-    </div>
-    <img class="banner-photo" src="/assets/img/sortie-velo-sourire.webp" alt="Une adhérente éclate de rire pendant une sortie vélo du collectif" width="981" height="428" loading="lazy">
-    <div class="benefits">
-      <div class="benefit benefit--ico"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></span><div><h3>Tu oses enfin.</h3><p>Ta première sortie vélo, ta première traversée à la nage, ton premier dossard. Entourée.</p></div></div>
-      <div class="benefit benefit--ico"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span><div><h3>Tu progresses, à ton rythme.</h3><p>On se compare à soi. Jamais aux autres.</p></div></div>
-      <div class="benefit benefit--ico"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><div><h3>Personne ne reste derrière.</h3><p>On part ensemble. On arrive ensemble.</p></div></div>
-      <div class="benefit benefit--ico"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg></span><div><h3>Tu comprends ton corps.</h3><p>Cycle menstruel, blessures, mental : 4 conférences par an avec des spécialistes.</p></div></div>
-      <div class="benefit benefit--ico"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><div><h3>Tu deviens autonome.</h3><p>Mécanique vélo, transitions de triathlon : des ateliers pour tout maîtriser.</p></div></div>
-      <div class="benefit benefit--ico"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M15.8 9.2a2.5 2.5 0 0 0-3.5 0l-.3.4-.35-.3a2.42 2.42 0 1 0-3.2 3.6l3.6 3.5 3.6-3.5c1.2-1.2 1.1-2.7.2-3.7"/></svg></span><div><h3>Tu trouves ta bande.</h3><p>Des copines qui te motivent toute la semaine et t'attendent à l'arrivée.</p></div></div>
-    </div>
-    <div class="actions"><a class="btn" href="/reserver/">Je veux essayer</a></div>
-  </div>
-</section>
-
-<!-- 5. COMMENT ÇA MARCHE -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-head"><h2>Nous rejoindre, en 3 étapes</h2></div>
-    <ol class="steps steps--3">
-      <li><h3>Viens tester une séance</h3><p>Un message sur Instagram ou un mail, et on t'accueille. On part ensemble.</p></li>
-      <li><h3>Adhère si tu as aimé</h3><p>Tes documents se signent en ligne, en quelques clics. Ta cotisation aussi.</p></li>
-      <li><h3>Vis ta saison</h3><p>Sorties, conférences, ateliers, défis : compose ton programme.</p></li>
-    </ol>
-  </div>
-</section>
-
-<!-- 6. OFFRE -->
-<section class="section section--tint" id="offre">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>L'adhésion, saison 2026-2027</h2>
-      <p>Une cotisation. Toute la saison. De septembre à août.</p>
-    </div>
-    <div class="offer">
-      <div class="price-main">
-        <h3>Adhésion annuelle</h3>
-        <p class="price">60€</p>
-        <p class="price-sub">par an, soit 5€ par mois</p>
-        <ul class="checklist">
-          <li>1 à 4 sorties par semaine : natation, vélo, running</li>
-          <li>4 conférences santé et performance</li>
-          <li>4 ateliers pratiques</li>
-          <li>L'accès aux défis collectifs de la saison (frais d'inscription en sus)</li>
-          <li>Un groupe de discussions avec la communauté</li>
-          <li>Une voix à l'assemblée générale</li>
-        </ul>
-        <div class="actions">
-          <a class="btn" href="/reserver/">Je teste une séance</a>
-          <a class="link-arrow" href="/adhesion/">Tout savoir sur l'adhésion</a>
-        </div>
-      </div>
-      <div class="price-side">
-        <div class="aside-box aside-box--bonus">
-          <h3>Offert aux 50 premières</h3>
-          <p>Ton pack de bienvenue, un cadeau du collectif pour bien commencer ta saison.</p>
-        </div>
-        <div class="aside-box">
-          <h3>Tarif solidaire</h3>
-          <p class="price-mini">40€</p>
-          <p>Pour les étudiantes et les demandeuses d'emploi, sur justificatif.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 7. DIFFÉRENCIATION -->
-<section class="section">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Pourquoi pas un club classique ?</h2>
-      <p>Parce que la performance est plus belle quand on la vit ensemble.</p>
-    </div>
-    <div class="table-wrap">
-      <table class="compare">
-        <caption class="sr-only">Comparaison entre un club classique et Ànotreplace</caption>
-        <thead><tr><th scope="col"></th><th scope="col">Club classique</th><th scope="col" class="us">Ànotreplace</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">100% féminin</th><td>Rarement</td><td class="us">Oui</td></tr>
-          <tr><th scope="row">Tous niveaux, sans pression</th><td>Selon le club</td><td class="us">Oui</td></tr>
-          <tr><th scope="row">Charte signée par chacune</th><td>Rarement</td><td class="us">Oui</td></tr>
-          <tr><th scope="row">Conférences santé féminine</th><td>Rarement</td><td class="us">4 par an</td></tr>
-          <tr><th scope="row">Défis collectifs organisés</th><td>Parfois</td><td class="us">Oui</td></tr>
-          <tr><th scope="row">Vélo de route pour débutantes</th><td>Rarement</td><td class="us">Oui, avec ateliers mécanique</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- 8. PREUVES SOCIALES -->
-<section class="section section--tint">
-  <div class="wrap">
-    <div class="section-head">
-      <h2>Toutes avaient une histoire à raconter</h2>
-      <p>Avant de créer Ànotreplace, on a demandé à des sportives : « Est-ce qu'il y a un moment où vous ne vous êtes pas sentie à votre place ? »</p>
-    </div>
-    <div class="quotes">
-      <figure class="q"><p>« On n'ose pas aller aux sorties vélo. On a peur de ne pas suivre, d'être tout derrière. »</p></figure>
-      <figure class="q"><p>« Je n'osais plus courir seule le soir. »</p></figure>
-      <figure class="q"><p>« J'ai détesté la compétition toxique qu'il y avait entre les athlètes. »</p></figure>
-    </div>
-    <p class="q-note">Témoignages anonymisés, recueillis par Ànotreplace. <a href="/le-collectif/#temoignages">Lire tous les témoignages</a></p>
-
-    <!-- À ACTIVER dès les premiers retours d'adhérentes (prénom + discipline + photo) :
-    <div class="quotes">
-      <figure class="q"><p>« … »</p><figcaption>Prénom, running</figcaption></figure>
-    </div>
-    -->
-
-    <div class="proof">
-      <img src="/assets/img/peloton-feminin-route-vignes.webp" alt="Le peloton du collectif roule entre les vignes, en fin de journée" width="1080" height="608" loading="lazy">
-      <img src="/assets/img/sortie-velo-groupe-femmes-angouleme.webp" alt="Le groupe du collectif réuni avant une sortie vélo" width="1398" height="918" loading="lazy">
-      <img src="/assets/img/running-trail-femmes-angouleme.webp" alt="Quatre coureuses du collectif après l'entraînement" width="1350" height="909" loading="lazy">
-    </div>
-    <ul class="trust">
-      <li>Association loi 1901 déclarée, RNA W161010667</li>
-      <li>Une charte signée par chaque adhérente</li>
-      <li><a href="{{ site.instagram_url }}" rel="noopener">Nos sorties sur Instagram</a></li>
-    </ul>
-  </div>
-</section>
-
-{% include instagram.html %}
-
-<!-- 9. FAQ -->
-<section class="section">
-  <div class="wrap faq-layout">
-    <div><h2>Tes questions, nos réponses</h2><p class="muted">D'autres questions ? <a href="/adhesion/#faq">Toutes les réponses</a> ou <a href="/contact/">écris-nous</a>.</p></div>
-    <div class="faq">
-      <details><summary>Je dois pratiquer les trois disciplines ?</summary><p>Non. Natation, vélo, running : tu pratiques une, deux ou les trois, comme tu veux. Chacune a sa place, que tu viennes pour une seule discipline ou pour le triathlon.</p></details>
-      <details><summary>Vous aidez à préparer un premier triathlon ?</summary><p>Oui. Entraînements dans les trois disciplines, atelier sur les transitions, défis à vivre ensemble : le collectif t'aide à te lancer dans ton premier triathlon, à ton rythme.</p></details>
-      <details><summary>Je débute. J'ai le niveau ?</summary><p>Oui. Les sorties s'adaptent au groupe et personne ne reste derrière. C'est même pour toi qu'on a créé le collectif.</p></details>
-      <details><summary>Il me faut un vélo de route ?</summary><p>Pour les sorties vélo, oui : un vélo en bon état et un casque. Pas encore équipée ? Viens courir ou nager avec nous, et lance-toi grâce à nos ateliers.</p></details>
-      <details><summary>C'est un club de compétition ?</summary><p>Non. On aime les défis et les dossards, sans pression ni comparaison. C'est toi qui fixes tes objectifs.</p></details>
-      <details><summary>Et la sécurité ?</summary><p>On part ensemble et on ne laisse personne derrière. Éléments réfléchissants l'hiver, et une charte qui protège chacune. Chacune reste responsable de son équipement et de son trajet retour.</p></details>
-      <details><summary>Pourquoi 100% féminin ?</summary><p>Parce que beaucoup de femmes n'osent pas pratiquer ailleurs. Ici, on crée d'abord un espace sûr. Le collectif est ouvert à toutes les femmes majeures.</p></details>
-      <details><summary>Combien ça coûte ?</summary><p>60€ par an, ou 40€ en tarif solidaire. Tu peux venir tester une séance avant d'adhérer.</p></details>
-      <details><summary>Je peux venir avec une amie ?</summary><p>Avec plaisir ! Envoyez-nous simplement un message, sur Instagram ou par mail, et venez ensemble.</p></details>
-    </div>
-  </div>
-</section>
-
-<!-- 10. CTA FINAL -->
-<section class="cta-final">
-  <div class="wrap">
-    <h2>Ta place t'attend.</h2>
-    <p>Des femmes t'attendent au départ&nbsp;!</p>
-    <div class="actions"><a class="btn" href="/reserver/">Je teste une séance</a></div>
-    <p class="small" style="margin-top:1.2rem">Tu adhères seulement si tu as aimé.</p>
-  </div>
-</section>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SportsOrganization",
-  "name": "Ànotreplace",
-  "legalName": "ANOTREPLACE",
-  "description": "Collectif sportif 100% féminin à Angoulême : natation, vélo, running, tous niveaux.",
-  "url": "{{ site.url }}/",
-  "logo": "{{ site.url }}/assets/img/icone-anotreplace-512.png",
-  "email": "{{ site.email }}",
-  "sport": ["Natation", "Cyclisme sur route", "Running", "Triathlon"],
-  "areaServed": "Angoulême, Charente",
-  "address": { "@type": "PostalAddress", "addressLocality": "Gond-Pontouvre", "postalCode": "16160", "addressRegion": "Charente", "addressCountry": "FR" },
-  "sameAs": ["{{ site.instagram_url }}"]
+/* Layout : un « tableau de départ » en tête (compte à rebours), puis une grille de dossards. */
+:root {
+  --bleu: #5170FF; --violet: #A46BE2; --rose: #F266C8;
+  --grad: linear-gradient(90deg, #5170FF, #A46BE2, #EE66C9);
+  --bg: #FBFAFF; --surface: #FFFFFF; --lavande: #F2EFFD;
+  --ink: #221C47; --muted: #5F5A7D; --line: #E4DEF8;
+  --accent: #6B4FD8; --accent-ink: #FFFFFF;
+  --board: #221C47; --board-ink: #FFFFFF; --board-muted: #C9C2F0;
+  --tri: #4361F0; --run: #D23FA8; --trail: #1E8A78; --bike: #8A55D6; --hyb: #B4560B;
+  --ok: #15845A; --ok-bg: #E3F6EC; --warn: #9A6200; --warn-bg: #FDF1D8;
+  --hot: #D3263F; --hot-bg: #FDE6EA; --idle: #5F5A7D; --idle-bg: #EFEDF7;
+  --shadow: 0 1px 2px rgba(34,28,71,.06), 0 8px 24px -12px rgba(34,28,71,.18);
+  --font: "Josefin Sans", "Avenir Next", "Century Gothic", system-ui, sans-serif;
+  --num: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #110E24; --surface: #1B1736; --lavande: #241F45;
+  --ink: #F2EFFD; --muted: #ABA4CF; --line: #312B5A;
+  --accent: #9C86FF; --accent-ink: #110E24;
+  --board: #241F45; --board-ink: #FFFFFF; --board-muted: #B9B0EA;
+  --tri: #7F95FF; --run: #F57DD2; --trail: #4CC6AF; --bike: #B994F2; --hyb: #F2A350;
+  --ok: #5FD39B; --ok-bg: #133325; --warn: #F2B95A; --warn-bg: #352812;
+  --hot: #FF7A8C; --hot-bg: #3A1520; --idle: #ABA4CF; --idle-bg: #262148;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #110E24; --surface: #1B1736; --lavande: #241F45;
+  --ink: #F2EFFD; --muted: #ABA4CF; --line: #312B5A;
+  --accent: #9C86FF; --accent-ink: #110E24;
+  --board: #241F45; --board-ink: #FFFFFF; --board-muted: #B9B0EA;
+  --tri: #7F95FF; --run: #F57DD2; --trail: #4CC6AF; --bike: #B994F2; --hyb: #F2A350;
+  --ok: #5FD39B; --ok-bg: #133325; --warn: #F2B95A; --warn-bg: #352812;
+  --hot: #FF7A8C; --hot-bg: #3A1520; --idle: #ABA4CF; --idle-bg: #262148;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--ink); margin: 0; }
+.anp { font-family: var(--font); font-size: 16px; line-height: 1.5; color: var(--ink); background: var(--bg); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+.anp *, .anp *::before, .anp *::after { box-sizing: border-box; }
+:where(.anp) :where(button, input, select, textarea) { font: inherit; color: inherit; }
+.anp h1, .anp h2, .anp h3, .anp h4 { margin: 0; line-height: 1.15; text-wrap: balance; }
+.anp :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.anp svg { flex-shrink: 0; }
+
+/* Barre du haut */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); }
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.topbar::before { content: ""; display: block; height: 4px; background: var(--grad); }
+.topbar-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 24px; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.brand { display: flex; align-items: center; line-height: 1; gap: 12px; }
+.brand-sub { max-width: 9em; line-height: 1.25; }
+.logo { display: block; height: 48px; width: auto; }
+.wordmark { font-weight: 700; font-size: 22px; letter-spacing: .02em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wordmark em { font-family: var(--num); font-weight: 600; font-style: italic; letter-spacing: .04em; }
+.brand-sub { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); font-weight: 600; }
+.desk-nav { display: none; gap: 4px; margin-left: 16px; }
+.desk-nav button { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 10px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.desk-nav button:hover { background: var(--lavande); color: var(--ink); }
+.desk-nav button.is-on { background: var(--lavande); color: var(--ink); }
+.desk-actions { display: none; gap: 8px; margin-left: auto; }
+
+/* Boutons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; font-weight: 600; cursor: pointer; text-decoration: none; white-space: nowrap; transition: transform .12s ease, background .15s ease, border-color .15s ease; }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-soft { background: var(--lavande); color: var(--ink); border-color: var(--line); }
+.btn-soft:hover { border-color: var(--accent); }
+.btn-light { background: #FFFFFF; color: #221C47; }
+.btn-outline-light { background: transparent; color: var(--board-ink); border-color: rgba(255,255,255,.35); }
+.btn-outline-light:hover { border-color: #FFFFFF; }
+.btn-danger { background: var(--hot); color: #FFFFFF; }
+.danger-text { color: var(--hot); }
+.icon-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; color: var(--muted); }
+.icon-btn:hover { color: var(--ink); border-color: var(--accent); }
+.icon-btn.ghost { border-color: transparent; background: transparent; }
+.icon-btn.sm { width: 44px; height: 44px; }
+.link-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--accent); font-weight: 600; cursor: pointer; padding: 8px 4px; min-height: 44px; }
+.link-btn.danger { color: var(--hot); }
+
+/* Contenu */
+.main { max-width: 1240px; margin: 0 auto; padding-block: 20px 120px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 24px; }
+.loading { display: flex; align-items: center; gap: 12px; color: var(--muted); padding: 48px 0; }
+.spinner { width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Hero : tableau de départ */
+.hero { display: grid; gap: 16px; }
+.board { position: relative; overflow: hidden; background: var(--board); color: var(--board-ink); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+.board::after { content: ""; position: absolute; inset: auto -10% -60% 30%; height: 120%; background: radial-gradient(closest-side, rgba(164,107,226,.45), transparent); pointer-events: none; }
+.board::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--grad); }
+.board > * { position: relative; z-index: 1; }
+.board-eyebrow { margin: 0; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--board-muted); }
+.board h1 { font-size: clamp(26px, 5vw, 40px); font-weight: 700; }
+.board-sub { margin: 0; color: var(--board-muted); }
+.board-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+
+.countdown { display: flex; gap: 8px; font-family: var(--num); font-variant-numeric: tabular-nums; }
+.cd-cell { display: flex; align-items: baseline; gap: 3px; background: var(--lavande); border-radius: 10px; padding: 6px 10px; min-width: 56px; justify-content: center; }
+.cd-val { font-size: 26px; font-weight: 700; line-height: 1; }
+.cd-unit { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.countdown-lg { gap: 10px; margin-top: 6px; }
+.countdown-lg .cd-cell { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); padding: 10px 12px; min-width: 0; flex: 1; max-width: 120px; }
+.countdown-lg .cd-val { font-size: clamp(34px, 8vw, 56px); color: #FFFFFF; }
+.countdown-lg .cd-unit { color: var(--board-muted); }
+
+.kpis { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.kpi dt { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.kpi dd { margin: 0; font-family: var(--num); font-size: 34px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.kpi dd small { font-size: 18px; color: var(--muted); font-weight: 600; }
+
+.mode-note { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--muted); background: var(--lavande); border-radius: 12px; padding: 10px 14px; }
+
+/* Barre d'outils */
+.toolbar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.search { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; min-height: 48px; color: var(--muted); }
+.search:focus-within { border-color: var(--accent); }
+.search input { flex: 1; min-width: 0; border: 0; background: transparent; outline: none; padding: 12px 0; color: var(--ink); }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px))); padding-right: 16px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 600; color: var(--muted); }
+.chip span { font-family: var(--num); font-size: 14px; background: var(--lavande); border-radius: 999px; padding: 0 7px; color: var(--ink); }
+.chip:hover { border-color: var(--accent); color: var(--ink); }
+.chip.is-on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip.is-on span { background: rgba(255,255,255,.18); color: inherit; }
+.chip.tone-tri svg { color: var(--tri); } .chip.tone-run svg { color: var(--run); } .chip.tone-trail svg { color: var(--trail); } .chip.tone-bike svg { color: var(--bike); } .chip.tone-hyb svg { color: var(--hyb); }
+.chip.is-on svg { color: inherit; }
+
+/* Cartes dossards */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.bib { --tone: var(--tri); position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); min-width: 0; }
+.bib::before { content: ""; position: absolute; left: 18px; right: 18px; top: 0; height: 4px; border-radius: 0 0 4px 4px; background: var(--tone); }
+.tone-tri { --tone: var(--tri); } .tone-run { --tone: var(--run); } .tone-trail { --tone: var(--trail); } .tone-bike { --tone: var(--bike); } .tone-hyb { --tone: var(--hyb); }
+.pin { position: absolute; top: 14px; width: 9px; height: 9px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 1px 2px rgba(34,28,71,.35); }
+.pin-tl { left: 10px; } .pin-tr { right: 10px; }
+.bib.status-today { border-color: var(--hot); box-shadow: 0 0 0 3px var(--hot-bg), var(--shadow); }
+.bib-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding-inline: 8px; }
+.disc { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--tone); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+.pill-veille { background: var(--idle-bg); color: var(--idle); }
+.pill-avenir { background: var(--warn-bg); color: var(--warn); }
+.pill-today { background: var(--hot-bg); color: var(--hot); animation: pulse 1.6s ease-in-out infinite; }
+.pill-open { background: var(--ok-bg); color: var(--ok); }
+.pill-done { background: var(--idle-bg); color: var(--idle); }
+.bib.status-done { opacity: .78; box-shadow: none; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 5px transparent; opacity: .82; } }
+.bib-title { display: flex; align-items: flex-start; gap: 8px; }
+.bib-title-text { flex: 1; min-width: 0; }
+.bib h3 { font-size: 22px; font-weight: 700; }
+.format { margin: 4px 0 0; color: var(--muted); font-weight: 600; }
+.meta { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--muted); font-size: 14px; }
+.meta span { display: inline-flex; align-items: center; gap: 6px; }
+.example-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; border: 1px dashed var(--line); border-radius: 6px; padding: 1px 6px; }
+.opening { background: var(--lavande); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.opening-label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+.opening-label::first-letter { text-transform: uppercase; }
+.opening .cd-cell { background: var(--surface); flex: 1; min-width: 0; }
+.opening-note { margin: 0; font-size: 14px; color: var(--muted); }
+.race-note { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 14px; font-weight: 600; color: var(--warn); }
+.race-note svg { margin-top: 3px; }
+.meta-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 600; text-decoration: none; min-height: 32px; }
+.meta-link:hover { text-decoration: underline; }
+.has-dot { position: relative; }
+.has-dot::after { content: ""; position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--hot); box-shadow: 0 0 0 2px var(--lavande); }
+.announce { background: var(--hot-bg); border: 1px solid color-mix(in srgb, var(--hot) 35%, transparent); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.announce-title { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--hot); }
+.announce ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.announce li { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--surface); border-radius: 12px; padding: 8px 8px 8px 14px; }
+.announce li span { min-width: 0; }
+.privacy { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted); }
+.privacy svg { margin-top: 2px; }
+.form-group { border-top: 1px solid var(--line); padding-top: 14px; gap: 12px; }
+.field-row-3 { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important; gap: 10px; }
+.message { display: flex; flex-direction: column; gap: 14px; }
+.message textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 12px 14px; line-height: 1.5; resize: vertical; }
+.message textarea:focus { outline: none; border-color: var(--accent); }
+.stats { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 8px; }
+.stats > div { border-left: 2px solid var(--line); padding-left: 10px; min-width: 0; }
+.stats dt { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stats dd { margin: 2px 0 0; font-family: var(--num); font-size: 26px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.stats dd small { font-size: 16px; color: var(--muted); }
+.card-actions { display: flex; gap: 8px; }
+.card-actions .btn-primary { flex: 1; min-width: 0; padding-inline: 12px; }
+.card-actions .btn-soft { padding-inline: 12px; }
+@media (max-width: 420px) { .hide-sm { display: none; } .card-actions .btn-primary { font-size: 15px; gap: 6px; } }
+.members-toggle { display: flex; align-items: center; gap: 10px; border: 0; background: none; padding: 4px 0; cursor: pointer; color: var(--accent); font-weight: 600; text-align: left; min-height: 44px; }
+.members-toggle .rot { transform: rotate(90deg); }
+.members-toggle svg { transition: transform .2s ease; }
+.avatars { display: flex; }
+.avatars .avatar { margin-left: -8px; border: 2px solid var(--surface); }
+.avatars .avatar:first-child { margin-left: 0; }
+.avatar { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--grad); color: #FFFFFF; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.members { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line); padding-top: 10px; }
+.member { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 4px 10px; padding: 6px 0; }
+.member-main { min-width: 0; display: flex; flex-direction: column; }
+@media (max-width: 420px) { .member { grid-template-columns: auto minmax(0, 1fr) auto; } .member .status-toggle { grid-column: 2; grid-row: 2; justify-self: start; } }
+.member-main strong { font-weight: 600; }
+.member-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.tag-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); background: none; border: 1px dashed var(--line); border-radius: 999px; padding: 6px 12px; min-height: 44px; cursor: pointer; }
+.tag-btn:disabled, .status-toggle:disabled { cursor: default; border-style: solid; opacity: .85; }
+.tag-btn:disabled:hover, .status-toggle:disabled:hover { border-color: var(--line); color: var(--muted); }
+.tag-static { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ok); padding: 6px 4px; min-height: 44px; }
+.me-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-left: 4px; }
+.tag-btn:hover { border-color: var(--accent); color: var(--ink); }
+.tag-btn.is-missing { color: var(--warn); border-color: currentColor; }
+.status-toggle { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 14px; min-height: 44px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--warn); }
+.status-toggle:hover { border-color: var(--accent); }
+.status-toggle.is-bib { background: var(--ok-bg); border-color: transparent; color: var(--ok); }
+.confirm { display: inline-flex; gap: 4px; }
+
+.empty { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; color: var(--muted); padding: 48px 16px; border: 1px dashed var(--line); border-radius: 20px; }
+.empty p { margin: 0; }
+
+/* Agenda fédéral */
+.federal .toolbar { flex-direction: column; align-items: stretch; }
+.federal .search { flex: 0 0 auto; }
+.fed-count { margin: 0 0 4px; color: var(--muted); font-size: 14px; font-weight: 600; }
+.fed-months { display: flex; flex-direction: column; gap: 20px; }
+.fed-month-title { font-size: 15px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 8px; }
+.fed-month-title::first-letter { text-transform: uppercase; }
+.fed-list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.fed-row { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px 14px; padding: 14px 16px; align-items: center; }
+.fed-row + .fed-row { border-top: 1px solid var(--line); }
+.fed-row.is-cancelled strong { text-decoration: line-through; color: var(--muted); }
+.fed-date { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--lavande); border-radius: 12px; padding: 6px 0; font-family: var(--num); line-height: 1; }
+.fed-day { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fed-wd { font-size: 12px; text-transform: uppercase; color: var(--muted); font-weight: 600; letter-spacing: .06em; }
+.fed-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.fed-main strong { font-weight: 700; }
+.fed-place { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+.fed-formats { display: flex; flex-wrap: wrap; gap: 4px; }
+.fmt { font-family: var(--num); font-size: 13px; font-weight: 600; letter-spacing: .03em; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; color: var(--ink); }
+.fed-actions { grid-column: 2; display: flex; gap: 8px; }
+.fed-actions .btn { min-height: 44px; padding: 8px 12px; }
+.is-followed { color: var(--ok); }
+.fed-sources { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+.fed-sources > p { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted); }
+.fed-sources a { color: var(--accent); }
+.ffa-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; background: var(--lavande); border-radius: 16px; padding: 16px; }
+.ffa-card > svg { color: var(--run); margin-top: 2px; }
+.ffa-card p { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
+.ffa-card .btn { grid-column: 2; justify-self: start; }
+@media (min-width: 640px) {
+  .fed-row { grid-template-columns: 56px minmax(0, 1fr) auto; }
+  .fed-actions { grid-column: 3; }
+  .ffa-card { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+  .ffa-card .btn { grid-column: 3; }
+}
+
+/* Logistique */
+.seat-line { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; border-radius: 12px; padding: 8px 12px; }
+.seat-line svg { margin-top: 2px; flex-shrink: 0; }
+.seat-line.is-ok { background: var(--ok-bg); color: var(--ok); }
+.seat-line.is-short { background: var(--warn-bg); color: var(--warn); }
+.li-meta { color: var(--muted); font-size: 14px; }
+.section-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
+.section-head h2 { font-size: 26px; }
+.section-head p { margin: 0; color: var(--muted); }
+.logi-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.logi { --tone: var(--tri); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.logi header { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+.logi h3 { display: flex; align-items: center; gap: 8px; font-size: 19px; }
+.logi h3 svg { color: var(--tone); }
+.logi header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.progress { height: 8px; border-radius: 999px; background: var(--lavande); overflow: hidden; }
+.progress-bar { height: 100%; background: var(--grad); border-radius: inherit; transition: width .3s ease; }
+.progress-label { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+.logi-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.logi-cols h4 { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.logi-cols ul { margin: 0; padding-left: 18px; font-size: 15px; }
+.empty-line { margin: 0; color: var(--muted); font-size: 14px; font-style: italic; }
+.logi .link-btn { align-self: flex-start; }
+
+.foot-user { display: block; font-style: normal; margin-top: 4px; }
+.login { max-width: 440px; width: 100%; margin: 24px auto; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 28px 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow); }
+.login-logo { height: 72px; width: auto; align-self: center; }
+.login h1 { font-size: 24px; text-align: center; }
+.login > p { margin: 0; color: var(--muted); text-align: center; }
+.login .code-input { font-family: var(--num); font-size: 30px; letter-spacing: .4em; text-align: center; }
+.login-info { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--ok); background: var(--ok-bg); border-radius: 12px; padding: 10px 12px; }
+.foot { text-align: center; color: var(--muted); font-size: 13px; font-style: italic; padding-top: 8px; }
+
+/* Navigation mobile */
+.bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.bottom-nav button { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 0; background: none; padding: 10px 4px 8px; min-height: 60px; cursor: pointer; color: var(--muted); font-size: 11px; font-weight: 600; }
+.bottom-nav button.is-on { color: var(--accent); }
+.bottom-nav button:disabled { opacity: .4; }
+.fab { position: fixed; z-index: 26; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 60px; height: 60px; border-radius: 50%; border: 4px solid var(--surface); background: var(--grad); color: #FFFFFF; display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 24px -8px rgba(107,79,216,.7); }
+.fab:active { transform: translateX(-50%) scale(.94); }
+
+/* Feuilles (bottom sheet mobile, modale bureau) */
+.sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(17,14,36,.55); display: flex; align-items: flex-end; justify-content: center; animation: fade .18s ease; }
+.sheet { width: 100%; max-height: 92vh; background: var(--surface); color: var(--ink); border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: up .24s cubic-bezier(.2,.8,.2,1); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.sheet-grip { width: 44px; height: 5px; border-radius: 999px; background: var(--line); margin: 10px auto 0; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 20px 6px; }
+.sheet-head h2 { font-size: 21px; }
+.sheet-body { overflow-y: auto; padding: 8px 20px 20px; }
+@keyframes up { from { transform: translateY(40px); opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }
+
+.drawer { display: flex; flex-direction: column; gap: 8px; }
+.drawer button { display: flex; align-items: center; gap: 14px; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 16px; padding: 14px 16px; min-height: 64px; cursor: pointer; }
+.drawer button:hover { border-color: var(--accent); }
+.drawer button:disabled { opacity: .45; }
+.drawer button > svg { color: var(--accent); }
+.drawer span { display: flex; flex-direction: column; }
+.drawer small { color: var(--muted); font-size: 13px; }
+
+/* Formulaires */
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form-intro { margin: 0; background: var(--lavande); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--muted); }
+.form-intro strong { color: var(--ink); }
+.field { display: flex; flex-direction: column; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.field > span, .field legend { font-weight: 600; font-size: 14px; padding: 0; margin-bottom: 6px; }
+.field input { min-height: 48px; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 10px 14px; width: 100%; }
+.field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.field input:disabled { opacity: .5; }
+.field-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.field-error { color: var(--hot); font-size: 14px; font-style: normal; font-weight: 600; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.choice { position: relative; display: flex; flex-direction: column; gap: 8px; border: 2px solid var(--line); border-radius: 16px; padding: 14px; cursor: pointer; font-weight: 600; font-size: 15px; min-height: 104px; }
+.choice input { position: absolute; opacity: 0; pointer-events: none; }
+.choice svg { color: var(--muted); }
+.choice.is-on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.choice.is-on svg { color: var(--accent); }
+.choice:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg-item { position: relative; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 14px; min-height: 44px; cursor: pointer; font-weight: 600; }
+.seg-item input { position: absolute; opacity: 0; pointer-events: none; }
+.seg-item svg { color: var(--tone, var(--accent)); }
+.seg-item.is-on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seg-item.is-on svg { color: inherit; }
+.seg-item:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; padding-top: 4px; }
+.form-actions .spacer { flex: 1; }
+.form-actions .btn-primary { flex: 1 1 180px; }
+
+/* ICS */
+.ics { display: flex; flex-direction: column; gap: 16px; }
+.ics-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; }
+.ics-list li { display: flex; gap: 10px; align-items: flex-start; }
+.ics-list svg { color: var(--accent); margin-top: 3px; }
+.ics-list small { color: var(--muted); }
+.ics-list small::first-letter { text-transform: uppercase; }
+.alarms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.alarms div { display: flex; gap: 8px; align-items: flex-start; background: var(--lavande); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
+.alarms svg { color: var(--accent); margin-top: 2px; }
+.alarms strong { font-family: var(--num); font-size: 18px; margin-right: 4px; }
+.ics-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ics-actions .btn-primary { flex: 1 1 200px; }
+.ics-empty { margin: 0; display: flex; gap: 10px; align-items: flex-start; background: var(--lavande); border-radius: 14px; padding: 14px 16px; }
+.ics-empty svg { color: var(--accent); margin-top: 2px; }
+.hint { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted); }
+.hint svg { margin-top: 2px; }
+.ics-raw summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.ics-raw textarea { width: 100%; margin-top: 8px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 10px; resize: vertical; }
+
+/* Tutoriel */
+.help-btn { margin-left: auto; display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--accent); cursor: pointer; flex-shrink: 0; }
+.help-btn:hover { border-color: var(--accent); background: var(--lavande); }
+.desk-actions + .help-btn { margin-left: 8px; }
+.tour { position: fixed; inset: 0; z-index: 80; }
+.tour-dim { position: fixed; inset: 0; background: rgba(17,14,36,.62); }
+.tour-spot { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(17,14,36,.62); outline: 3px solid #FFFFFF; transition: top .25s ease, left .25s ease, width .25s ease, height .25s ease; pointer-events: none; }
+.tour-bubble { position: fixed; background: var(--surface); color: var(--ink); border-radius: 18px; padding: 16px 18px; box-shadow: 0 18px 40px -12px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 6px; animation: fade .2s ease; }
+.tour-bubble h3 { font-size: 18px; }
+.tour-bubble p { margin: 0; font-size: 15px; color: var(--muted); }
+.tour-bubble .tour-count { font-family: var(--num); font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--accent); }
+.tour-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 6px; }
+.tour-actions .btn { min-width: 96px; }
+.tour-arrow { position: absolute; width: 14px; height: 14px; background: var(--surface); transform: translateX(-50%) rotate(45deg); }
+.tour-below .tour-arrow { top: -7px; }
+.tour-above .tour-arrow { bottom: -7px; }
+
+/* Toast */
+.toast { position: fixed; z-index: 60; left: 50%; transform: translateX(-50%); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 14px; background: var(--ink); color: var(--bg); padding: 12px 16px; border-radius: 14px; font-weight: 600; box-shadow: var(--shadow); max-width: calc(100% - 32px); animation: up .2s ease; }
+.toast button { border: 0; background: none; color: var(--bg); text-decoration: underline; font-weight: 700; cursor: pointer; white-space: nowrap; padding: 6px 0; }
+
+@media (min-width: 640px) {
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toolbar { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .search { flex: 1 1 280px; }
+  .chips { margin-right: 0; padding-right: 0; flex-wrap: wrap; overflow: visible; }
+  .sheet-backdrop { align-items: center; padding: 24px; }
+  .sheet { max-width: 560px; border-radius: 24px; animation-name: fade; }
+  .sheet-wide { max-width: 720px; }
+  .sheet-grip { display: none; }
+  .sheet-head { padding-top: 18px; }
+}
+@media (min-width: 960px) {
+  .desk-nav { display: flex; }
+  .bottom-nav { display: none; }
+  .fab { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .main { padding-bottom: 48px; }
+  .hero { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); align-items: stretch; }
+  .board { padding: 32px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi { justify-content: space-between; }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .logi-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toast { bottom: 32px; }
+}
+@media (min-width: 1180px) {
+  .desk-actions { display: flex; }
+  .fab { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anp *, .anp *::before, .anp *::after { animation: none !important; transition: none !important; }
+}
+`;ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(AnotreplaceDashboard,null));
+
 </script>
+</body>
+</html>
