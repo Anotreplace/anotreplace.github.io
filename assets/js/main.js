@@ -14,9 +14,7 @@
   document.querySelectorAll('.nav ul a').forEach(function (a) {
     if (path.indexOf(a.getAttribute('href')) === 0) a.setAttribute('aria-current', 'page');
   });
-  // Bandeau événement : disparaît tout seul après la date
-  var bar = document.querySelector('.event-bar[data-until]');
-  if (bar && new Date() >= new Date(bar.getAttribute('data-until'))) bar.hidden = true;
+  // Bandeau événement : masqué dès son affichage par le petit script de header.html
   // CTA mobile : apparaît après le premier écran
   var m = document.querySelector('.mobile-cta');
   if (m) {
@@ -45,10 +43,12 @@
   // Une fois dessinée, la ligne s'affiche en entier (évite qu'elle s'arrête avant le bord)
   setTimeout(function () { path.classList.add('is-drawn'); }, reduit ? 0 : 3100);
 
+  // Lectures de la mise en page regroupées avant les écritures (évite un recalcul forcé par picto)
+  var m, r;
+  function mesurer() { m = svg.getScreenCTM(); r = hero.getBoundingClientRect(); }
+
   function placer(rider, t) {
     var p = path.getPointAtLength(t * longueur);
-    var m = svg.getScreenCTM();
-    var r = hero.getBoundingClientRect();
     if (!m) return;
     var x = p.x * m.a + p.y * m.c + m.e - r.left;
     var y = p.x * m.b + p.y * m.d + m.f - r.top;
@@ -58,11 +58,13 @@
   }
 
   function arrives() {
+    mesurer();
     riders.forEach(function (r, i) { placer(r, ARRIVEES[i]); r.classList.add('is-arrived'); });
   }
 
   function tick(now) {
     var termine = true;
+    mesurer();
     riders.forEach(function (r, i) {
       var k = (now - debut - DEPART - i * DECALAGE) / DUREE;
       if (k < 0) return (termine = false);
