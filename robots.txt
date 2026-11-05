@@ -3,4 +3,5 @@ layout: null
 ---
 User-agent: *
 Allow: /
+Disallow: /assets/video/
 Sitemap: {{ site.url }}/sitemap.xml
