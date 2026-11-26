@@ -2,7 +2,13 @@
 <div class="event-bar" data-until="2026-12-08T20:00:00">
   <div class="wrap"><p>Atelier Vélonomie les 5 et 8 décembre : 10 places seulement. <a href="/activites/#velonomie">Je réserve ma place</a></p></div>
 </div>
-<script>(function(b){if(b&&new Date()>=new Date(b.getAttribute('data-until')))b.hidden=true;})(document.currentScript.previousElementSibling);</script>
+<script>(function(b){
+  // Masqué avant le premier affichage une fois la date passée ; sinon le bandeau reste collé en haut, au-dessus du menu
+  if(!b)return;
+  if(new Date()>=new Date(b.getAttribute('data-until'))){b.hidden=true;return;}
+  var r=document.documentElement,maj=function(){r.style.setProperty('--bar-h',b.offsetHeight+'px');};
+  maj();if(window.ResizeObserver)new ResizeObserver(maj).observe(b);else window.addEventListener('resize',maj);
+})(document.currentScript.previousElementSibling);</script>
 <header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href="/"><img srcset="/assets/img/logo-anotreplace-2026-256.webp 256w, /assets/img/logo-anotreplace-2026.webp 640w" sizes="84px" src="/assets/img/logo-anotreplace-2026.webp" alt="Ànotreplace, retour à l'accueil" width="640" height="349"></a>
